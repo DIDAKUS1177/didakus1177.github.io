@@ -239,6 +239,7 @@ const EDUCATION = [
   {
     logo: 'IPN',
     title: 'Maestría en Informática',
+    highlights: ['Investigación aplicada', 'Sistemas inteligentes', 'Ingeniería de software', 'Datos a gran escala'],
     institute: 'Instituto Politécnico Nacional (IPN) · México',
     years: '2026 – 2028',
     status: { es: 'En curso', en: 'In progress' },
@@ -250,6 +251,7 @@ const EDUCATION = [
   {
     logo: 'SENA',
     title: 'Tecnólogo en Aplicaciones para Cloud',
+    highlights: ['Arquitecturas escalables', 'Contenedores y Docker', 'Servicios administrados', 'Integración continua', 'Despliegue en la nube'],
     institute: 'SENA',
     years: '2025 – 2026',
     status: { es: 'En certificación', en: 'Awaiting certification' },
@@ -261,6 +263,7 @@ const EDUCATION = [
   {
     logo: 'SENA',
     title: 'Tecnólogo en Análisis y Desarrollo de Sistemas de Información',
+    highlights: ['Desarrollo en Power BI', 'AppSheet y low-code', 'Modelado de bases de datos', 'SQL', 'Ciclo de vida del software', 'Análisis de requisitos'],
     institute: 'SENA',
     years: '2022 – 2024',
     status: null,
@@ -272,6 +275,7 @@ const EDUCATION = [
   {
     logo: 'UPTC',
     title: 'Especialización en Gestión de la Productividad y Mejoramiento Continuo',
+    highlights: ['Lean Manufacturing', 'Six Sigma', 'Kaizen', 'Indicadores de productividad', 'Estandarización de procesos'],
     institute: 'Universidad Pedagógica y Tecnológica de Colombia (UPTC)',
     years: '2023 – 2024',
     status: null,
@@ -283,6 +287,7 @@ const EDUCATION = [
   {
     logo: 'UPTC',
     title: 'Ingeniería Metalúrgica',
+    highlights: ['Grupo de investigación INCITEMA', 'Grupo GIMEP', 'Metalurgia extractiva', 'Ensayos no destructivos (END)', 'Ciencia de materiales', 'Siderurgia', 'Caracterización de materiales', 'Integridad de activos'],
     institute: 'Universidad Pedagógica y Tecnológica de Colombia (UPTC)',
     years: '2018 – 2023',
     status: null,
@@ -318,7 +323,8 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
     (typeFilter === '' || course.type === typeFilter)
   );
 
-  const selectClass = "bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-brand-red transition-colors";
+  const selectClass =
+    "bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 hover:border-gray-400 dark:hover:border-white/25 transition-colors cursor-pointer";
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
@@ -445,9 +451,19 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                     {e.institute} · {e.years}
                   </p>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
                   {lang === 'es' ? e.desc.es : e.desc.en}
                 </p>
+                <div className="flex flex-wrap gap-1.5 mt-auto">
+                  {e.highlights.map((h) => (
+                    <span
+                      key={h}
+                      className="px-2.5 py-1 rounded-full bg-brand-red/8 dark:bg-brand-red/12 border border-brand-red/25 text-[10px] font-bold text-brand-red uppercase tracking-wide"
+                    >
+                      {h}
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

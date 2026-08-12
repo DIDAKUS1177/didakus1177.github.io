@@ -18,6 +18,12 @@
 }
 
 @layer base {
+  /* Sin esto el navegador dibuja los desplegables nativos de <select> en
+     blanco, aunque el resto del sitio este en modo oscuro. Tambien arregla
+     las barras de scroll y los selectores de fecha. */
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
+
   body {
     @apply font-sans antialiased bg-gray-50 text-gray-900 dark:bg-brand-black dark:text-brand-white transition-colors duration-300;
   }

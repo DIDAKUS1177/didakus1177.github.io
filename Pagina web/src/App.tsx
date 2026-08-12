@@ -34,6 +34,7 @@ import {
   Lightbulb,
   Users,
   Github,
+  Code,
   Plus,
   Sun,
   Moon
@@ -852,6 +853,268 @@ const SERVICES: Service[] = [
     tools: ['R', 'Shiny', 'Minitab', 'Python'],
   },
 ];
+
+// --- Areas de servicio con diagramas ---
+// Diagramas propios en SVG en vez de imagenes de internet: se adaptan al
+// tema, se ven nitidos a cualquier tamaño y no dependen de licencias ajenas.
+const D = {
+  caja: 'fill-white dark:fill-white/[0.06] stroke-gray-300 dark:stroke-white/15',
+  cajaRoja: 'fill-brand-red/10 stroke-brand-red/50',
+  texto: 'fill-gray-700 dark:fill-gray-300',
+  textoTenue: 'fill-gray-500',
+  linea: 'stroke-gray-400 dark:stroke-white/25',
+};
+
+const Flecha = ({ x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2: number }) => (
+  <>
+    <line x1={x1} y1={y1} x2={x2 - 7} y2={y2} className={D.linea} strokeWidth="1.5" strokeDasharray="4 3" />
+    <polygon points={`${x2},${y2} ${x2 - 8},${y2 - 4} ${x2 - 8},${y2 + 4}`} className="fill-brand-red" />
+  </>
+);
+
+const DIAGRAMS: Record<string, React.ReactNode> = {
+  // ERP / CRM: modulos -> aplicacion -> base de datos
+  desarrollo: (
+    <svg viewBox="0 0 420 190" className="w-full h-auto">
+      {['Clientes', 'Inventario', 'Facturación'].map((m, i) => (
+        <g key={m}>
+          <rect x="6" y={18 + i * 52} width="104" height="38" rx="8" className={D.caja} strokeWidth="1.5" />
+          <text x="58" y={41 + i * 52} textAnchor="middle" fontSize="12" fontWeight="700" className={D.texto}>{m}</text>
+        </g>
+      ))}
+      <Flecha x1={114} y1={95} x2={150} y2={95} />
+      <rect x="152" y="52" width="112" height="86" rx="12" className={D.cajaRoja} strokeWidth="2" />
+      <text x="208" y="88" textAnchor="middle" fontSize="13" fontWeight="900" className="fill-brand-red">ERP / CRM</text>
+      <text x="208" y="106" textAnchor="middle" fontSize="10" className={D.textoTenue}>web + móvil</text>
+      <Flecha x1={268} y1={95} x2={304} y2={95} />
+      <ellipse cx="356" cy="64" rx="48" ry="12" className={D.caja} strokeWidth="1.5" />
+      <path d="M308 64v62c0 6.6 21.5 12 48 12s48-5.4 48-12V64" className={D.caja} strokeWidth="1.5" />
+      <text x="356" y="106" textAnchor="middle" fontSize="11" fontWeight="700" className={D.texto}>Base de datos</text>
+    </svg>
+  ),
+
+  // Fuentes dispersas -> proceso de carga -> almacen unico
+  datos: (
+    <svg viewBox="0 0 420 190" className="w-full h-auto">
+      {['Excel', 'Sheets', 'Sensores', 'Formularios'].map((m, i) => (
+        <g key={m}>
+          <rect x="6" y={10 + i * 44} width="92" height="32" rx="7" className={D.caja} strokeWidth="1.5" />
+          <text x="52" y={30 + i * 44} textAnchor="middle" fontSize="11" fontWeight="700" className={D.texto}>{m}</text>
+          <line x1="100" y1={26 + i * 44} x2="140" y2="95" className={D.linea} strokeWidth="1.2" strokeDasharray="3 3" />
+        </g>
+      ))}
+      <polygon points="142,58 214,58 186,100 186,132 170,124 170,100" className={D.cajaRoja} strokeWidth="2" />
+      <text x="178" y="84" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand-red">ETL</text>
+      <Flecha x1={220} y1={95} x2={258} y2={95} />
+      <ellipse cx="312" cy="62" rx="52" ry="13" className={D.caja} strokeWidth="1.5" />
+      <path d="M260 62v66c0 7.2 23.3 13 52 13s52-5.8 52-13V62" className={D.caja} strokeWidth="1.5" />
+      <text x="312" y="106" textAnchor="middle" fontSize="11" fontWeight="700" className={D.texto}>PostgreSQL</text>
+      <text x="312" y="122" textAnchor="middle" fontSize="9" className={D.textoTenue}>una sola fuente</text>
+    </svg>
+  ),
+
+  // Antes: cadena manual larga. Despues: un solo paso automatico.
+  automatizacion: (
+    <svg viewBox="0 0 420 190" className="w-full h-auto">
+      <text x="8" y="20" fontSize="10" fontWeight="900" className={D.textoTenue}>ANTES · manual</text>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <g key={i}>
+          <rect x={8 + i * 62} y="30" width="48" height="30" rx="6" className={D.caja} strokeWidth="1.4" />
+          <text x={32 + i * 62} y="49" textAnchor="middle" fontSize="10" className={D.textoTenue}>{i + 1}</text>
+          {i < 4 && <line x1={58 + i * 62} y1="45" x2={68 + i * 62} y2="45" className={D.linea} strokeWidth="1.4" />}
+        </g>
+      ))}
+      <text x="330" y="49" fontSize="11" fontWeight="700" className={D.textoTenue}>3 h</text>
+
+      <text x="8" y="104" fontSize="10" fontWeight="900" className="fill-brand-red">DESPUÉS · automático</text>
+      <rect x="8" y="114" width="110" height="38" rx="8" className={D.cajaRoja} strokeWidth="2" />
+      <text x="63" y="138" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand-red">1 clic</text>
+      <Flecha x1={122} y1={133} x2={160} y2={133} />
+      <rect x="164" y="114" width="140" height="38" rx="8" className={D.caja} strokeWidth="1.5" />
+      <text x="234" y="138" textAnchor="middle" fontSize="11" fontWeight="700" className={D.texto}>Informe generado</text>
+      <text x="330" y="138" fontSize="11" fontWeight="900" className="fill-brand-red">2 min</text>
+    </svg>
+  ),
+
+  // Datos crudos -> indicadores -> decision
+  analitica: (
+    <svg viewBox="0 0 420 190" className="w-full h-auto">
+      <rect x="8" y="26" width="120" height="138" rx="10" className={D.caja} strokeWidth="1.5" />
+      <text x="68" y="20" textAnchor="middle" fontSize="10" fontWeight="900" className={D.textoTenue}>DATOS CRUDOS</text>
+      {[0, 1, 2, 3, 4, 5].map((r) => (
+        <g key={r}>
+          {[0, 1, 2].map((c) => (
+            <rect key={c} x={20 + c * 34} y={38 + r * 20} width="26" height="9" rx="2"
+                  className="fill-gray-300 dark:fill-white/15" />
+          ))}
+        </g>
+      ))}
+      <Flecha x1={134} y1={95} x2={168} y2={95} />
+
+      {/* barras + tendencia */}
+      <rect x="176" y="26" width="128" height="138" rx="10" className={D.caja} strokeWidth="1.5" />
+      <text x="240" y="20" textAnchor="middle" fontSize="10" fontWeight="900" className="fill-brand-red">INDICADORES</text>
+      {[38, 62, 30, 76, 52].map((h, i) => (
+        <rect key={i} x={190 + i * 23} y={146 - h} width="15" height={h} rx="3"
+              className={i === 3 ? 'fill-brand-red' : 'fill-brand-red/35'} />
+      ))}
+      <polyline points="197,112 220,92 243,120 266,76 289,100" fill="none" className="stroke-amber-500" strokeWidth="2" />
+      <Flecha x1={310} y1={95} x2={344} y2={95} />
+
+      <rect x="348" y="60" width="66" height="70" rx="10" className={D.cajaRoja} strokeWidth="2" />
+      <text x="381" y="88" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand-red">Decisión</text>
+      <text x="381" y="106" textAnchor="middle" fontSize="9" className={D.textoTenue}>con evidencia</text>
+    </svg>
+  ),
+
+  // Ciclo PDCA con las normas alrededor
+  calidad: (
+    <svg viewBox="0 0 420 190" className="w-full h-auto">
+      <circle cx="140" cy="95" r="66" className={D.caja} strokeWidth="1.5" />
+      {[
+        { t: 'PLANEAR', x: 140, y: 44 },
+        { t: 'HACER', x: 200, y: 99 },
+        { t: 'VERIFICAR', x: 140, y: 152 },
+        { t: 'ACTUAR', x: 78, y: 99 },
+      ].map((q) => (
+        <text key={q.t} x={q.x} y={q.y} textAnchor="middle" fontSize="10" fontWeight="900"
+              className="fill-brand-red">{q.t}</text>
+      ))}
+      <path d="M140 42a53 53 0 1 1-37 91" fill="none" className="stroke-brand-red" strokeWidth="2.5" strokeDasharray="6 4" />
+      <polygon points="103,133 112,126 113,138" className="fill-brand-red" />
+      <text x="140" y="92" textAnchor="middle" fontSize="12" fontWeight="900" className={D.texto}>MEJORA</text>
+      <text x="140" y="108" textAnchor="middle" fontSize="12" fontWeight="900" className={D.texto}>CONTINUA</text>
+
+      {['ISO 9001', 'ISO 14001', 'ISO 45001', 'ISO 17025', 'API 580 / 581'].map((n, i) => (
+        <g key={n}>
+          <rect x="248" y={16 + i * 32} width="164" height="24" rx="12" className={D.cajaRoja} strokeWidth="1.5" />
+          <text x="330" y={32 + i * 32} textAnchor="middle" fontSize="11" fontWeight="700" className="fill-brand-red">{n}</text>
+        </g>
+      ))}
+    </svg>
+  ),
+};
+
+interface Area {
+  key: string;
+  icon: typeof Bot;
+  title: { es: string; en: string };
+  desc: { es: string; en: string };
+  bullets: { es: string[]; en: string[] };
+}
+
+const AREAS: Area[] = [
+  {
+    key: 'desarrollo',
+    icon: Code,
+    title: { es: 'Desarrollo de Software a la Medida', en: 'Custom Software Development' },
+    desc: {
+      es: 'Construyo el sistema que tu operación necesita cuando el software del mercado no encaja: ERP, CRM, portales de trámites o aplicaciones de campo.',
+      en: 'I build the system your operation needs when off-the-shelf software does not fit: ERP, CRM, service portals or field applications.',
+    },
+    bullets: {
+      es: ['ERP y CRM por módulos', 'Portales de atención y trámites', 'Aplicaciones de campo con foto y firma', 'Roles, permisos y auditoría'],
+      en: ['Modular ERP and CRM', 'Service and request portals', 'Field apps with photo and signature', 'Roles, permissions and audit trail'],
+    },
+  },
+  {
+    key: 'datos',
+    icon: Database,
+    title: { es: 'Infraestructura y Arquitectura de Datos', en: 'Data Infrastructure & Architecture' },
+    desc: {
+      es: 'Saco la información de decenas de archivos sueltos y la llevo a una base de datos única, con procesos de carga automáticos.',
+      en: 'I take information out of dozens of scattered files into a single database, with automated load processes.',
+    },
+    bullets: {
+      es: ['Diseño del modelo de datos', 'Migración desde Excel y Sheets', 'Procesos ETL automáticos', 'Respaldos, accesos y seguridad'],
+      en: ['Data model design', 'Migration from Excel and Sheets', 'Automated ETL processes', 'Backups, access control and security'],
+    },
+  },
+  {
+    key: 'automatizacion',
+    icon: Zap,
+    title: { es: 'Automatización de Procesos', en: 'Process Automation' },
+    desc: {
+      es: 'Lo que hoy toma horas de copiar y pegar queda en un botón: informes, flujos de aprobación y notificaciones.',
+      en: 'What today takes hours of copy-paste becomes a single button: reports, approval flows and notifications.',
+    },
+    bullets: {
+      es: ['Generación automática de informes', 'Flujos de aprobación por niveles', 'Notificaciones por correo y WhatsApp', 'Integración entre sistemas'],
+      en: ['Automatic report generation', 'Multi-level approval flows', 'Email and WhatsApp notifications', 'System-to-system integration'],
+    },
+  },
+  {
+    key: 'analitica',
+    icon: BarChart3,
+    title: { es: 'Analítica, BI e Inteligencia Artificial', en: 'Analytics, BI & Artificial Intelligence' },
+    desc: {
+      es: 'Convierto la tabla en una respuesta: qué está fallando, por qué, y qué va a pasar si no se corrige.',
+      en: 'I turn the table into an answer: what is failing, why, and what happens if it is not fixed.',
+    },
+    bullets: {
+      es: ['Tableros en Power BI y Tableau', 'Estadística aplicada al proceso', 'Modelos predictivos y machine learning', 'Agentes de IA sobre tus documentos'],
+      en: ['Power BI and Tableau dashboards', 'Statistics applied to the process', 'Predictive models and machine learning', 'AI agents over your documents'],
+    },
+  },
+  {
+    key: 'calidad',
+    icon: ShieldCheck,
+    title: { es: 'Calidad y Sistemas Integrados de Gestión', en: 'Quality & Integrated Management Systems' },
+    desc: {
+      es: 'Mi base de ingeniería: auditorías internas, documentación y integridad de activos bajo norma, no solo la parte de software.',
+      en: 'My engineering foundation: internal audits, documentation and asset integrity under standards, not just the software side.',
+    },
+    bullets: {
+      es: ['Auditorías internas ISO 9001, 14001, 45001', 'Laboratorios bajo ISO 17025', 'Integridad de activos API 580 / 581 / 570', 'Documentación e indicadores del SIG'],
+      en: ['Internal audits ISO 9001, 14001, 45001', 'Laboratories under ISO 17025', 'Asset integrity API 580 / 581 / 570', 'IMS documentation and indicators'],
+    },
+  },
+];
+
+const ServiceAreas = ({ lang }: { lang: 'es' | 'en' }) => (
+  <div className="space-y-6 mb-24">
+    {AREAS.map((area, i) => {
+      const Icono = area.icon;
+      return (
+        <motion.div
+          key={area.key}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.5 }}
+          className="glass rounded-[28px] p-6 md:p-9 border-gray-200 dark:border-white/5 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center hover:border-brand-red/30 transition-colors"
+        >
+          <div className={i % 2 === 1 ? 'lg:order-2' : ''}>
+            <div className="rounded-2xl bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/5 p-4">
+              {DIAGRAMS[area.key]}
+            </div>
+          </div>
+
+          <div className={i % 2 === 1 ? 'lg:order-1' : ''}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-brand-red/10 flex items-center justify-center shrink-0">
+                <Icono className="text-brand-red" size={22} />
+              </div>
+              <span className="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">
+                {String(i + 1).padStart(2, '0')} · {lang === 'es' ? 'Área de servicio' : 'Service area'}
+              </span>
+            </div>
+            <h3 className="text-2xl md:text-3xl font-black mb-3">{area.title[lang]}</h3>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-5">{area.desc[lang]}</p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2">
+              {area.bullets[lang].map((b) => (
+                <li key={b} className="flex gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <CheckCircle2 size={15} className="text-brand-red shrink-0 mt-0.5" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
+      );
+    })}
+  </div>
+);
 
 const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number }> = ({ service, lang, index }) => {
   const [open, setOpen] = useState(false);
@@ -1886,12 +2149,19 @@ export default function App() {
         </div>
       </section>
 
-      {/* --- Analytics Showcase --- */}
-      <section id="analytics" className="py-32 px-6 bg-gray-100/50 dark:bg-white/[0.01]">
+      {/* --- Muestra de analisis (parte de Servicios) --- */}
+      <section id="analytics" className="pb-32 px-6 bg-gray-100/50 dark:bg-white/[0.01]">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black mb-4">{t.analytics.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">{t.analytics.subtitle}</p>
+          <div className="text-center mb-16">
+            <span className="text-[10px] font-black text-brand-red uppercase tracking-[0.25em]">
+              {lang === 'es' ? 'Muestra de trabajo' : 'Work sample'}
+            </span>
+            <h3 className="text-3xl md:text-4xl font-black mb-4 mt-3">{t.analytics.title}</h3>
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              {lang === 'es'
+                ? 'Estos son los análisis que entrego dentro de los proyectos: no son imágenes de ejemplo, son los gráficos reales que uso para encontrar dónde está el problema.'
+                : 'These are the analyses I deliver inside projects: not stock images, but the actual charts I use to find where the problem is.'}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -1992,8 +2262,8 @@ export default function App() {
       {/* --- Data Analyzer --- */}
       {/* Moved to separate page */}
 
-      {/* --- Solutions --- */}
-      <section id="solutions" className="py-32 px-6 relative overflow-hidden">
+      {/* --- Servicios: areas, detalle y muestra de analisis --- */}
+      <section id="solutions" className="pt-32 pb-24 px-6 relative overflow-hidden bg-gray-100/50 dark:bg-white/[0.01]">
         <div className="tech-grid opacity-70" />
         <div className="section-halo float-slow w-[500px] h-[500px] bg-brand-red/10 dark:bg-brand-red/[0.07] top-1/4 -right-40" />
 
@@ -2005,8 +2275,16 @@ export default function App() {
                 ? 'No vendo herramientas sueltas: acompaño el problema desde el diagnóstico hasta que la solución queda funcionando y el equipo sabe usarla.'
                 : 'I do not sell isolated tools: I follow the problem from diagnosis until the solution is running and the team knows how to use it.'}
             </p>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-brand-red mt-6">
-              {lang === 'es' ? 'Toca cada tarjeta para ver el detalle' : 'Tap each card to see the detail'}
+          </div>
+
+          <ServiceAreas lang={lang} />
+
+          <div className="text-center mb-12">
+            <h3 className="text-2xl md:text-3xl font-black mb-3">
+              {lang === 'es' ? 'El detalle de cada servicio' : 'The detail of each service'}
+            </h3>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-brand-red">
+              {lang === 'es' ? 'Toca cada tarjeta para desplegarla' : 'Tap each card to expand it'}
             </p>
           </div>
 
