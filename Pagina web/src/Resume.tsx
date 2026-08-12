@@ -11,10 +11,13 @@ import {
   BookOpen,
   Search,
   User,
-  Loader2
+  Loader2,
+  ChevronRight,
+  Image as ImageIcon
 } from 'lucide-react';
 
 import fallbackCoursesData from './data/curriculum.json';
+import { BackButton } from './App';
 
 interface Course {
   id: string;
@@ -67,13 +70,14 @@ const INSTITUTE_TEXT_STYLE: Record<string, string> = {
   uptc: 'text-[#F39200]',
   ricaute: 'text-blue-400',
   'saber +': 'text-teal-400',
+  ipn: 'text-[#6A1B32] dark:text-[#C8A2C8]',
 };
 
 const slugify = (s: string) => s.toLowerCase().trim().replace(/\s*\+\s*$/, '-mas').replace(/[^a-z0-9]+/g, '-');
 
 // Intenta cargar public/logos/{slug}.png; si no existe, cae al texto con color de marca.
 // Para activar un logo real solo hace falta colocar el archivo con ese nombre — sin tocar código.
-const InstituteLogo = ({ institute }: { institute: string }) => {
+const InstituteLogo = ({ institute, className = 'h-6 max-w-[110px]' }: { institute: string; className?: string }) => {
   const [imgFailed, setImgFailed] = useState(false);
   const key = institute.toLowerCase().trim();
   const textStyle = INSTITUTE_TEXT_STYLE[key] ?? '';
@@ -83,7 +87,7 @@ const InstituteLogo = ({ institute }: { institute: string }) => {
       <img
         src={`/logos/${slugify(institute)}.png`}
         alt={institute}
-        className="h-6 max-w-[110px] object-contain object-left"
+        className={`${className} object-contain object-left`}
         onError={() => setImgFailed(true)}
       />
     );
@@ -94,9 +98,126 @@ const InstituteLogo = ({ institute }: { institute: string }) => {
 
 const SITE_URL = 'https://didakus1177.github.io/';
 
+// Experiencia laboral. `photos` = cuántas imágenes hay en
+// public/experiencia/{id}/{1..n}.jpg — al subirlas y aumentar el número
+// aparecen solas, sin tocar nada más.
+const EXPERIENCE = [
+  {
+    id: 'ccd-uptc',
+    photos: 0,
+    title: 'Gestor de Proyectos y Procesos (OPS)',
+    org: 'CÁMARA DE COMERCIO DE DUITAMA / UPTC',
+    period: 'Sep 2025 – Feb 2026',
+    bullets: [
+      'Lideré la reestructuración y análisis de procesos operativos, logrando una estandarización que optimizó los tiempos de respuesta interinstitucionales.',
+      'Implementé metodologías ágiles para la gestión de proyectos conjuntos, asegurando el cumplimiento de cronogramas y entregables clave.',
+      'Desarrollé tableros de control y KPIs para el monitoreo en tiempo real del desempeño de los proyectos asignados.',
+    ],
+  },
+  {
+    id: 'bhr',
+    photos: 0,
+    title: 'Desarrollador de Software y Analista de Datos',
+    org: 'BUSINESS AND HUMAN RIGHTS (BHR)',
+    period: 'Proyecto',
+    bullets: [
+      'Creación de software a medida para la digitalización de formularios y procesos de recolección de información en campo.',
+      'Automatización de la recopilación y regeneración de reportes, reduciendo significativamente los tiempos de procesamiento manual y errores operativos.',
+      'Implementación de sistemas de análisis de datos para la interpretación masiva de encuestas y métricas de impacto social y empresarial.',
+    ],
+  },
+  {
+    id: 'ademincol',
+    photos: 0,
+    title: 'Ingeniero Desarrollador e Integral de Activos',
+    org: 'ADEMINCOL',
+    period: 'Jul 2024 – Actualidad',
+    bullets: [
+      'Gestión integral de integridad de activos industriales aplicando normativas API (580, 581, 570) y ASME.',
+      'Transformación digital de procesos de inspección mediante el desarrollo de aplicaciones y análisis de datos con Python, R y SQL.',
+      'Diseño de dashboards en Power BI para la visualización de riesgos y toma de decisiones basada en datos (RBI).',
+    ],
+  },
+  {
+    id: 'laboratorio',
+    photos: 0,
+    title: 'Auditor de Calidad y Procesos',
+    org: 'LABORATORIO DE PRUEBAS ELECTROMECÁNICAS',
+    period: 'Feb 2024 – Abr 2024',
+    bullets: [
+      'Ejecuté auditorías internas bajo normas ISO 17025 e ISO 9001, optimizando el sistema de gestión documental.',
+      'Implementé controles en Power BI para el seguimiento de indicadores de calidad en tiempo real.',
+    ],
+  },
+  {
+    id: 'paz-del-rio',
+    photos: 0,
+    title: 'Ingeniero de Mejora Continua – Alto Horno',
+    org: 'ACERÍAS PAZ DEL RÍO',
+    period: 'Ene 2023 – Dic 2023',
+    bullets: [
+      'Lideré proyectos de mejora continua utilizando herramientas estadísticas (Minitab, Python) para identificar y eliminar cuellos de botella en producción.',
+      'Desarrollé e implementé herramientas de control en Power BI y Excel Avanzado, mejorando la visibilidad operativa y la toma de decisiones.',
+      'Apoyé la implementación y mantenimiento de sistemas de gestión integral (Hitch) bajo normas ISO.',
+    ],
+  },
+];
+
+// Tira de fotos de cada experiencia. Misma mecánica que el carrusel de
+// proyectos: transición por CSS, con flechas cuando hay más de una.
+const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lang: 'es' | 'en' }) => {
+  const [i, setI] = useState(0);
+
+  if (exp.photos === 0) {
+    return (
+      <div className="aspect-[21/9] rounded-2xl border border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center gap-1.5 mb-5 bg-gray-50 dark:bg-white/[0.015]">
+        <ImageIcon size={18} className="text-gray-400 dark:text-gray-600" />
+        <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+          {lang === 'es' ? 'Espacio para fotos' : 'Space for photos'}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative aspect-[21/9] rounded-2xl overflow-hidden mb-5 bg-gray-200 dark:bg-black/40 group/exp">
+      {Array.from({ length: exp.photos }).map((_, n) => (
+        <img
+          key={n}
+          src={`/experiencia/${exp.id}/${n + 1}.jpg`}
+          alt={`${exp.title} — ${n + 1}`}
+          loading="lazy"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+            n === i ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ))}
+      {exp.photos > 1 && (
+        <>
+          <button
+            onClick={() => setI((p) => (p - 1 + exp.photos) % exp.photos)}
+            aria-label="Anterior"
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 hover:bg-black/60 text-white/80 hover:text-white flex items-center justify-center opacity-60 group-hover/exp:opacity-100 transition-all"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            onClick={() => setI((p) => (p + 1) % exp.photos)}
+            aria-label="Siguiente"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 hover:bg-black/60 text-white/80 hover:text-white flex items-center justify-center opacity-60 group-hover/exp:opacity-100 transition-all"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
 // Formación académica, de lo más reciente a lo más antiguo.
 const EDUCATION = [
   {
+    logo: 'IPN',
     title: 'Maestría en Informática',
     institute: 'Instituto Politécnico Nacional (IPN) · México',
     years: '2026 – 2028',
@@ -107,6 +228,7 @@ const EDUCATION = [
     },
   },
   {
+    logo: 'SENA',
     title: 'Tecnólogo en Aplicaciones para Cloud',
     institute: 'SENA',
     years: '2025 – 2026',
@@ -117,6 +239,7 @@ const EDUCATION = [
     },
   },
   {
+    logo: 'SENA',
     title: 'Tecnólogo en Análisis y Desarrollo de Sistemas de Información',
     institute: 'SENA',
     years: '2022 – 2024',
@@ -127,6 +250,7 @@ const EDUCATION = [
     },
   },
   {
+    logo: 'UPTC',
     title: 'Especialización en Gestión de la Productividad y Mejoramiento Continuo',
     institute: 'Universidad Pedagógica y Tecnológica de Colombia (UPTC)',
     years: '2023 – 2024',
@@ -137,6 +261,7 @@ const EDUCATION = [
     },
   },
   {
+    logo: 'UPTC',
     title: 'Ingeniería Metalúrgica',
     institute: 'Universidad Pedagógica y Tecnológica de Colombia (UPTC)',
     years: '2018 – 2023',
@@ -179,13 +304,9 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
       <div className="max-w-5xl mx-auto">
         
-        <button 
-          onClick={onBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-12"
-        >
-          <ChevronLeft size={20} />
-          {lang === 'es' ? 'Volver al Portafolio' : 'Back to Portfolio'}
-        </button>
+        <div className="mb-10">
+          <BackButton onBack={onBack} lang={lang} />
+        </div>
 
         {/* Header */}
         <motion.div 
@@ -203,7 +324,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
               Ingeniero Metalúrgico | Especialista en Productividad y Mejora Continua | Data Scientist
             </h2>
             <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm">
-              <span>📍 Bogotá, Colombia</span>
+              <span>📍 Ciudad de México (CDMX)</span>
               <span>📱 +57 321 629 1861</span>
               <span>✉️ dialhebl.dh@gmail.com</span>
             </div>
@@ -243,7 +364,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             <User className="text-brand-red" />
             {lang === 'es' ? 'PERFIL PROFESIONAL' : 'PROFESSIONAL PROFILE'}
           </h3>
-          <p className="text-gray-300 leading-relaxed text-lg">
+          <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
             Ingeniero Metalúrgico y Especialista en Gestión de la Productividad y Mejoramiento Continuo, con sólida trayectoria en la transformación de procesos industriales y análisis de datos. Experto en la implementación de metodologías de mejora continua (Lean Manufacturing, Six Sigma, Kaizen) y desarrollo de software para la automatización de reportes y toma de decisiones. Poseo dominio avanzado de herramientas de Business Intelligence (Power BI, Tableau) y lenguajes de programación (Python, R, SQL). Cuento con experiencia liderando proyectos de estandarización operativa y auditorías de calidad (ISO 9001, 14001, 45001). Destaco por mi capacidad para generar impacto en los resultados del negocio a través de soluciones tecnológicas ágiles y gestión estratégica de la información.
           </p>
         </motion.div>
@@ -260,55 +381,19 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             {lang === 'es' ? 'EXPERIENCIA LABORAL' : 'WORK EXPERIENCE'}
           </h3>
           
-          <div className="space-y-8">
-            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
-              <h4 className="text-xl font-bold">Gestor de Proyectos y Procesos (OPS)</h4>
-              <div className="text-brand-red text-sm font-bold mb-4">CÁMARA DE COMERCIO DE DUITAMA / UPTC | Sep 2025 – Feb 2026</div>
-              <ul className="list-disc list-inside text-gray-400 space-y-2">
-                <li>Lideré la reestructuración y análisis de procesos operativos, logrando una estandarización que optimizó los tiempos de respuesta interinstitucionales.</li>
-                <li>Implementé metodologías ágiles para la gestión de proyectos conjuntos, asegurando el cumplimiento de cronogramas y entregables clave.</li>
-                <li>Desarrollé tableros de control y KPIs para el monitoreo en tiempo real del desempeño de los proyectos asignados.</li>
-              </ul>
-            </div>
-
-            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
-              <h4 className="text-xl font-bold">Desarrollador de Software y Analista de Datos</h4>
-              <div className="text-brand-red text-sm font-bold mb-4">BUSINESS AND HUMAN RIGHTS (BHR) | Proyecto</div>
-              <ul className="list-disc list-inside text-gray-400 space-y-2">
-                <li>Creación de software a medida para la digitalización de formularios y procesos de recolección de información en campo.</li>
-                <li>Automatización de la recopilación y regeneración de reportes, reduciendo significativamente los tiempos de procesamiento manual y errores operativos.</li>
-                <li>Implementación de sistemas de análisis de datos para la interpretación masiva de encuestas y métricas de impacto social y empresarial.</li>
-              </ul>
-            </div>
-
-            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
-              <h4 className="text-xl font-bold">Ingeniero Desarrollador e Integral de Activos</h4>
-              <div className="text-brand-red text-sm font-bold mb-4">ADEMINCOL | Jul 2024 – Actualidad</div>
-              <ul className="list-disc list-inside text-gray-400 space-y-2">
-                <li>Gestión integral de integridad de activos industriales aplicando normativas API (580, 581, 570) y ASME.</li>
-                <li>Transformación digital de procesos de inspección mediante el desarrollo de aplicaciones y análisis de datos con Python, R y SQL.</li>
-                <li>Diseño de dashboards en Power BI para la visualización de riesgos y toma de decisiones basada en datos (RBI).</li>
-              </ul>
-            </div>
-
-            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
-              <h4 className="text-xl font-bold">Auditor de Calidad y Procesos</h4>
-              <div className="text-brand-red text-sm font-bold mb-4">LABORATORIO DE PRUEBAS ELECTROMECÁNICAS | Feb 2024 – Abr 2024</div>
-              <ul className="list-disc list-inside text-gray-400 space-y-2">
-                <li>Ejecuté auditorías internas bajo normas ISO 17025 y ISO 9001, optimizando el sistema de gestión documental.</li>
-                <li>Implementé controles en Power BI para el seguimiento de indicadores de calidad en tiempo real.</li>
-              </ul>
-            </div>
-
-            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
-              <h4 className="text-xl font-bold">Ingeniero de Mejora Continua – Alto Horno</h4>
-              <div className="text-brand-red text-sm font-bold mb-4">ACERÍAS PAZ DEL RÍO | Ene 2023 – Dic 2023</div>
-              <ul className="list-disc list-inside text-gray-400 space-y-2">
-                <li>Lideré proyectos de mejora continua utilizando herramientas estadísticas (Minitab, Python) para identificar y eliminar cuellos de botella en producción.</li>
-                <li>Desarrollé e implementé herramientas de control en Power BI y Excel Avanzado, mejorando la visibilidad operativa y la toma de decisiones.</li>
-                <li>Apoyé la implementación y mantenimiento de sistemas de gestión integral (Hitch) bajo normas ISO.</li>
-              </ul>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {EXPERIENCE.map((exp) => (
+              <div key={exp.id} className="glass p-6 rounded-3xl border-l-4 border-l-brand-red flex flex-col">
+                <ExperiencePhotos exp={exp} lang={lang} />
+                <h4 className="text-lg font-bold leading-snug">{exp.title}</h4>
+                <div className="text-brand-red text-xs font-bold mb-4 mt-1">
+                  {exp.org} | {exp.period}
+                </div>
+                <ul className="list-disc list-outside pl-4 text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                  {exp.bullets.map((b, k) => <li key={k}>{b}</li>)}
+                </ul>
+              </div>
+            ))}
           </div>
         </motion.div>
 
@@ -334,9 +419,12 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-brand-red font-bold mb-3">
-                  {e.institute} · {e.years}
-                </p>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <InstituteLogo institute={e.logo} className="h-7 max-w-[80px]" />
+                  <p className="text-sm text-brand-red font-bold">
+                    {e.institute} · {e.years}
+                  </p>
+                </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   {lang === 'es' ? e.desc.es : e.desc.en}
                 </p>

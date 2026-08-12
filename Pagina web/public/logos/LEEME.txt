@@ -1,0 +1,18 @@
+LOGOS DE INSTITUCIONES
+======================
+Coloca aqui los logos, en PNG con fondo transparente y ~120 px de alto.
+El nombre del archivo debe ir en minusculas:
+
+  sena.png      -> SENA
+  uptc.png      -> UPTC
+  ipn.png       -> Instituto Politecnico Nacional
+  platzi.png    -> Platzi
+  mintic.png    -> MinTIC
+  ricaute.png   -> Ricaute
+  saber-mas.png -> Saber +
+
+Aparecen solos en la formacion academica y en la tabla de cursos.
+Si un archivo no existe, se muestra el nombre en texto: nada se rompe.
+
+La subcarpeta "clientes/" es para logos de empresas; esos requieren
+autorizacion de cada marca y hay que activarlos en el codigo.

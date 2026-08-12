@@ -1,0 +1,14 @@
+FOTOS DE EXPERIENCIA LABORAL
+============================
+Una carpeta por empleo, con las fotos numeradas 1.jpg, 2.jpg, 3.jpg...
+
+  ccd-uptc/      Camara de Comercio de Duitama / UPTC
+  bhr/           Business and Human Rights
+  ademincol/     ADEMINCOL
+  laboratorio/   Laboratorio de Pruebas Electromecanicas
+  paz-del-rio/   Acerias Paz del Rio
+
+Formato horizontal (21:9 aprox), ancho maximo 1400 px.
+
+Despues avisame para subir el contador "photos" de cada empleo en
+src/Resume.tsx; mientras este en 0 se muestra el recuadro punteado.

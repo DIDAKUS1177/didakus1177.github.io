@@ -63,7 +63,6 @@ import {
 } from 'recharts';
 
 import { Resume } from './Resume';
-import coursesData from './data/curriculum.json';
 import { WORLD_PATH } from './data/worldMap';
 
 // --- Translations ---
@@ -680,77 +679,73 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
   );
 };
 
-// --- PROPUESTA: franja de impacto + banda de logos ---
-// Los números salen de datos reales del sitio, no están escritos a mano.
-// La banda de logos lee /logos/clientes/*.png y solo muestra los que existan,
-// así se va llenando a medida que consigas las autorizaciones de marca.
-const CLIENT_LOGOS = [
+// Banda de cierre del inicio: lleva a la pagina de Proyectos.
+// Antes habia una franja de cifras (proyectos / paises / certificaciones);
+// se quito porque resultaba poco creible.
+const CLIENT_LOGOS: { file: string; name: string }[] = [
   // { file: 'ademincol.png', name: 'ADEMINCOL' },
-  // { file: 'paz-del-rio.png', name: 'Acerías Paz del Río' },
-  // Añade aquí cada logo que puedas usar; el archivo va en public/logos/clientes/
+  // Cada logo va en public/logos/clientes/ y requiere permiso de la marca.
 ];
 
-const ImpactSection = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyectos: () => void }) => {
-  const stats = [
-    { value: `${PROJECTS.length}`, es: 'Proyectos en producción', en: 'Projects in production' },
-    { value: `${COUNTRIES.length}`, es: 'Países', en: 'Countries' },
-    { value: `${coursesData.length}+`, es: 'Cursos y certificaciones', en: 'Courses & certifications' },
-    { value: '6', es: 'Sectores atendidos', en: 'Industries served' },
-  ];
+// Boton de volver compartido por las paginas internas.
+export const BackButton = ({ onBack, lang }: { onBack: () => void; lang: 'es' | 'en' }) => (
+  <button
+    onClick={onBack}
+    className="group inline-flex items-center gap-2.5 pl-3 pr-5 py-2.5 rounded-full glass border-gray-200 dark:border-white/10 hover:border-brand-red/50 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand-red transition-all hover:-translate-x-0.5"
+  >
+    <span className="w-7 h-7 rounded-full bg-brand-red/10 group-hover:bg-brand-red flex items-center justify-center transition-colors">
+      <ChevronLeft size={16} className="text-brand-red group-hover:text-white transition-colors" />
+    </span>
+    {lang === 'es' ? 'Volver al portafolio' : 'Back to portfolio'}
+  </button>
+);
 
-  return (
-    <section className="py-24 px-6 border-y border-gray-200 dark:border-white/5">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-4">
-          {stats.map((s, i) => (
-            <motion.div
-              key={s.en}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="text-center"
-            >
-              <div className="text-5xl md:text-6xl font-black text-brand-red mb-2">{s.value}</div>
-              <div className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">
-                {lang === 'es' ? s.es : s.en}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyectos: () => void }) => (
+  <section className="py-24 px-6 border-y border-gray-200 dark:border-white/5">
+    <div className="max-w-4xl mx-auto text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-3xl md:text-4xl font-black mb-4">
+          {lang === 'es' ? 'Mira lo que he construido' : 'See what I have built'}
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-10">
+          {lang === 'es'
+            ? 'Plataformas, dashboards y automatizaciones en produccion en Espana, Mexico y Colombia.'
+            : 'Platforms, dashboards and automations running in production across Spain, Mexico and Colombia.'}
+        </p>
+        <button
+          onClick={onVerProyectos}
+          className="inline-flex items-center gap-3 px-8 py-4 red-gradient rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform text-white"
+        >
+          {lang === 'es' ? 'Ver todos los proyectos' : 'View all projects'}
+          <ArrowRight size={20} />
+        </button>
+      </motion.div>
 
-        <div className="text-center mt-12">
-          <button
-            onClick={onVerProyectos}
-            className="inline-flex items-center gap-3 px-8 py-4 red-gradient rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform text-white"
-          >
-            {lang === 'es' ? 'Ver todos los proyectos' : 'View all projects'}
-            <ArrowRight size={20} />
-          </button>
-        </div>
-
-        {CLIENT_LOGOS.length > 0 && (
-          <div className="mt-20">
-            <p className="text-center text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em] mb-10">
-              {lang === 'es' ? 'Organizaciones con las que he trabajado' : 'Organizations I have worked with'}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-8">
-              {CLIENT_LOGOS.map((logo: { file: string; name: string }) => (
-                <img
-                  key={logo.file}
-                  src={`/logos/clientes/${logo.file}`}
-                  alt={logo.name}
-                  title={logo.name}
-                  className="h-10 max-w-[150px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all"
-                />
-              ))}
-            </div>
+      {CLIENT_LOGOS.length > 0 && (
+        <div className="mt-20">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em] mb-10">
+            {lang === 'es' ? 'Organizaciones con las que he trabajado' : 'Organizations I have worked with'}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-8">
+            {CLIENT_LOGOS.map((logo) => (
+              <img
+                key={logo.file}
+                src={`/logos/clientes/${logo.file}`}
+                alt={logo.name}
+                title={logo.name}
+                className="h-10 max-w-[150px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all"
+              />
+            ))}
           </div>
-        )}
-      </div>
-    </section>
-  );
-};
+        </div>
+      )}
+    </div>
+  </section>
+);
 
 const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
   <section id="projects" className="py-32 px-6 bg-gray-100/50 dark:bg-gray-100/50 dark:bg-white/[0.01]">
@@ -768,44 +763,46 @@ const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
 
       <WorldMap lang={lang} />
 
-      <div className="space-y-12">
+      {/* Dos columnas: la captura arriba y el texto debajo, para que las
+          tarjetas se comparen de un vistazo. */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {PROJECTS.map((project, i) => (
           <motion.article
             key={project.id}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6 }}
-            className="glass rounded-[32px] p-6 md:p-10 border-white/5 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.5, delay: (i % 2) * 0.1 }}
+            className="glass rounded-[32px] p-5 md:p-7 border-gray-200 dark:border-white/5 flex flex-col hover:border-brand-red/30 transition-colors"
           >
-            <div className={i % 2 === 1 ? 'lg:order-2' : ''}>
-              <ProjectCarousel project={project} />
+            <ProjectCarousel project={project} />
+
+            <div className="flex items-center gap-3 mt-6 mb-3">
+              <Flag country={project.country} className="w-9 shrink-0" />
+              <div className="flex flex-col min-w-0">
+                <span className="text-[10px] font-black text-brand-red uppercase tracking-[0.2em] truncate">
+                  {project.client}
+                </span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  {project.city} · {project.country}
+                </span>
+              </div>
             </div>
 
-            <div className={i % 2 === 1 ? 'lg:order-1' : ''}>
-              <div className="flex items-center gap-3 mb-3">
-                <Flag country={project.country} className="w-10 shrink-0" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">
-                    {project.client}
-                  </span>
-                  <span className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">
-                    {project.country}
-                  </span>
-                </div>
-              </div>
-              <h3 className="text-2xl md:text-3xl font-black mb-4">{project.title}</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">{project.desc[lang]}</p>
-              <div className="flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 rounded-full bg-gray-200/70 dark:bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 text-[11px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+            <h3 className="text-xl md:text-2xl font-black mb-3">{project.title}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 flex-1">
+              {project.desc[lang]}
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              {project.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2.5 py-1 rounded-full bg-gray-200/70 dark:bg-white/5 border border-gray-300 dark:border-white/10 text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
           </motion.article>
         ))}
@@ -1393,13 +1390,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <button 
-            onClick={() => setCurrentPage('home')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-900 dark:hover:text-white transition-colors mb-12"
-          >
-            <ChevronLeft size={20} />
-            {lang === 'es' ? 'Volver al Portafolio' : 'Back to Portfolio'}
-          </button>
+          <BackButton onBack={() => setCurrentPage('home')} lang={lang} />
           <DataAnalyzer lang={lang} />
         </div>
       </div>
@@ -1410,13 +1401,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 pt-20">
         <div className="max-w-7xl mx-auto px-6">
-          <button
-            onClick={() => setCurrentPage('home')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
-          >
-            <ChevronLeft size={20} />
-            {lang === 'es' ? 'Volver al Portafolio' : 'Back to Portfolio'}
-          </button>
+          <BackButton onBack={() => setCurrentPage('home')} lang={lang} />
         </div>
         <ProjectsSection lang={lang} />
       </div>
@@ -1795,107 +1780,76 @@ export default function App() {
       </section>
 
       {/* --- Impacto (propuesta) --- */}
-      <ImpactSection lang={lang} onVerProyectos={() => setCurrentPage('projects')} />
+      <ProjectsCta lang={lang} onVerProyectos={() => setCurrentPage('projects')} />
 
       {/* --- Success Map --- */}
       {/* Moved to separate page */}
 
       {/* --- Contact --- */}
       <section id="contact" className="py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="glass p-12 md:p-20 rounded-[40px] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red/10 blur-[100px] -z-10" />
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div>
-                <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
-                  {t.contact.title}
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-400 mb-12">
-                  {t.contact.subtitle}
-                </p>
-                
-                <div className="flex flex-col gap-4">
-                  <button 
-                    onClick={openGmail}
-                    className="flex items-center justify-between p-6 glass rounded-2xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-brand-red flex items-center justify-center">
-                        <Mail className="text-white" size={24} />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-bold">{t.contact.gmail}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-500">dialhebl.dh@gmail.com</p>
-                      </div>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl md:text-5xl font-black mb-4">{t.contact.title}</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+              {t.contact.subtitle}
+            </p>
+          </div>
+
+          {/* Canales de contacto en rejilla; antes habia un recuadro vacio
+              con un icono de chip que no aportaba nada. */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            {[
+              { onClick: openGmail, icon: Mail, bg: 'bg-brand-red',
+                title: t.contact.gmail, sub: 'dialhebl.dh@gmail.com' },
+              { href: 'https://wa.me/573337279204', icon: MessageCircle, bg: 'bg-[#25D366]',
+                title: t.contact.whatsapp, sub: '+57 333 727 9204' },
+              { href: 'https://wa.me/573216291861', icon: MessageCircle, bg: 'bg-[#25D366]',
+                title: t.contact.whatsappPersonal, sub: '+57 321 629 1861' },
+              { href: 'https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b',
+                icon: Linkedin, bg: 'bg-[#0A66C2]', title: t.contact.linkedin, sub: 'Diego A. Hernández Blanco' },
+            ].map((c) => {
+              const Icono = c.icon;
+              const contenido = (
+                <>
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className={`w-12 h-12 shrink-0 rounded-xl ${c.bg} flex items-center justify-center`}>
+                      <Icono className="text-white" size={22} />
                     </div>
-                    <ChevronRight className="text-gray-600 group-hover:text-gray-900 dark:hover:text-white transition-colors" />
-                  </button>
-
-                  <a 
-                    href="https://wa.me/573337279204" 
-                    target="_blank"
-                    className="flex items-center justify-between p-6 glass rounded-2xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all group border-brand-red/20"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-brand-red flex items-center justify-center shadow-[0_0_15px_rgba(211,47,47,0.4)]">
-                        <MessageCircle className="text-white" size={24} />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-bold">{t.contact.whatsapp}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-500">+57 333 727 9204</p>
-                      </div>
+                    <div className="text-left min-w-0">
+                      <p className="font-bold truncate">{c.title}</p>
+                      <p className="text-sm text-gray-500 truncate">{c.sub}</p>
                     </div>
-                    <ChevronRight className="text-gray-600 group-hover:text-gray-900 dark:hover:text-white transition-colors" />
-                  </a>
-
-                  <a 
-                    href="https://wa.me/573216291861" 
-                    target="_blank"
-                    className="flex items-center justify-between p-6 glass rounded-2xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all group border-gray-200 dark:border-white/10"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-brand-red/50 flex items-center justify-center">
-                        <MessageCircle className="text-white" size={24} />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-bold">{t.contact.whatsappPersonal}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-500">+57 321 629 1861</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="text-gray-600 group-hover:text-gray-900 dark:hover:text-white transition-colors" />
-                  </a>
-
-                  <a 
-                    href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" 
-                    target="_blank"
-                    className="flex items-center justify-between p-6 glass rounded-2xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#0A66C2] flex items-center justify-center">
-                        <Linkedin className="text-white" size={24} />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-bold">{t.contact.linkedin}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-500">Diego A. Hernández Blanco</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="text-gray-600 group-hover:text-gray-900 dark:hover:text-white transition-colors" />
-                  </a>
-                </div>
-
-                <ContactForm lang={lang} />
-              </div>
-
-              <div className="hidden lg:block relative">
-                <div className="w-full aspect-square glass rounded-3xl flex items-center justify-center p-12">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-brand-red/20 blur-3xl rounded-full animate-pulse" />
-                    <Cpu size={200} className="text-brand-red relative z-10" strokeWidth={1} />
                   </div>
-                </div>
-              </div>
-            </div>
+                  <ChevronRight className="shrink-0 text-gray-400 group-hover:text-brand-red group-hover:translate-x-1 transition-all" />
+                </>
+              );
+              const clase = "flex items-center justify-between gap-3 p-5 glass rounded-2xl border-gray-200 dark:border-white/5 hover:border-brand-red/40 transition-all group w-full";
+              return c.href ? (
+                <a key={c.sub} href={c.href} target="_blank" rel="noreferrer" className={clase}>{contenido}</a>
+              ) : (
+                <button key={c.sub} onClick={c.onClick} className={clase}>{contenido}</button>
+              );
+            })}
+          </div>
+
+          {/* Disponibilidad: da contexto util antes de que escriban */}
+          <div className="glass rounded-2xl border-gray-200 dark:border-white/5 p-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm">
+            <span className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              {lang === 'es' ? 'Disponible para nuevos proyectos' : 'Available for new projects'}
+            </span>
+            <span className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <MapPin size={15} className="text-brand-red" />
+              {lang === 'es' ? 'Ciudad de México · remoto' : 'Mexico City · remote'}
+            </span>
+            <span className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <Languages size={15} className="text-brand-red" />
+              {lang === 'es' ? 'Español · Inglés' : 'Spanish · English'}
+            </span>
+          </div>
+
+          <div className="max-w-2xl mx-auto">
+            <ContactForm lang={lang} />
           </div>
         </div>
       </section>
