@@ -306,18 +306,111 @@
         }
         
         #about .about-content {
-            max-width: 800px; 
-            margin: 0 auto; 
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 3.5rem;
+        }
+
+        #about .about-photos {
+            flex: 0 0 300px;
+            position: relative;
+        }
+
+        #about .about-photo-main {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            display: block;
+        }
+
+        #about .about-photo-field {
+            width: 55%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 4px solid var(--white);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: absolute;
+            bottom: -1.5rem;
+            right: -1.5rem;
+        }
+
+        #about .about-text {
+            flex: 1;
         }
 
         #about h3 {
-            font-size: 2.2rem; 
-            margin-bottom: 1.5rem; 
-            text-align: center; 
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
         }
-        
+
         #about p {
-            margin-bottom: 1rem; 
+            margin-bottom: 1rem;
+        }
+
+        /* --- Sección Proyectos Realizados --- */
+        #projects {
+            background: var(--light-bg);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--white);
+            padding: 2.2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-top: 3px solid var(--secondary-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .project-icon {
+            font-size: 2.2rem;
+            color: var(--secondary-color);
+            margin-bottom: 1.2rem;
+        }
+
+        .project-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .project-card p {
+            color: var(--text-color);
+            flex-grow: 1;
+            margin-bottom: 1.2rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .project-tags span {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid #ddd;
         }
 
         #services {
@@ -671,12 +764,13 @@
             h2 { font-size: 2.2rem; } 
             #hero h1 { font-size: 2.8rem; } 
             #hero p { font-size: 1.2rem; }
-            .navbar .nav-links { display: none; } 
+            .navbar .nav-links { display: none; }
             .navbar .logo .tagline { display: none; }
-            #about .about-content { text-align: left; }
+            #about .about-content { flex-direction: column; text-align: left; }
+            #about .about-photos { flex: 0 0 auto; width: 70%; max-width: 280px; margin: 0 auto 2rem auto; }
             #about h3 { text-align: center; }
-            .contact-grid, .testimonials-grid, .services-grid, .process-grid { 
-                grid-template-columns: 1fr; 
+            .contact-grid, .testimonials-grid, .services-grid, .process-grid, .projects-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -693,6 +787,7 @@
             <ul class="nav-links">
                 <li><a href="#about">Nosotros</a></li>
                 <li><a href="#services">Soluciones</a></li>
+                <li><a href="#projects">Proyectos</a></li>
                 <li><a href="#value-prop">Propuesta de Valor</a></li>
                 <li><a href="#process">Nuestro Proceso</a></li>
                 <li><a href="#testimonials">Experiencia</a></li>
@@ -716,6 +811,10 @@
     <section id="about" class="animated-section">
         <div class="container">
             <div class="about-content">
+                <div class="about-photos">
+                    <img src="foto-diego.jpg" alt="Diego Alejandro Hernández Blanco, fundador de didakus" class="about-photo-main">
+                    <img src="foto-campo.jpg" alt="Diego Hernández Blanco en trabajo de campo en planta industrial" class="about-photo-field">
+                </div>
                 <div class="about-text">
                     <h3>Sobre Nosotros</h3>
                     <p>
@@ -767,6 +866,80 @@
                     <div class="icon"><i class="fas fa-laptop-code"></i></div>
                     <h3>Desarrollo a Medida</h3>
                     <p>Creamos las herramientas y aplicaciones que tu negocio realmente necesita, con un enfoque en resolver tus desafíos únicos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="animated-section">
+        <div class="container">
+            <h2>Proyectos Realizados</h2>
+            <p class="section-subtitle">Una muestra de soluciones que hemos diseñado y llevado a producción en distintos sectores: industria, gobierno, ingeniería y ciencia de datos.</p>
+
+            <div class="projects-grid">
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-industry"></i></div>
+                    <h3>ERP Ademincol</h3>
+                    <p>Plataforma integral de gestión de inspecciones industriales (END, PMI, PCM): captura de datos en campo, generación automática de informes normalizados y consolidación en una arquitectura moderna, reemplazando procesos manuales en Excel.</p>
+                    <div class="project-tags">
+                        <span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>React</span>
+                    </div>
+                </div>
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-gauge-high"></i></div>
+                    <h3>Programa RBI 581</h3>
+                    <p>Aplicación web que implementa la metodología API 581 / ASME PCC-3 para calcular probabilidad y consecuencia de falla en activos industriales, generando matrices de riesgo y planes de inspección optimizados.</p>
+                    <div class="project-tags">
+                        <span>R Shiny</span><span>API 581</span><span>Análisis de Riesgo</span>
+                    </div>
+                </div>
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-oil-can"></i></div>
+                    <h3>Calculadora de Tanques API 653</h3>
+                    <p>Herramienta de cálculo técnico para inspección de tanques de almacenamiento: espesores mínimos, corrosión y vida remanente, con interfaz web interactiva para ingenieros de campo.</p>
+                    <div class="project-tags">
+                        <span>R Shiny</span><span>Ingeniería Mecánica</span>
+                    </div>
+                </div>
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-file-excel"></i></div>
+                    <h3>Automatización con Macros (VBA)</h3>
+                    <p>Automatización de tareas repetitivas y generación de reportes en Excel mediante macros: inserción masiva de evidencia fotográfica y consolidación de datos, reduciendo horas de trabajo manual.</p>
+                    <div class="project-tags">
+                        <span>VBA</span><span>Excel</span><span>Automatización</span>
+                    </div>
+                </div>
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Dashboards y Reportes PCM</h3>
+                    <p>Módulos de generación de reportes de integridad mecánica con integración a Google Sheets y exportación automática a Excel, incluyendo gestión de evidencia fotográfica en campo.</p>
+                    <div class="project-tags">
+                        <span>R Shiny</span><span>Python</span><span>Google Sheets API</span>
+                    </div>
+                </div>
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-cube"></i></div>
+                    <h3>Simulación 3D – Alto Horno</h3>
+                    <p>Modelado y animación 3D de un alto horno siderúrgico (carga, soplo de aire y reducción) integrado en una aplicación interactiva, usada como herramienta técnica para explicar el proceso productivo.</p>
+                    <div class="project-tags">
+                        <span>Blender</span><span>Python</span><span>Visualización 3D</span>
+                    </div>
+                </div>
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-cloud"></i></div>
+                    <h3>Pipeline de Datos Serverless en AWS</h3>
+                    <p>Arquitectura de datos serverless para automatización de procesamiento de información: Lambda, Step Functions, EventBridge, S3 y Redshift, aprovisionada como infraestructura como código.</p>
+                    <div class="project-tags">
+                        <span>AWS</span><span>Terraform</span><span>Redshift</span>
+                    </div>
+                </div>
+                <div class="project-card animated-item">
+                    <div class="project-icon"><i class="fas fa-users-gear"></i></div>
+                    <h3>CRM Power Grid</h3>
+                    <p>Aplicación web de gestión de clientes para una empresa de ingeniería eléctrica: registro de clientes, contactos y seguimiento comercial en un solo lugar.</p>
+                    <div class="project-tags">
+                        <span>Desarrollo Web</span><span>Gestión Comercial</span>
+                    </div>
                 </div>
             </div>
         </div>

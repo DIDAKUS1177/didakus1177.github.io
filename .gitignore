@@ -1,0 +1,22 @@
+# Material de trabajo que NO debe publicarse.
+# Contiene las capturas originales sin difuminar (incluida la declaración
+# tributaria con datos personales del contribuyente y del contador).
+# Las versiones publicables ya están en "Pagina web/public/proyectos/".
+Pagina web/Imagenes pendientes/
+
+# Dependencias y artefactos de compilación
+node_modules/
+dist/
+build/
+coverage/
+
+# Variables de entorno (claves y URLs privadas)
+.env
+.env.*
+!.env.example
+
+# Sistema operativo / editores
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log

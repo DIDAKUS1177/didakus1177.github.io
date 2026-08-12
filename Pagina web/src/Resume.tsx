@@ -1,0 +1,415 @@
+import React, { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
+import Papa from 'papaparse';
+import {
+  Briefcase,
+  GraduationCap,
+  Award,
+  Code,
+  ChevronLeft,
+  Download,
+  BookOpen,
+  Search,
+  User,
+  Loader2
+} from 'lucide-react';
+
+import fallbackCoursesData from './data/curriculum.json';
+
+interface Course {
+  id: string;
+  topic: string;
+  institute: string;
+  type: string;
+  name: string;
+  hours: string;
+  year: string;
+  month: string;
+}
+
+const SHEET_CSV_URL = import.meta.env.VITE_CURRICULUM_SHEET_CSV_URL as string | undefined;
+
+// Carga los cursos desde una hoja de Google Sheets publicada como CSV (si está
+// configurada); si no, usa el respaldo local en src/data/curriculum.json.
+function useCourses(): { courses: Course[]; loading: boolean; fromSheet: boolean } {
+  const [courses, setCourses] = useState<Course[]>(fallbackCoursesData as Course[]);
+  const [loading, setLoading] = useState(!!SHEET_CSV_URL);
+  const [fromSheet, setFromSheet] = useState(false);
+
+  useEffect(() => {
+    if (!SHEET_CSV_URL) return;
+
+    fetch(SHEET_CSV_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+      })
+      .then((csvText) => {
+        const parsed = Papa.parse<Course>(csvText, { header: true, skipEmptyLines: true });
+        if (parsed.data.length > 0) {
+          setCourses(parsed.data);
+          setFromSheet(true);
+        }
+      })
+      .catch((err) => {
+        console.warn('No se pudo cargar el currículum desde Google Sheets, usando respaldo local.', err);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { courses, loading, fromSheet };
+}
+
+const INSTITUTE_TEXT_STYLE: Record<string, string> = {
+  platzi: 'text-[#98CA3F]',
+  sena: 'text-[#FF6E00]',
+  mintic: 'text-[#000000] bg-white px-1 rounded',
+  uptc: 'text-[#F39200]',
+  ricaute: 'text-blue-400',
+  'saber +': 'text-teal-400',
+};
+
+const slugify = (s: string) => s.toLowerCase().trim().replace(/\s*\+\s*$/, '-mas').replace(/[^a-z0-9]+/g, '-');
+
+// Intenta cargar public/logos/{slug}.png; si no existe, cae al texto con color de marca.
+// Para activar un logo real solo hace falta colocar el archivo con ese nombre — sin tocar código.
+const InstituteLogo = ({ institute }: { institute: string }) => {
+  const [imgFailed, setImgFailed] = useState(false);
+  const key = institute.toLowerCase().trim();
+  const textStyle = INSTITUTE_TEXT_STYLE[key] ?? '';
+
+  if (!imgFailed) {
+    return (
+      <img
+        src={`/logos/${slugify(institute)}.png`}
+        alt={institute}
+        className="h-6 max-w-[110px] object-contain object-left"
+        onError={() => setImgFailed(true)}
+      />
+    );
+  }
+
+  return <span className={`font-black tracking-tighter ${textStyle || 'text-gray-300'}`}>{institute}</span>;
+};
+
+// Formación académica, de lo más reciente a lo más antiguo.
+const EDUCATION = [
+  {
+    title: 'Maestría en Informática',
+    institute: 'Instituto Politécnico Nacional (IPN) · México',
+    years: '2026 – 2028',
+    status: { es: 'En curso', en: 'In progress' },
+    desc: {
+      es: 'Formación avanzada en ciencias de la computación e ingeniería de software, orientada a la investigación aplicada en sistemas inteligentes y tratamiento de datos a gran escala.',
+      en: 'Advanced training in computer science and software engineering, focused on applied research in intelligent systems and large-scale data processing.',
+    },
+  },
+  {
+    title: 'Tecnólogo en Aplicaciones para Cloud',
+    institute: 'SENA',
+    years: '2025 – 2026',
+    status: { es: 'En certificación', en: 'Awaiting certification' },
+    desc: {
+      es: 'Desarrollo y despliegue de aplicaciones en la nube: arquitecturas escalables, contenedores, servicios administrados e integración continua.',
+      en: 'Development and deployment of cloud applications: scalable architectures, containers, managed services and continuous integration.',
+    },
+  },
+  {
+    title: 'Tecnólogo en Análisis y Desarrollo de Sistemas de Información',
+    institute: 'SENA',
+    years: '2022 – 2024',
+    status: null,
+    desc: {
+      es: 'Análisis, diseño y construcción de sistemas de información: modelado de bases de datos, desarrollo de software y gestión del ciclo de vida de las aplicaciones.',
+      en: 'Analysis, design and construction of information systems: database modeling, software development and application lifecycle management.',
+    },
+  },
+  {
+    title: 'Especialización en Gestión de la Productividad y Mejoramiento Continuo',
+    institute: 'Universidad Pedagógica y Tecnológica de Colombia (UPTC)',
+    years: '2023 – 2024',
+    status: null,
+    desc: {
+      es: 'Metodologías de mejora continua aplicadas a la industria (Lean Manufacturing, Six Sigma, Kaizen), medición de productividad y estandarización de procesos operativos.',
+      en: 'Continuous improvement methodologies applied to industry (Lean Manufacturing, Six Sigma, Kaizen), productivity measurement and operational process standardization.',
+    },
+  },
+  {
+    title: 'Ingeniería Metalúrgica',
+    institute: 'Universidad Pedagógica y Tecnológica de Colombia (UPTC)',
+    years: '2018 – 2023',
+    status: null,
+    desc: {
+      es: 'Base de ingeniería en procesos siderúrgicos, ciencia de materiales, integridad de activos y control de calidad, sustento técnico de mi trabajo en entornos industriales.',
+      en: 'Engineering foundation in steelmaking processes, materials science, asset integrity and quality control — the technical grounding for my work in industrial environments.',
+    },
+  },
+];
+
+interface ResumeProps {
+  onBack: () => void;
+  lang: 'es' | 'en';
+}
+
+export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [topicFilter, setTopicFilter] = useState('');
+  const [instituteFilter, setInstituteFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const { courses, loading, fromSheet } = useCourses();
+
+  const topics = Array.from(new Set(courses.map(c => c.topic))).filter(Boolean).sort();
+  const institutes = Array.from(new Set(courses.map(c => c.institute))).filter(Boolean).sort();
+  const types = Array.from(new Set(courses.map(c => c.type))).filter(Boolean).sort();
+
+  const filteredCourses = courses.filter(course =>
+    (course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.institute.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (topicFilter === '' || course.topic === topicFilter) &&
+    (instituteFilter === '' || course.institute === instituteFilter) &&
+    (typeFilter === '' || course.type === typeFilter)
+  );
+
+  const selectClass = "bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-brand-red transition-colors";
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
+      <div className="max-w-5xl mx-auto">
+        
+        <button 
+          onClick={onBack}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-12"
+        >
+          <ChevronLeft size={20} />
+          {lang === 'es' ? 'Volver al Portafolio' : 'Back to Portfolio'}
+        </button>
+
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass p-12 rounded-[40px] mb-12 relative overflow-hidden flex flex-col md:flex-row items-center gap-8"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red/10 blur-[100px] -z-10" />
+          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-brand-red/20 shadow-[0_0_30px_rgba(211,47,47,0.2)]">
+            <img src="/profile.jpg" alt="Diego Hernández" className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black mb-4">DIEGO ALEJANDRO HERNÁNDEZ BLANCO</h1>
+            <h2 className="text-xl md:text-2xl text-brand-red font-bold mb-6">
+              Ingeniero Metalúrgico | Especialista en Productividad y Mejora Continua | Data Scientist
+            </h2>
+            <div className="flex flex-wrap gap-4 text-gray-400 text-sm">
+              <span>📍 Bogotá, Colombia</span>
+              <span>📱 +57 321 629 1861</span>
+              <span>✉️ dialhebl.dh@gmail.com</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Profile */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-16"
+        >
+          <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
+            <User className="text-brand-red" />
+            {lang === 'es' ? 'PERFIL PROFESIONAL' : 'PROFESSIONAL PROFILE'}
+          </h3>
+          <p className="text-gray-300 leading-relaxed text-lg">
+            Ingeniero Metalúrgico y Especialista en Gestión de la Productividad y Mejoramiento Continuo, con sólida trayectoria en la transformación de procesos industriales y análisis de datos. Experto en la implementación de metodologías de mejora continua (Lean Manufacturing, Six Sigma, Kaizen) y desarrollo de software para la automatización de reportes y toma de decisiones. Poseo dominio avanzado de herramientas de Business Intelligence (Power BI, Tableau) y lenguajes de programación (Python, R, SQL). Cuento con experiencia liderando proyectos de estandarización operativa y auditorías de calidad (ISO 9001, 14001, 45001). Destaco por mi capacidad para generar impacto en los resultados del negocio a través de soluciones tecnológicas ágiles y gestión estratégica de la información.
+          </p>
+        </motion.div>
+
+        {/* Experience */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-16"
+        >
+          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+            <Briefcase className="text-brand-red" />
+            {lang === 'es' ? 'EXPERIENCIA LABORAL' : 'WORK EXPERIENCE'}
+          </h3>
+          
+          <div className="space-y-8">
+            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
+              <h4 className="text-xl font-bold">Gestor de Proyectos y Procesos (OPS)</h4>
+              <div className="text-brand-red text-sm font-bold mb-4">CÁMARA DE COMERCIO DE DUITAMA / UPTC | Sep 2025 – Feb 2026</div>
+              <ul className="list-disc list-inside text-gray-400 space-y-2">
+                <li>Lideré la reestructuración y análisis de procesos operativos, logrando una estandarización que optimizó los tiempos de respuesta interinstitucionales.</li>
+                <li>Implementé metodologías ágiles para la gestión de proyectos conjuntos, asegurando el cumplimiento de cronogramas y entregables clave.</li>
+                <li>Desarrollé tableros de control y KPIs para el monitoreo en tiempo real del desempeño de los proyectos asignados.</li>
+              </ul>
+            </div>
+
+            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
+              <h4 className="text-xl font-bold">Desarrollador de Software y Analista de Datos</h4>
+              <div className="text-brand-red text-sm font-bold mb-4">BUSINESS AND HUMAN RIGHTS (BHR) | Proyecto</div>
+              <ul className="list-disc list-inside text-gray-400 space-y-2">
+                <li>Creación de software a medida para la digitalización de formularios y procesos de recolección de información en campo.</li>
+                <li>Automatización de la recopilación y regeneración de reportes, reduciendo significativamente los tiempos de procesamiento manual y errores operativos.</li>
+                <li>Implementación de sistemas de análisis de datos para la interpretación masiva de encuestas y métricas de impacto social y empresarial.</li>
+              </ul>
+            </div>
+
+            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
+              <h4 className="text-xl font-bold">Ingeniero Desarrollador e Integral de Activos</h4>
+              <div className="text-brand-red text-sm font-bold mb-4">ADEMINCOL | Jul 2024 – Actualidad</div>
+              <ul className="list-disc list-inside text-gray-400 space-y-2">
+                <li>Gestión integral de integridad de activos industriales aplicando normativas API (580, 581, 570) y ASME.</li>
+                <li>Transformación digital de procesos de inspección mediante el desarrollo de aplicaciones y análisis de datos con Python, R y SQL.</li>
+                <li>Diseño de dashboards en Power BI para la visualización de riesgos y toma de decisiones basada en datos (RBI).</li>
+              </ul>
+            </div>
+
+            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
+              <h4 className="text-xl font-bold">Auditor de Calidad y Procesos</h4>
+              <div className="text-brand-red text-sm font-bold mb-4">LABORATORIO DE PRUEBAS ELECTROMECÁNICAS | Feb 2024 – Abr 2024</div>
+              <ul className="list-disc list-inside text-gray-400 space-y-2">
+                <li>Ejecuté auditorías internas bajo normas ISO 17025 y ISO 9001, optimizando el sistema de gestión documental.</li>
+                <li>Implementé controles en Power BI para el seguimiento de indicadores de calidad en tiempo real.</li>
+              </ul>
+            </div>
+
+            <div className="glass p-8 rounded-3xl border-l-4 border-l-brand-red">
+              <h4 className="text-xl font-bold">Ingeniero de Mejora Continua – Alto Horno</h4>
+              <div className="text-brand-red text-sm font-bold mb-4">ACERÍAS PAZ DEL RÍO | Ene 2023 – Dic 2023</div>
+              <ul className="list-disc list-inside text-gray-400 space-y-2">
+                <li>Lideré proyectos de mejora continua utilizando herramientas estadísticas (Minitab, Python) para identificar y eliminar cuellos de botella en producción.</li>
+                <li>Desarrollé e implementé herramientas de control en Power BI y Excel Avanzado, mejorando la visibilidad operativa y la toma de decisiones.</li>
+                <li>Apoyé la implementación y mantenimiento de sistemas de gestión integral (Hitch) bajo normas ISO.</li>
+              </ul>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Education */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-16"
+        >
+          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+            <GraduationCap className="text-brand-red" />
+            {lang === 'es' ? 'FORMACIÓN ACADÉMICA' : 'EDUCATION'}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {EDUCATION.map((e) => (
+              <div key={e.title} className="glass p-6 rounded-2xl flex flex-col">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <h4 className="font-bold leading-snug">{e.title}</h4>
+                  {e.status && (
+                    <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-full">
+                      {lang === 'es' ? e.status.es : e.status.en}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-brand-red font-bold mb-3">
+                  {e.institute} · {e.years}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {lang === 'es' ? e.desc.es : e.desc.en}
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Courses Table */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-16"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <h3 className="text-2xl font-black flex items-center gap-3">
+              <BookOpen className="text-brand-red" />
+              {lang === 'es' ? 'CURSOS Y CERTIFICACIONES' : 'COURSES & CERTIFICATIONS'}
+              {loading && <Loader2 className="animate-spin text-gray-500" size={18} />}
+              {fromSheet && (
+                <span className="text-[9px] font-bold text-teal-500 uppercase tracking-widest bg-teal-500/10 px-2 py-1 rounded-full">
+                  {lang === 'es' ? 'En vivo · Google Sheets' : 'Live · Google Sheets'}
+                </span>
+              )}
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                <input
+                  type="text"
+                  placeholder={lang === 'es' ? 'Buscar curso...' : 'Search course...'}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`${selectClass} pl-10 pr-4 w-full md:w-56`}
+                />
+              </div>
+              <select value={topicFilter} onChange={(e) => setTopicFilter(e.target.value)} className={selectClass}>
+                <option value="">{lang === 'es' ? 'Todas las temáticas' : 'All topics'}</option>
+                {topics.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+              <select value={instituteFilter} onChange={(e) => setInstituteFilter(e.target.value)} className={selectClass}>
+                <option value="">{lang === 'es' ? 'Todos los institutos' : 'All institutes'}</option>
+                {institutes.map(i => <option key={i} value={i}>{i}</option>)}
+              </select>
+              <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className={selectClass}>
+                <option value="">{lang === 'es' ? 'Todos los tipos' : 'All types'}</option>
+                {types.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mb-4">
+            {lang === 'es'
+              ? `Mostrando ${filteredCourses.length} de ${courses.length} cursos`
+              : `Showing ${filteredCourses.length} of ${courses.length} courses`}
+          </p>
+
+          <div className="glass rounded-[32px] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-white/5 text-gray-400 font-bold uppercase text-[10px] tracking-wider">
+                  <tr>
+                    <th className="p-4">Temática</th>
+                    <th className="p-4">Curso</th>
+                    <th className="p-4">Instituto</th>
+                    <th className="p-4">Tipo</th>
+                    <th className="p-4">Horas</th>
+                    <th className="p-4">Fecha</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {filteredCourses.map((course) => (
+                    <tr key={course.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-4">
+                        <span className="px-2 py-1 rounded bg-brand-red/20 text-brand-red text-[10px] font-bold uppercase">
+                          {course.topic}
+                        </span>
+                      </td>
+                      <td className="p-4 font-medium text-gray-200">{course.name}</td>
+                      <td className="p-4"><InstituteLogo institute={course.institute} /></td>
+                      <td className="p-4 text-gray-400">{course.type}</td>
+                      <td className="p-4 text-gray-400">{course.hours !== 'NA' ? `${course.hours}h` : '-'}</td>
+                      <td className="p-4 text-gray-400">{course.month}/{course.year}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {filteredCourses.length === 0 && (
+                <div className="p-8 text-center text-gray-500 italic">
+                  {lang === 'es' ? 'No se encontraron cursos.' : 'No courses found.'}
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+      </div>
+    </div>
+  );
+};
