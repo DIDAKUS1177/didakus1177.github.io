@@ -83,13 +83,16 @@ const InstituteLogo = ({ institute, className = 'h-6 max-w-[110px]' }: { institu
   const textStyle = INSTITUTE_TEXT_STYLE[key] ?? '';
 
   if (!imgFailed) {
+    // Placa blanca: IPN y UPTC son oscuros y se pierden sobre fondo oscuro.
     return (
-      <img
-        src={`/logos/${slugify(institute)}.png`}
-        alt={institute}
-        className={`${className} object-contain object-left`}
-        onError={() => setImgFailed(true)}
-      />
+      <span className="inline-flex items-center justify-center bg-white rounded-md px-1.5 py-1 ring-1 ring-black/10 dark:ring-white/15">
+        <img
+          src={`/logos/${slugify(institute)}.png`}
+          alt={institute}
+          className={`${className} object-contain`}
+          onError={() => setImgFailed(true)}
+        />
+      </span>
     );
   }
 
@@ -151,7 +154,7 @@ const EXPERIENCE = [
   },
   {
     id: 'paz-del-rio',
-    photos: 0,
+    photos: 5,
     title: 'Ingeniero de Mejora Continua – Alto Horno',
     org: 'ACERÍAS PAZ DEL RÍO',
     period: 'Ene 2023 – Dic 2023',
@@ -170,7 +173,7 @@ const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lan
 
   if (exp.photos === 0) {
     return (
-      <div className="aspect-[21/9] rounded-2xl border border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center gap-1.5 mb-5 bg-gray-50 dark:bg-white/[0.015]">
+      <div className="aspect-[16/9] rounded-2xl border border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center gap-1.5 mb-5 bg-gray-50 dark:bg-white/[0.015]">
         <ImageIcon size={18} className="text-gray-400 dark:text-gray-600" />
         <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-600">
           {lang === 'es' ? 'Espacio para fotos' : 'Space for photos'}
@@ -180,7 +183,7 @@ const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lan
   }
 
   return (
-    <div className="relative aspect-[21/9] rounded-2xl overflow-hidden mb-5 bg-gray-200 dark:bg-black/40 group/exp">
+    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-5 bg-gray-200 dark:bg-black/40 group/exp">
       {Array.from({ length: exp.photos }).map((_, n) => (
         <img
           key={n}
@@ -208,6 +211,23 @@ const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lan
           >
             <ChevronRight size={18} />
           </button>
+
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-black/45 text-[9px] font-bold text-white/85">
+            {i + 1} / {exp.photos}
+          </div>
+
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {Array.from({ length: exp.photos }).map((_, n) => (
+              <button
+                key={n}
+                onClick={() => setI(n)}
+                aria-label={`Ver foto ${n + 1}`}
+                className={`h-1 rounded-full transition-all ${
+                  n === i ? 'w-4 bg-brand-red' : 'w-1 bg-white/60 hover:bg-white/90'
+                }`}
+              />
+            ))}
+          </div>
         </>
       )}
     </div>
