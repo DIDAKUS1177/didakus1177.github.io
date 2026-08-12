@@ -34,6 +34,7 @@ import {
   Lightbulb,
   Users,
   Github,
+  Plus,
   Sun,
   Moon
 } from 'lucide-react';
@@ -699,6 +700,237 @@ export const BackButton = ({ onBack, lang }: { onBack: () => void; lang: 'es' | 
     {lang === 'es' ? 'Volver al portafolio' : 'Back to portfolio'}
   </button>
 );
+
+// --- Servicios ---
+// Cada tarjeta se despliega para mostrar entregables concretos y herramientas,
+// en vez de quedarse en una sola linea generica.
+interface Service {
+  icon: typeof Bot;
+  title: { es: string; en: string };
+  desc: { es: string; en: string };
+  items: { es: string[]; en: string[] };
+  tools: string[];
+}
+
+const SERVICES: Service[] = [
+  {
+    icon: Bot,
+    title: { es: 'Agentes de IA', en: 'AI Agents' },
+    desc: {
+      es: 'Asistentes que leen tus propios documentos y bases de datos, y responden o redactan por ti.',
+      en: 'Assistants that read your own documents and databases, then answer or draft on your behalf.',
+    },
+    items: {
+      es: [
+        'Asistentes que consultan tus manuales, informes y bases de datos internas',
+        'Clasificación y extracción automática de datos desde PDF, correos y formularios',
+        'Redacción automática de informes en Word y PowerPoint a partir de los resultados',
+        'Integración con las herramientas que ya usa tu equipo',
+      ],
+      en: [
+        'Assistants that query your manuals, reports and internal databases',
+        'Automatic classification and extraction from PDFs, emails and forms',
+        'Automatic drafting of Word and PowerPoint reports from the results',
+        'Integration with the tools your team already uses',
+      ],
+    },
+    tools: ['LLMs', 'RAG', 'Python', 'APIs'],
+  },
+  {
+    icon: FileJson,
+    title: { es: 'Automatización de Formatos', en: 'Form & Report Automation' },
+    desc: {
+      es: 'Del formato en papel o Excel a la captura digital en campo con generación automática del informe.',
+      en: 'From paper or Excel forms to digital field capture with automatic report generation.',
+    },
+    items: {
+      es: [
+        'Captura en campo desde el celular, con fotos, firma y funcionamiento sin señal',
+        'Generación del informe final en Excel o PDF con tu plantilla corporativa',
+        'Consolidación de toda la información en una sola base de datos',
+        'Trazabilidad de quién registró qué y cuándo',
+      ],
+      en: [
+        'Field capture from a phone, with photos, signature and offline support',
+        'Final report generated in Excel or PDF using your corporate template',
+        'All information consolidated into a single database',
+        'Full traceability of who recorded what and when',
+      ],
+    },
+    tools: ['AppSheet', 'Python', 'Apps Script', 'openpyxl'],
+  },
+  {
+    icon: BarChart3,
+    title: { es: 'Business Intelligence', en: 'Business Intelligence' },
+    desc: {
+      es: 'Tableros que se actualizan solos y responden las preguntas que de verdad mueven el negocio.',
+      en: 'Dashboards that refresh themselves and answer the questions that actually move the business.',
+    },
+    items: {
+      es: [
+        'Definición de indicadores junto con las áreas que los van a usar',
+        'Modelo de datos y limpieza de las fuentes existentes',
+        'Tableros en Power BI o Tableau con actualización automática',
+        'Permisos por rol y capacitación al equipo para que no dependan de mí',
+      ],
+      en: [
+        'KPI definition together with the teams that will use them',
+        'Data model and cleanup of existing sources',
+        'Power BI or Tableau dashboards with automatic refresh',
+        'Role-based access and team training so they do not depend on me',
+      ],
+    },
+    tools: ['Power BI', 'Tableau', 'SQL', 'DAX'],
+  },
+  {
+    icon: Zap,
+    title: { es: 'AppSheet & Power Automate', en: 'AppSheet & Power Automate' },
+    desc: {
+      es: 'Aplicaciones internas y flujos de aprobación sin montar un desarrollo a la medida desde cero.',
+      en: 'Internal apps and approval flows without building custom software from scratch.',
+    },
+    items: {
+      es: [
+        'Aplicaciones internas para solicitudes, inventarios o inspecciones',
+        'Flujos de aprobación por niveles con notificaciones automáticas',
+        'Integración con Google Sheets, SharePoint, correo y WhatsApp',
+        'Puesta en marcha en semanas, no en meses',
+      ],
+      en: [
+        'Internal apps for requests, inventories or inspections',
+        'Multi-level approval flows with automatic notifications',
+        'Integration with Google Sheets, SharePoint, email and WhatsApp',
+        'Live in weeks, not months',
+      ],
+    },
+    tools: ['AppSheet', 'Power Automate', 'Google Workspace'],
+  },
+  {
+    icon: Database,
+    title: { es: 'Big Data & SQL', en: 'Big Data & SQL' },
+    desc: {
+      es: 'Sacar la información de archivos de Excel dispersos y ponerla en una base de datos que aguante.',
+      en: 'Getting information out of scattered Excel files and into a database that holds up.',
+    },
+    items: {
+      es: [
+        'Diseño del modelo de datos y migración desde hojas de cálculo',
+        'Procesos de carga y transformación automáticos (ETL)',
+        'Optimización de consultas lentas y de reportes que tardan',
+        'Respaldos, control de acceso y registro de auditoría',
+      ],
+      en: [
+        'Data model design and migration from spreadsheets',
+        'Automated load and transformation processes (ETL)',
+        'Optimization of slow queries and slow reports',
+        'Backups, access control and audit logging',
+      ],
+    },
+    tools: ['PostgreSQL', 'SQL Server', 'Python', 'Docker'],
+  },
+  {
+    icon: LineChart,
+    title: { es: 'Análisis Estadístico en R', en: 'Statistical Analysis in R' },
+    desc: {
+      es: 'Cuando la pregunta no se responde con un promedio: estadística aplicada al proceso industrial.',
+      en: 'When an average will not answer the question: statistics applied to industrial processes.',
+    },
+    items: {
+      es: [
+        'Pareto, capacidad de proceso y cartas de control',
+        'Regresión y series de tiempo para proyectar comportamiento',
+        'Diseño de experimentos para encontrar la causa real de un problema',
+        'Modelos de riesgo bajo API 581 e integridad de activos',
+      ],
+      en: [
+        'Pareto, process capability and control charts',
+        'Regression and time series to project behavior',
+        'Design of experiments to find the real root cause',
+        'Risk models under API 581 and asset integrity',
+      ],
+    },
+    tools: ['R', 'Shiny', 'Minitab', 'Python'],
+  },
+];
+
+const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number }> = ({ service, lang, index }) => {
+  const [open, setOpen] = useState(false);
+  const Icono = service.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: (index % 3) * 0.08 }}
+      viewport={{ once: true }}
+      className={`glass rounded-3xl transition-all group border-gray-200 dark:border-white/5 ${
+        open ? 'border-brand-red/40' : 'hover:border-brand-red/40'
+      }`}
+    >
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="w-full text-left p-7 cursor-pointer"
+      >
+        <div className="flex items-start justify-between gap-4 mb-5">
+          <div
+            className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center transition-colors ${
+              open ? 'bg-brand-red' : 'bg-brand-red/10 group-hover:bg-brand-red'
+            }`}
+          >
+            <Icono
+              className={`transition-colors ${open ? 'text-white' : 'text-brand-red group-hover:text-white'}`}
+              size={26}
+            />
+          </div>
+          <span
+            className={`mt-1 text-gray-400 transition-transform duration-300 ${open ? 'rotate-45' : ''}`}
+            aria-hidden
+          >
+            <Plus size={20} />
+          </span>
+        </div>
+
+        <h3 className="text-xl font-bold mb-2">{service.title[lang]}</h3>
+        <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{service.desc[lang]}</p>
+
+        {/* Despliegue con grid 0fr -> 1fr: anima la altura sin saber cuánto mide */}
+        <div
+          className={`grid transition-[grid-template-rows] duration-500 ease-out ${
+            open ? 'grid-rows-[1fr] mt-6' : 'grid-rows-[0fr]'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <ul className="space-y-2.5 mb-5">
+              {service.items[lang].map((it) => (
+                <li key={it} className="flex gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                  <CheckCircle2 size={16} className="text-brand-red shrink-0 mt-0.5" />
+                  <span>{it}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap gap-1.5">
+              {service.tools.map((tool) => (
+                <span
+                  key={tool}
+                  className="px-2.5 py-1 rounded-full bg-gray-200/70 dark:bg-white/5 border border-gray-300 dark:border-white/10 text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider"
+                >
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <span className="mt-5 inline-block text-[10px] font-black uppercase tracking-widest text-brand-red">
+          {open
+            ? (lang === 'es' ? 'Ocultar detalle' : 'Hide detail')
+            : (lang === 'es' ? 'Ver qué incluye' : 'See what is included')}
+        </span>
+      </button>
+    </motion.div>
+  );
+};
 
 const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyectos: () => void }) => (
   <section className="py-24 px-6 border-y border-gray-200 dark:border-white/5">
@@ -1455,19 +1687,29 @@ export default function App() {
       <section id="hero" className="relative pt-40 pb-24 px-6 overflow-hidden min-h-[800px] flex items-center">
         {/* Background: animated glow + photo slider */}
         <div className="absolute inset-0 -z-20 overflow-hidden bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-          <AnimatePresence mode="popLayout">
-            <motion.img
-              key={bgIndex}
-              src={`/fondo/bg${bgIndex + 1}.jpg`}
-              alt="Fondo de la industria"
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 0.35, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-              className="absolute inset-0 w-full h-full object-cover dark:opacity-40 opacity-15"
+          {/* Las 4 fotos quedan montadas y solo cambia la opacidad por CSS.
+              Con AnimatePresence la imagen se quedaba congelada en opacity 0
+              y el fondo aparecia vacio. */}
+          {[0, 1, 2, 3].map((n) => (
+            <img
+              key={n}
+              src={`/fondo/bg${n + 1}.jpg`}
+              alt=""
+              aria-hidden
+              loading={n === 0 ? 'eager' : 'lazy'}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+                n === bgIndex ? 'opacity-25 dark:opacity-45' : 'opacity-0'
+              }`}
             />
-          </AnimatePresence>
+          ))}
           <div className="hero-gradient-bg" />
+          <div className="tech-grid" />
+          {/* Manchas de color que flotan lentamente: dan movimiento al fondo */}
+          <div className="section-halo float-slow w-[420px] h-[420px] bg-brand-red/25 dark:bg-brand-red/20 -top-20 -left-24" />
+          <div
+            className="section-halo float-slow w-[360px] h-[360px] bg-amber-500/15 dark:bg-amber-500/10 bottom-0 right-0"
+            style={{ animationDelay: '-9s' }}
+          />
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-gray-50 dark:from-brand-black to-transparent" />
         </div>
 
@@ -1751,29 +1993,26 @@ export default function App() {
       {/* Moved to separate page */}
 
       {/* --- Solutions --- */}
-      <section id="solutions" className="py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
+      <section id="solutions" className="py-32 px-6 relative overflow-hidden">
+        <div className="tech-grid opacity-70" />
+        <div className="section-halo float-slow w-[500px] h-[500px] bg-brand-red/10 dark:bg-brand-red/[0.07] top-1/4 -right-40" />
+
+        <div className="max-w-7xl mx-auto relative">
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-4">{t.services.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">{t.services.subtitle}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+              {lang === 'es'
+                ? 'No vendo herramientas sueltas: acompaño el problema desde el diagnóstico hasta que la solución queda funcionando y el equipo sabe usarla.'
+                : 'I do not sell isolated tools: I follow the problem from diagnosis until the solution is running and the team knows how to use it.'}
+            </p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-brand-red mt-6">
+              {lang === 'es' ? 'Toca cada tarjeta para ver el detalle' : 'Tap each card to see the detail'}
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {t.services.items.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="glass p-8 rounded-3xl hover:border-brand-red/50 transition-all group"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-brand-red/10 flex items-center justify-center mb-6 group-hover:bg-brand-red transition-colors">
-                  <item.icon className="text-brand-red group-hover:text-gray-900 dark:hover:text-white transition-colors" size={28} />
-                </div>
-                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{item.desc}</p>
-              </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+            {SERVICES.map((service, i) => (
+              <ServiceCard key={service.title.en} service={service} lang={lang} index={i} />
             ))}
           </div>
         </div>
