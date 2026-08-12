@@ -2177,6 +2177,14 @@ export default function App() {
                   +57 333 727 9204
                 </a>
                 <a 
+                  href="https://wa.me/573216291861"
+                  target="_blank"
+                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-orange-600 flex items-center gap-2 font-bold whitespace-nowrap"
+                >
+                  <MessageCircle size={20} />
+                  +57 321 629 1861
+                </a>
+                <a 
                   href="https://github.com/DIDAKUS1177/didakus1177.github.io"
                   target="_blank"
                   className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-gray-600 dark:text-gray-400 flex items-center gap-2 font-bold whitespace-nowrap"
@@ -2416,6 +2424,8 @@ export default function App() {
                 title: t.contact.gmail, sub: 'dialhebl.dh@gmail.com' },
               { href: 'https://wa.me/573337279204', icon: MessageCircle, bg: 'bg-[#25D366]',
                 title: t.contact.whatsapp, sub: '+57 333 727 9204' },
+              { href: 'https://wa.me/573216291861', icon: MessageCircle, bg: 'bg-[#25D366]',
+                title: t.contact.whatsappPersonal, sub: '+57 321 629 1861' },
               { href: 'https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b',
                 icon: Linkedin, bg: 'bg-[#0A66C2]', title: t.contact.linkedin, sub: 'Diego A. Hernández Blanco' },
             ].map((c) => {
@@ -2483,20 +2493,67 @@ export default function App() {
         </div>
       </footer>
 
-      {/* --- Accion flotante unica --- */}
-      {/* Antes habia cinco botones apilados. Con tantas opciones el visitante
-          duda y no elige ninguna; los demas canales estan en Contacto. */}
-      <a
-        href="https://wa.me/573337279204"
-        target="_blank"
-        rel="noreferrer"
-        className="fixed bottom-6 right-6 z-[100] flex items-center gap-3 pl-4 pr-5 py-3.5 rounded-full bg-[#25D366] text-white font-bold shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:scale-105 transition-transform"
-      >
-        <MessageCircle size={22} />
-        <span className="hidden sm:block text-sm">
-          {lang === 'es' ? 'Hablemos' : "Let's talk"}
-        </span>
-      </a>
+      {/* --- Floating Action Buttons --- */}
+      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-[100]">
+        <a 
+          href="https://wa.me/573337279204" 
+          target="_blank"
+          className="w-14 h-14 bg-brand-red rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(211,47,47,0.5)] hover:scale-110 transition-transform group relative"
+          title={t.contact.whatsapp}
+        >
+          <MessageCircle className="text-white" size={28} />
+          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            {t.contact.whatsapp}
+          </span>
+        </a>
+        
+        <a 
+          href="https://wa.me/573216291861" 
+          target="_blank"
+          className="w-14 h-14 bg-orange-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(234,88,12,0.3)] hover:scale-110 transition-transform group relative"
+          title={t.contact.whatsappPersonal}
+        >
+          <User className="text-white" size={28} />
+          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            {t.contact.whatsappPersonal}
+          </span>
+        </a>
+
+        <a 
+          href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" 
+          target="_blank"
+          className="w-14 h-14 bg-[#0A66C2] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(10,102,194,0.3)] hover:scale-110 transition-transform group relative"
+          title={t.contact.linkedin}
+        >
+          <Linkedin className="text-white" size={28} />
+          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            LinkedIn
+          </span>
+        </a>
+
+        <a 
+          href="https://github.com/DIDAKUS1177/didakus1177.github.io" 
+          target="_blank"
+          className="w-14 h-14 bg-[#333] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          title="GitHub"
+        >
+          <Github className="text-white" size={28} />
+          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            GitHub
+          </span>
+        </a>
+
+        <button 
+          onClick={openGmail}
+          className="w-14 h-14 glass rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          title={t.contact.gmail}
+        >
+          <Mail className="text-white" size={28} />
+          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Email
+          </span>
+        </button>
+      </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes marquee {
