@@ -92,6 +92,8 @@ const InstituteLogo = ({ institute }: { institute: string }) => {
   return <span className={`font-black tracking-tighter ${textStyle || 'text-gray-300'}`}>{institute}</span>;
 };
 
+const SITE_URL = 'https://didakus1177.github.io/';
+
 // Formación académica, de lo más reciente a lo más antiguo.
 const EDUCATION = [
   {
@@ -200,12 +202,34 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             <h2 className="text-xl md:text-2xl text-brand-red font-bold mb-6">
               Ingeniero Metalúrgico | Especialista en Productividad y Mejora Continua | Data Scientist
             </h2>
-            <div className="flex flex-wrap gap-4 text-gray-400 text-sm">
+            <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm">
               <span>📍 Bogotá, Colombia</span>
               <span>📱 +57 321 629 1861</span>
               <span>✉️ dialhebl.dh@gmail.com</span>
             </div>
           </div>
+
+          {/* QR al portafolio: util al imprimir el CV o mostrarlo en pantalla.
+              Se muestra siempre la URL en texto para que no sea un enlace opaco. */}
+          <a
+            href={SITE_URL}
+            className="shrink-0 md:ml-auto text-center group"
+            title={lang === 'es' ? 'Abrir el portafolio' : 'Open the portfolio'}
+          >
+            <div className="w-28 h-28 rounded-2xl bg-white p-2 ring-1 ring-gray-300 dark:ring-white/20 shadow-sm group-hover:ring-brand-red transition-all">
+              <img
+                src="/qr-sitio.svg"
+                alt={lang === 'es' ? 'Código QR del portafolio de Diego Hernández' : 'QR code to Diego Hernández portfolio'}
+                className="w-full h-full"
+              />
+            </div>
+            <p className="mt-2 text-[9px] font-bold uppercase tracking-widest text-gray-500">
+              {lang === 'es' ? 'Escanea el portafolio' : 'Scan the portfolio'}
+            </p>
+            <p className="text-[9px] text-gray-500 dark:text-gray-600 break-all max-w-28">
+              didakus1177.github.io
+            </p>
+          </a>
         </motion.div>
 
         {/* Profile */}
