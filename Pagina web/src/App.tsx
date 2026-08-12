@@ -78,12 +78,13 @@ const translations = {
     hero: {
       title: 'Diego Hernández',
       subtitle: 'Analytica Industrial & IA',
-      description: 'Transformamos datos en decisiones estratégicas. Automatización, Inteligencia Artificial y Soluciones de Datos a la medida de tu industria.',
-      cta: 'Contáctame',
+      description: 'Ayudo a empresas industriales y entidades públicas a convertir sus datos en decisiones: automatizo lo repetitivo, construyo el sistema que les falta y dejo al equipo sabiendo usarlo.',
+      cta: 'Agendar diagnóstico gratuito',
+      freeConsult: 'La primera consulta de diagnóstico es gratuita',
     },
     analytics: {
       title: 'Showcase de Analítica Avanzada',
-      subtitle: 'Transformamos datos complejos en herramientas estratégicas accionables',
+      subtitle: 'Así encuentro dónde está el problema antes de proponer una solución',
       pareto: {
         title: 'Diagrama de Pareto (80/20)',
         desc: 'Identificación de las causas vitales que generan el 80% de los problemas en producción.',
@@ -133,7 +134,7 @@ const translations = {
     },
     contact: {
       title: 'Iniciemos la Conversación',
-      subtitle: 'Estamos listos para llevar tu negocio al siguiente nivel.',
+      subtitle: 'Cuéntame tu caso en 15 minutos. Te digo si tiene solución y por dónde empezaría, sin compromiso.',
       gmail: 'Enviar Correo (Gmail)',
       whatsapp: 'WhatsApp Directo',
       whatsappPersonal: 'WhatsApp Personal',
@@ -159,12 +160,13 @@ const translations = {
     hero: {
       title: 'Diego Hernández',
       subtitle: 'Industrial Analytics & AI',
-      description: 'We transform data into strategic decisions. Automation, Artificial Intelligence, and Data Solutions tailored to your industry.',
-      cta: 'Contact Me',
+      description: 'I help industrial companies and public institutions turn their data into decisions: I automate the repetitive work, build the system they are missing, and leave the team knowing how to use it.',
+      cta: 'Book a free diagnostic',
+      freeConsult: 'The first diagnostic call is free',
     },
     analytics: {
       title: 'Advanced Analytics Showcase',
-      subtitle: 'We transform complex data into actionable strategic tools',
+      subtitle: 'This is how I find where the problem is before proposing a solution',
       pareto: {
         title: 'Pareto Chart (80/20)',
         desc: 'Identification of the vital causes that generate 80% of production problems.',
@@ -214,7 +216,7 @@ const translations = {
     },
     contact: {
       title: 'Let\'s Start the Conversation',
-      subtitle: 'We are ready to take your business to the next level.',
+      subtitle: 'Tell me about your case in 15 minutes. I will tell you whether it has a solution and where I would start, no strings attached.',
       gmail: 'Send Email (Gmail)',
       whatsapp: 'Direct WhatsApp',
       whatsappPersonal: 'Personal WhatsApp',
@@ -1195,6 +1197,94 @@ const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number
   );
 };
 
+// --- Como trabajo ---
+// Responde las tres dudas de quien contrata: cuanto cuesta, si voy a entender
+// su negocio, y que pasa si desaparezco a mitad del proyecto.
+const STEPS = [
+  {
+    icon: MessageCircle,
+    title: { es: 'Diagnóstico', en: 'Diagnostic' },
+    badge: { es: 'Gratis · 15 min', en: 'Free · 15 min' },
+    desc: {
+      es: 'Me cuentas qué te está costando tiempo o dinero. Te digo si tiene solución, por dónde empezaría y si soy la persona indicada. Si no lo soy, te lo digo.',
+      en: 'You tell me what is costing you time or money. I tell you whether it has a solution, where I would start, and whether I am the right person. If I am not, I will say so.',
+    },
+  },
+  {
+    icon: FileJson,
+    title: { es: 'Propuesta', en: 'Proposal' },
+    badge: { es: 'Por escrito', en: 'In writing' },
+    desc: {
+      es: 'Alcance, tiempo y precio cerrados antes de empezar. Sabes exactamente qué recibes y cuánto cuesta, sin sorpresas a mitad de camino.',
+      en: 'Scope, timeline and price agreed before starting. You know exactly what you get and what it costs, with no surprises halfway through.',
+    },
+  },
+  {
+    icon: Code,
+    title: { es: 'Construcción', en: 'Build' },
+    badge: { es: 'Con entregas parciales', en: 'With partial deliveries' },
+    desc: {
+      es: 'Vas viendo avances reales durante el proceso, no una caja negra que aparece al final. Si algo no va por buen camino, lo corregimos a tiempo.',
+      en: 'You see real progress along the way, not a black box that shows up at the end. If something is off track, we correct it in time.',
+    },
+  },
+  {
+    icon: ShieldCheck,
+    title: { es: 'Entrega y acompañamiento', en: 'Handover & support' },
+    badge: { es: 'Sin dependencia', en: 'No lock-in' },
+    desc: {
+      es: 'Capacito a tu equipo y entrego la documentación. El sistema queda funcionando sin que dependas de mí para operarlo.',
+      en: 'I train your team and hand over the documentation. The system keeps running without depending on me to operate it.',
+    },
+  },
+];
+
+const HowIWork = ({ lang }: { lang: 'es' | 'en' }) => (
+  <section id="process" className="py-28 px-6 relative overflow-hidden">
+    <div className="tech-grid opacity-60" />
+    <div className="max-w-6xl mx-auto relative">
+      <div className="text-center mb-16">
+        <h2 className="text-4xl md:text-5xl font-black mb-4">
+          {lang === 'es' ? 'Cómo trabajo' : 'How I work'}
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+          {lang === 'es'
+            ? 'Para que sepas exactamente qué pasa desde que me escribes hasta que el sistema queda funcionando.'
+            : 'So you know exactly what happens from the moment you write to me until the system is up and running.'}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {STEPS.map((step, i) => {
+          const Icono = step.icon;
+          return (
+            <motion.div
+              key={step.title.en}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="glass rounded-3xl p-6 border-gray-200 dark:border-white/5 relative flex flex-col"
+            >
+              <span className="absolute top-5 right-6 text-4xl font-black text-brand-red/12 dark:text-brand-red/20 leading-none">
+                {i + 1}
+              </span>
+              <div className="w-11 h-11 rounded-xl bg-brand-red/10 flex items-center justify-center mb-4">
+                <Icono className="text-brand-red" size={21} />
+              </div>
+              <h3 className="text-lg font-black mb-1.5">{step.title[lang]}</h3>
+              <span className="inline-block self-start text-[9px] font-black uppercase tracking-widest text-brand-red bg-brand-red/10 border border-brand-red/25 px-2 py-1 rounded-full mb-3">
+                {step.badge[lang]}
+              </span>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{step.desc[lang]}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+);
+
 const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyectos: () => void }) => (
   <section className="py-24 px-6 border-y border-gray-200 dark:border-white/5">
     <div className="max-w-4xl mx-auto text-center">
@@ -1921,6 +2011,7 @@ export default function App() {
             <div className="hidden md:flex items-center gap-6 font-medium text-sm text-gray-600 dark:text-gray-400">
               <a href="#about" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.about}</a>
               <a href="#solutions" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.solutions}</a>
+              <a href="#process" className="hover:text-gray-900 dark:hover:text-white transition-colors">{lang === 'es' ? 'Cómo trabajo' : 'How I work'}</a>
               <button onClick={() => setCurrentPage('projects')} className="hover:text-gray-900 dark:hover:text-white transition-colors">{lang === 'es' ? 'Proyectos' : 'Projects'}</button>
               
               <button onClick={() => setCurrentPage('datalab')} className="hover:text-gray-900 dark:hover:text-white transition-colors">Data Lab</button>
@@ -2050,6 +2141,17 @@ export default function App() {
             </button>
           </motion.div>
 
+          {/* Gancho: quitar el riesgo de dar el primer paso */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-full bg-brand-red/8 dark:bg-brand-red/12 border border-brand-red/30 text-sm font-bold text-brand-red"
+          >
+            <CheckCircle2 size={17} />
+            {t.hero.freeConsult}
+          </motion.p>
+
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -2073,14 +2175,6 @@ export default function App() {
                 >
                   <MessageCircle size={20} />
                   +57 333 727 9204
-                </a>
-                <a 
-                  href="https://wa.me/573216291861"
-                  target="_blank"
-                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-orange-600 flex items-center gap-2 font-bold whitespace-nowrap"
-                >
-                  <MessageCircle size={20} />
-                  +57 321 629 1861
                 </a>
                 <a 
                   href="https://github.com/DIDAKUS1177/didakus1177.github.io"
@@ -2297,6 +2391,8 @@ export default function App() {
       </section>
 
       {/* --- Impacto (propuesta) --- */}
+      <HowIWork lang={lang} />
+
       <ProjectsCta lang={lang} onVerProyectos={() => setCurrentPage('projects')} />
 
       {/* --- Success Map --- */}
@@ -2320,8 +2416,6 @@ export default function App() {
                 title: t.contact.gmail, sub: 'dialhebl.dh@gmail.com' },
               { href: 'https://wa.me/573337279204', icon: MessageCircle, bg: 'bg-[#25D366]',
                 title: t.contact.whatsapp, sub: '+57 333 727 9204' },
-              { href: 'https://wa.me/573216291861', icon: MessageCircle, bg: 'bg-[#25D366]',
-                title: t.contact.whatsappPersonal, sub: '+57 321 629 1861' },
               { href: 'https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b',
                 icon: Linkedin, bg: 'bg-[#0A66C2]', title: t.contact.linkedin, sub: 'Diego A. Hernández Blanco' },
             ].map((c) => {
@@ -2389,67 +2483,20 @@ export default function App() {
         </div>
       </footer>
 
-      {/* --- Floating Action Buttons --- */}
-      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-[100]">
-        <a 
-          href="https://wa.me/573337279204" 
-          target="_blank"
-          className="w-14 h-14 bg-brand-red rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(211,47,47,0.5)] hover:scale-110 transition-transform group relative"
-          title={t.contact.whatsapp}
-        >
-          <MessageCircle className="text-white" size={28} />
-          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            {t.contact.whatsapp}
-          </span>
-        </a>
-        
-        <a 
-          href="https://wa.me/573216291861" 
-          target="_blank"
-          className="w-14 h-14 bg-orange-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(234,88,12,0.3)] hover:scale-110 transition-transform group relative"
-          title={t.contact.whatsappPersonal}
-        >
-          <User className="text-white" size={28} />
-          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            {t.contact.whatsappPersonal}
-          </span>
-        </a>
-
-        <a 
-          href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" 
-          target="_blank"
-          className="w-14 h-14 bg-[#0A66C2] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(10,102,194,0.3)] hover:scale-110 transition-transform group relative"
-          title={t.contact.linkedin}
-        >
-          <Linkedin className="text-white" size={28} />
-          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            LinkedIn
-          </span>
-        </a>
-
-        <a 
-          href="https://github.com/DIDAKUS1177/didakus1177.github.io" 
-          target="_blank"
-          className="w-14 h-14 bg-[#333] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
-          title="GitHub"
-        >
-          <Github className="text-white" size={28} />
-          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            GitHub
-          </span>
-        </a>
-
-        <button 
-          onClick={openGmail}
-          className="w-14 h-14 glass rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
-          title={t.contact.gmail}
-        >
-          <Mail className="text-white" size={28} />
-          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Email
-          </span>
-        </button>
-      </div>
+      {/* --- Accion flotante unica --- */}
+      {/* Antes habia cinco botones apilados. Con tantas opciones el visitante
+          duda y no elige ninguna; los demas canales estan en Contacto. */}
+      <a
+        href="https://wa.me/573337279204"
+        target="_blank"
+        rel="noreferrer"
+        className="fixed bottom-6 right-6 z-[100] flex items-center gap-3 pl-4 pr-5 py-3.5 rounded-full bg-[#25D366] text-white font-bold shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:scale-105 transition-transform"
+      >
+        <MessageCircle size={22} />
+        <span className="hidden sm:block text-sm">
+          {lang === 'es' ? 'Hablemos' : "Let's talk"}
+        </span>
+      </a>
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes marquee {
