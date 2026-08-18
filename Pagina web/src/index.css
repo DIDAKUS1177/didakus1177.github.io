@@ -102,7 +102,7 @@
 
 .dark .tech-grid {
   /* intensidad del tejido: subir con cuidado, compite con el texto */
-  --hilo: 0.018;
+  --hilo: 0.10;
   /* la regla base calcula background-size con esta variable */
   --grid-size: 8px;
   background-image:
@@ -198,3 +198,50 @@ html {
 
 /* Las imagenes nunca desbordan su contenedor */
 img { max-width: 100%; }
+
+/* --- Fibra de carbono en toda la pagina (modo oscuro) --- */
+.dark body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  --hilo: 0.10;
+  background-color: #121212;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, var(--hilo)) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, calc(var(--hilo) * 2.2)) 0 1px, transparent 1px 4px);
+  background-size: 8px 8px;
+}
+
+/* Segunda trama desfasada: es lo que da el aspecto tejido */
+.dark body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  --hilo: 0.10;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, calc(var(--hilo) * 1.6)) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, var(--hilo)) 0 1px, transparent 1px 4px);
+  background-size: 8px 8px;
+  background-position: 4px 4px;
+  mask-image: repeating-conic-gradient(#000 0% 25%, transparent 0% 50%);
+  -webkit-mask-image: repeating-conic-gradient(#000 0% 25%, transparent 0% 50%);
+  mask-size: 16px 16px;
+  -webkit-mask-size: 16px 16px;
+}
+
+/* El contenido va por encima de la textura */
+.dark body > * { position: relative; z-index: 1; }
+
+/* Ya no hace falta repetirla por seccion: la doblaria */
+.dark .tech-grid { display: none; }
+
+/* Con la trama a intensidad alta, los paneles se opacan un poco mas para
+   que los parrafos no queden leyendose sobre el tejido. */
+.dark .glass {
+  background-color: rgba(24, 25, 28, 0.82);
+  backdrop-filter: blur(10px);
+}
