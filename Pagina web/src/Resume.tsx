@@ -16,7 +16,9 @@ import {
   Image as ImageIcon,
   Languages,
   Phone,
-  MessageCircle
+  MessageCircle,
+  Mail,
+  Linkedin
 } from 'lucide-react';
 
 import fallbackCoursesData from './data/curriculum.json';
@@ -126,16 +128,58 @@ const LANGUAGES = {
   },
 };
 
-// Referencias laborales, con telefono a peticion expresa del titular del sitio.
-// Nota: al publicarse quedan visibles para cualquiera y son rastreables por
-// robots que recolectan numeros. El enlace `tel:` y el de WhatsApp los hacen
-// utiles desde el movil.
+// Referencias laborales, con datos de contacto a peticion del titular del sitio.
+// Nota: son datos personales de terceros; al publicarse quedan visibles para
+// cualquiera y son rastreables por robots que recolectan correos y numeros.
 const REFERENCES = [
-  { nombre: 'Iván Numpaké', cargo: { es: 'Especialista en Sostenibilidad', en: 'Sustainability Specialist' }, org: 'BHR Colombia', tel: '+57 317 501 3135' },
-  { nombre: 'Rocío Téllez', cargo: { es: 'Consultora Especialista de Calidad', en: 'Quality Consultant' }, org: '—', tel: '+57 311 811 8722' },
-  { nombre: 'Felipe Torres', cargo: { es: 'Especialista API — Integridad de Activos', en: 'API Specialist — Asset Integrity' }, org: 'ADEMINCOL', tel: '+57 317 401 6701' },
-  { nombre: 'Javier Carvajal', cargo: { es: 'Coordinador de Mejora Continua', en: 'Continuous Improvement Coordinator' }, org: 'Acerías Paz del Río', tel: '+57 320 302 3095' },
-  { nombre: 'Carlos Falcão', cargo: { es: 'Director de Alto Horno', en: 'Blast Furnace Director' }, org: 'Acerías Paz del Río', tel: '+57 320 890 9138' },
+  {
+    nombre: 'María Prandi',
+    cargo: { es: 'Gerente General', en: 'General Manager' },
+    org: 'Business and Human Rights',
+    tel: '+34 620 82 04 22',
+    email: 'maria.prandi@businessandhumanrights.es',
+    linkedin: null,
+  },
+  {
+    nombre: 'Iván Numpaké',
+    cargo: { es: 'Especialista en Sostenibilidad', en: 'Sustainability Specialist' },
+    org: 'BHR Colombia',
+    tel: '+57 317 501 3135',
+    email: 'ivan.numpake@businessandhumanrights.es',
+    linkedin: 'https://www.linkedin.com/in/ivan-numpake/',
+  },
+  {
+    nombre: 'Rocío Téllez',
+    cargo: { es: 'Consultora Especialista de Calidad', en: 'Quality Consultant' },
+    org: '—',
+    tel: '+57 311 811 8722',
+    email: null,
+    linkedin: 'https://www.linkedin.com/in/rocio-tellez-plazas-9912983aa/',
+  },
+  {
+    nombre: 'Felipe Torres',
+    cargo: { es: 'Especialista API — Integridad de Activos', en: 'API Specialist — Asset Integrity' },
+    org: 'ADEMINCOL',
+    tel: '+57 317 401 6701',
+    email: null,
+    linkedin: 'https://www.linkedin.com/in/felipe-torres-888066268/',
+  },
+  {
+    nombre: 'Javier Carvajal',
+    cargo: { es: 'Coordinador de Mejora Continua', en: 'Continuous Improvement Coordinator' },
+    org: 'Acerías Paz del Río',
+    tel: '+57 320 302 3095',
+    email: null,
+    linkedin: null,
+  },
+  {
+    nombre: 'Carlos Falcão',
+    cargo: { es: 'Director de Alto Horno', en: 'Blast Furnace Director' },
+    org: 'Acerías Paz del Río',
+    tel: '+57 320 890 9138',
+    email: null,
+    linkedin: 'https://www.linkedin.com/in/carlos-eduardo-falcao-de-lima-3ba44422/',
+  },
 ];
 
 // Experiencia laboral. `photos` = cuántas imágenes hay en
@@ -687,24 +731,48 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{r.org}</p>
                 )}
 
-                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-white/10">
-                  <a
-                    href={`tel:${r.tel.replace(/\s/g, '')}`}
-                    className="flex items-center gap-1.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand transition-colors"
-                  >
-                    <Phone size={14} className="text-brand shrink-0" />
-                    {r.tel}
-                  </a>
-                  <a
-                    href={`https://wa.me/${r.tel.replace(/[^0-9]/g, '')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`WhatsApp de ${r.nombre}`}
-                    title="WhatsApp"
-                    className="ml-auto w-7 h-7 shrink-0 rounded-lg bg-[#25D366]/15 hover:bg-[#25D366] text-[#25D366] hover:text-white flex items-center justify-center transition-colors"
-                  >
-                    <MessageCircle size={14} />
-                  </a>
+                <div className="mt-4 pt-3 border-t border-gray-200 dark:border-white/10 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`tel:${r.tel.replace(/\s/g, '')}`}
+                      className="flex items-center gap-1.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand transition-colors"
+                    >
+                      <Phone size={14} className="text-brand shrink-0" />
+                      {r.tel}
+                    </a>
+                    <a
+                      href={`https://wa.me/${r.tel.replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`WhatsApp de ${r.nombre}`}
+                      title="WhatsApp"
+                      className="ml-auto w-7 h-7 shrink-0 rounded-lg bg-[#25D366]/15 hover:bg-[#25D366] text-[#25D366] hover:text-white flex items-center justify-center transition-colors"
+                    >
+                      <MessageCircle size={14} />
+                    </a>
+                  </div>
+
+                  {r.email && (
+                    <a
+                      href={`mailto:${r.email}`}
+                      className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-brand transition-colors break-all"
+                    >
+                      <Mail size={13} className="text-brand shrink-0" />
+                      {r.email}
+                    </a>
+                  )}
+
+                  {r.linkedin && (
+                    <a
+                      href={r.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0A66C2] dark:text-[#4DA3E8] hover:underline"
+                    >
+                      <Linkedin size={13} className="shrink-0" />
+                      {lang === 'es' ? 'Ver perfil de LinkedIn' : 'View LinkedIn profile'}
+                    </a>
+                  )}
                 </div>
               </div>
             ))}

@@ -814,28 +814,45 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
     </svg>
   ),
 
-  // Ciclo PDCA con las normas alrededor
+  // Ciclo PDCA con las normas alrededor.
+  // Los cuatro tramos van separados y con su propia punta de flecha; antes
+  // era un unico arco de 270 grados y las etiquetas caian encima de el.
   calidad: (
     <svg viewBox="0 0 420 190" className="w-full h-auto">
-      <circle cx="140" cy="95" r="66" className={D.caja} strokeWidth="1.5" />
+      {/* anillo de referencia */}
+      <circle cx="132" cy="95" r="46" className={D.caja} strokeWidth="1.2" strokeDasharray="2 4" fillOpacity="0" />
+
+      {/* cada etapa: un arco con su flecha, girando en sentido horario */}
       {[
-        { t: 'PLANEAR', x: 140, y: 44 },
-        { t: 'HACER', x: 200, y: 99 },
-        { t: 'VERIFICAR', x: 140, y: 152 },
-        { t: 'ACTUAR', x: 78, y: 99 },
-      ].map((q) => (
-        <text key={q.t} x={q.x} y={q.y} textAnchor="middle" fontSize="10" fontWeight="900"
-              className="fill-brand">{q.t}</text>
+        { d: 'M150.7 53.0 A46 46 0 0 1 174.0 76.3', f: '177.7,84.5 178.6,74.3 169.5,78.3' },
+        { d: 'M174.0 113.7 A46 46 0 0 1 150.7 137.0', f: '142.5,140.7 152.7,141.6 148.7,132.5' },
+        { d: 'M113.3 137.0 A46 46 0 0 1 90.0 113.7', f: '86.3,105.5 85.4,115.7 94.5,111.7' },
+        { d: 'M90.0 76.3 A46 46 0 0 1 113.3 53.0', f: '121.5,49.3 111.3,48.4 115.3,57.5' },
+      ].map((tramo, i) => (
+        <g key={i}>
+          <path d={tramo.d} fill="none" stroke="#D97706" strokeWidth="3.5" strokeLinecap="round" />
+          <polygon points={tramo.f} fill="#D97706" />
+        </g>
       ))}
-      <path d="M140 42a53 53 0 1 1-37 91" fill="none" className="stroke-brand" strokeWidth="2.5" strokeDasharray="6 4" />
-      <polygon points="103,133 112,126 113,138" className="fill-brand" />
-      <text x="140" y="92" textAnchor="middle" fontSize="12" fontWeight="900" className={D.texto}>MEJORA</text>
-      <text x="140" y="108" textAnchor="middle" fontSize="12" fontWeight="900" className={D.texto}>CONTINUA</text>
+
+      {/* etapas, fuera del anillo para que no lo pisen */}
+      {[
+        { t: 'PLANEAR', x: 132, y: 29 },
+        { t: 'HACER', x: 202, y: 99 },
+        { t: 'VERIFICAR', x: 132, y: 173 },
+        { t: 'ACTUAR', x: 62, y: 99 },
+      ].map((q) => (
+        <text key={q.t} x={q.x} y={q.y} textAnchor="middle" fontSize="11" fontWeight="900"
+              fill="#D97706">{q.t}</text>
+      ))}
+
+      <text x="132" y="92" textAnchor="middle" fontSize="11.5" fontWeight="900" className={D.texto}>MEJORA</text>
+      <text x="132" y="106" textAnchor="middle" fontSize="11.5" fontWeight="900" className={D.texto}>CONTINUA</text>
 
       {['ISO 9001', 'ISO 14001', 'ISO 45001', 'ISO 17025', 'API 580 / 581'].map((n, i) => (
         <g key={n}>
           <rect x="248" y={16 + i * 32} width="164" height="24" rx="12" className={D.cajaRoja} strokeWidth="1.5" />
-          <text x="330" y={32 + i * 32} textAnchor="middle" fontSize="11" fontWeight="700" className="fill-brand">{n}</text>
+          <text x="330" y={32 + i * 32} textAnchor="middle" fontSize="11" fontWeight="700" fill="#D97706">{n}</text>
         </g>
       ))}
     </svg>
