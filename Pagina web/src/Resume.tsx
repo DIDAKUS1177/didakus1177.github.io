@@ -137,7 +137,7 @@ const REFERENCES = [
 ];
 
 // Experiencia laboral. `photos` = cuántas imágenes hay en
-// public/experiencia/{id}/{1..n}.jpg — al subirlas y aumentar el número
+// public/experiencia/{id}/{1..n}.webp — al subirlas y aumentar el número
 // aparecen solas, sin tocar nada más.
 const EXPERIENCE = [
   {
@@ -222,7 +222,7 @@ const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lan
       {Array.from({ length: exp.photos }).map((_, n) => (
         <img
           key={n}
-          src={`/experiencia/${exp.id}/${n + 1}.jpg`}
+          src={`/experiencia/${exp.id}/${n + 1}.webp`}
           alt={`${exp.title} — ${n + 1}`}
           loading="lazy"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
@@ -377,7 +377,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red/10 blur-[100px] -z-10" />
           <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-brand-red/20 shadow-[0_0_30px_rgba(211,47,47,0.2)]">
-            <img src="/profile.jpg" alt="Diego Hernández" className="w-full h-full object-cover" />
+            <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="text-4xl md:text-5xl font-black mb-4">DIEGO ALEJANDRO HERNÁNDEZ BLANCO</h1>

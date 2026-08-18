@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Papa from 'papaparse';
 import { 
@@ -34,6 +34,7 @@ import {
   Lightbulb,
   Users,
   Github,
+  Loader2,
   Code,
   Plus,
   Sun,
@@ -64,176 +65,20 @@ import {
   ZAxis
 } from 'recharts';
 
-import { Resume } from './Resume';
+import { translations } from './translations';
+
+// Cargados en diferido: Recharts y PapaParse pesan mas que todo el resto
+// del sitio junto, y solo hacen falta al llegar a la analitica o al Data Lab.
+const Resume = React.lazy(() => import('./Resume').then(m => ({ default: m.Resume })));
+const ParetoChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.ParetoChartComponent })));
+const IshikawaDiagram = React.lazy(() => import('./charts').then(m => ({ default: m.IshikawaDiagram })));
+const RadarChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.RadarChartComponent })));
+const TrendChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.TrendChartComponent })));
+const LiveDashboard = React.lazy(() => import('./charts').then(m => ({ default: m.LiveDashboard })));
+const DataAnalyzer = React.lazy(() => import('./charts').then(m => ({ default: m.DataAnalyzer })));
 import { WORLD_PATH } from './data/worldMap';
 
 // --- Translations ---
-const translations = {
-  es: {
-    nav: {
-      about: 'Conoce sobre mi',
-      solutions: 'Soluciones',
-      contact: 'Contacto',
-    },
-    hero: {
-      title: 'Diego Hernández',
-      subtitle: 'Analytica Industrial & IA',
-      description: 'Ayudo a empresas industriales y entidades públicas a convertir sus datos en decisiones: automatizo lo repetitivo, construyo el sistema que les falta y dejo al equipo sabiendo usarlo.',
-      cta: 'Agendar diagnóstico gratuito',
-      freeConsult: 'La primera consulta de diagnóstico es gratuita',
-    },
-    analytics: {
-      title: 'Showcase de Analítica Avanzada',
-      subtitle: 'Así encuentro dónde está el problema antes de proponer una solución',
-      pareto: {
-        title: 'Diagrama de Pareto (80/20)',
-        desc: 'Identificación de las causas vitales que generan el 80% de los problemas en producción.',
-      },
-      ishikawa: {
-        title: 'Diagrama de Ishikawa (Espina de Pescado)',
-        desc: 'Análisis de causa-raíz estructurado por las 6M (Mano de obra, Maquinaria, Métodos, Materiales, Medición, Medio ambiente).',
-      },
-      radar: {
-        title: 'Matriz de Desempeño KPI',
-        desc: 'Comparativa multidimensional de indicadores críticos de rendimiento.',
-      },
-      trends: {
-        title: 'Análisis Predictivo de Tendencias',
-        desc: 'Proyección de comportamiento basada en modelos de Machine Learning.',
-      },
-      dashboard: {
-        title: 'Dashboard de Control en Tiempo Real',
-        desc: 'Visualización de KPIs críticos para el monitoreo industrial.',
-        efficiency: 'Eficiencia OEE',
-        quality: 'Índice de Calidad',
-        downtime: 'Tiempo de Parada'
-      }
-    },
-    analyzer: {
-      title: 'Laboratorio de Datos (Beta)',
-      subtitle: 'Sube tu archivo CSV para generar análisis automáticos de Pareto y Regresión.',
-      upload: 'Subir Archivo CSV',
-      downloadTemplate: 'Descargar Plantilla Base',
-      stats: 'Estadísticas Complementarias',
-      pareto: 'Análisis de Pareto Personalizado',
-      regression: 'Análisis de Regresión Lineal',
-      noData: 'Por favor, sube un archivo CSV para ver los resultados.',
-      error: 'Error al procesar el archivo. Asegúrate de que el formato sea correcto (Columnas: Causa, Valor).'
-    },
-    services: {
-      title: 'Soluciones de Alto Nivel',
-      subtitle: 'Herramientas de vanguardia para la industria moderna',
-      items: [
-        { title: 'Agentes de IA', desc: 'Creación de agentes autónomos para optimizar procesos y atención.', icon: Bot },
-        { title: 'Automatización de Formatos', desc: 'Digitalización y flujo automático de documentos críticos.', icon: FileJson },
-        { title: 'Business Intelligence', desc: 'Dashboards avanzados en Power BI y Tableau.', icon: BarChart3 },
-        { title: 'AppSheet & Power Automate', desc: 'Desarrollo de aplicaciones low-code y flujos de trabajo.', icon: Zap },
-        { title: 'Big Data & SQL', desc: 'Arquitectura de datos robusta y escalable.', icon: Database },
-        { title: 'Análisis Estadístico en R', desc: 'Modelado matemático profundo para predicción.', icon: LineChart },
-      ]
-    },
-    contact: {
-      title: 'Iniciemos la Conversación',
-      subtitle: 'Cuéntame tu caso en 15 minutos. Te digo si tiene solución y por dónde empezaría, sin compromiso.',
-      gmail: 'Enviar Correo (Gmail)',
-      whatsapp: 'WhatsApp Directo',
-      whatsappPersonal: 'WhatsApp Personal',
-      linkedin: 'Perfil de LinkedIn',
-      phone: 'Llamar Directo',
-      formTitle: 'O escríbeme directamente',
-      formName: 'Nombre completo',
-      formEmail: 'Correo electrónico',
-      formMessage: '¿En qué puedo ayudarte?',
-      formSubmit: 'Enviar mensaje',
-      formSending: 'Enviando...',
-      formSuccess: '¡Mensaje enviado! Te responderé pronto.',
-      formError: 'No se pudo enviar. Intenta por WhatsApp o correo.',
-    },
-    footer: '© 2026 Diego Hernández. Todos los derechos reservados.',
-  },
-  en: {
-    nav: {
-      about: 'Know about me',
-      solutions: 'Solutions',
-      contact: 'Contact',
-    },
-    hero: {
-      title: 'Diego Hernández',
-      subtitle: 'Industrial Analytics & AI',
-      description: 'I help industrial companies and public institutions turn their data into decisions: I automate the repetitive work, build the system they are missing, and leave the team knowing how to use it.',
-      cta: 'Book a free diagnostic',
-      freeConsult: 'The first diagnostic call is free',
-    },
-    analytics: {
-      title: 'Advanced Analytics Showcase',
-      subtitle: 'This is how I find where the problem is before proposing a solution',
-      pareto: {
-        title: 'Pareto Chart (80/20)',
-        desc: 'Identification of the vital causes that generate 80% of production problems.',
-      },
-      ishikawa: {
-        title: 'Ishikawa Diagram (Fishbone)',
-        desc: 'Root-cause analysis structured by the 6Ms (Manpower, Machinery, Methods, Materials, Measurement, Mother Nature).',
-      },
-      radar: {
-        title: 'KPI Performance Matrix',
-        desc: 'Multidimensional comparison of critical performance indicators.',
-      },
-      trends: {
-        title: 'Predictive Trend Analysis',
-        desc: 'Behavior projection based on Machine Learning models.',
-      },
-      dashboard: {
-        title: 'Real-Time Control Dashboard',
-        desc: 'Visualization of critical KPIs for industrial monitoring.',
-        efficiency: 'OEE Efficiency',
-        quality: 'Quality Index',
-        downtime: 'Downtime'
-      }
-    },
-    analyzer: {
-      title: 'Data Lab (Beta)',
-      subtitle: 'Upload your CSV file to generate automatic Pareto and Regression analysis.',
-      upload: 'Upload CSV File',
-      downloadTemplate: 'Download Base Template',
-      stats: 'Complementary Statistics',
-      pareto: 'Custom Pareto Analysis',
-      regression: 'Linear Regression Analysis',
-      noData: 'Please upload a CSV file to see the results.',
-      error: 'Error processing the file. Make sure the format is correct (Columns: Cause, Value).'
-    },
-    services: {
-      title: 'High-Level Solutions',
-      subtitle: 'Cutting-edge tools for modern industry',
-      items: [
-        { title: 'AI Agents', desc: 'Creation of autonomous agents to optimize processes and support.', icon: Bot },
-        { title: 'Format Automation', desc: 'Digitalization and automatic flow of critical documents.', icon: FileJson },
-        { title: 'Business Intelligence', desc: 'Advanced dashboards in Power BI and Tableau.', icon: BarChart3 },
-        { title: 'AppSheet & Power Automate', desc: 'Low-code app development and workflows.', icon: Zap },
-        { title: 'Big Data & SQL', desc: 'Robust and scalable data architecture.', icon: Database },
-        { title: 'Statistical Analysis in R', desc: 'Deep mathematical modeling for prediction.', icon: LineChart },
-      ]
-    },
-    contact: {
-      title: 'Let\'s Start the Conversation',
-      subtitle: 'Tell me about your case in 15 minutes. I will tell you whether it has a solution and where I would start, no strings attached.',
-      gmail: 'Send Email (Gmail)',
-      whatsapp: 'Direct WhatsApp',
-      whatsappPersonal: 'Personal WhatsApp',
-      linkedin: 'LinkedIn Profile',
-      phone: 'Call Direct',
-      formTitle: 'Or write to me directly',
-      formName: 'Full name',
-      formEmail: 'Email address',
-      formMessage: 'How can I help you?',
-      formSubmit: 'Send message',
-      formSending: 'Sending...',
-      formSuccess: 'Message sent! I will get back to you soon.',
-      formError: 'Could not send it. Try WhatsApp or email instead.',
-    },
-    footer: '© 2026 Diego Hernández. All rights reserved.',
-  }
-};
 
 const CONTACT_WEBHOOK_URL = import.meta.env.VITE_CONTACT_WEBHOOK_URL as string | undefined;
 
@@ -273,7 +118,7 @@ const RotatingWord = ({ lang }: { lang: 'es' | 'en' }) => {
 };
 
 // --- Proyectos ---
-// `shots` = número de capturas disponibles en /proyectos/{id}/{1..n}.jpg
+// `shots` = número de capturas disponibles en /proyectos/{id}/{1..n}.webp
 // Para añadir una imagen: colócala como el siguiente número y sube `shots`.
 interface Project {
   id: string;
@@ -461,7 +306,7 @@ const ProjectCarousel = ({ project }: { project: Project }) => {
       {Array.from({ length: project.shots }).map((_, i) => (
         <img
           key={i}
-          src={`/proyectos/${project.id}/${i + 1}.jpg`}
+          src={`/proyectos/${project.id}/${i + 1}.webp`}
           alt={`${project.title} — captura ${i + 1}`}
           loading={i === 0 ? 'eager' : 'lazy'}
           aria-hidden={i !== index}
@@ -1285,6 +1130,55 @@ const HowIWork = ({ lang }: { lang: 'es' | 'en' }) => (
   </section>
 );
 
+
+// Marcador mientras se descarga un bloque diferido. Mantiene la altura para
+// que el contenido de abajo no salte cuando termina de cargar.
+const CargandoBloque = ({ alto = 'h-[300px]' }: { alto?: string }) => (
+  <div className={`${alto} w-full rounded-2xl bg-gray-100 dark:bg-white/[0.03] animate-pulse flex items-center justify-center`}>
+    <Loader2 className="text-brand-red/50 animate-spin" size={26} />
+  </div>
+);
+
+const PantallaCargando = () => (
+  <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center">
+    <Loader2 className="text-brand-red animate-spin" size={34} />
+  </div>
+);
+
+
+// Barra de progreso de lectura: indica cuanto queda de pagina.
+const BarraProgreso = () => {
+  const [pct, setPct] = useState(0);
+
+  React.useEffect(() => {
+    let frame = 0;
+    const calcular = () => {
+      frame = 0;
+      const alto = document.documentElement.scrollHeight - window.innerHeight;
+      setPct(alto > 0 ? Math.min(100, (window.scrollY / alto) * 100) : 0);
+    };
+    // requestAnimationFrame evita recalcular en cada pixel de scroll
+    const alScroll = () => { if (!frame) frame = requestAnimationFrame(calcular); };
+    window.addEventListener('scroll', alScroll, { passive: true });
+    window.addEventListener('resize', alScroll);
+    calcular();
+    return () => {
+      window.removeEventListener('scroll', alScroll);
+      window.removeEventListener('resize', alScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return (
+    <div className="fixed top-0 left-0 right-0 h-[3px] z-[60] pointer-events-none">
+      <div
+        className="h-full red-gradient transition-[width] duration-150 ease-out"
+        style={{ width: `${pct}%` }}
+      />
+    </div>
+  );
+};
+
 const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyectos: () => void }) => (
   <section className="py-24 px-6 border-y border-gray-200 dark:border-white/5">
     <div className="max-w-4xl mx-auto text-center">
@@ -1467,475 +1361,6 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
   );
 };
 
-// --- Analytics Components ---
-
-// Los graficos usaban colores fijos oscuros; esto los adapta al tema activo.
-const useChartTheme = () => {
-  const [dark, setDark] = useState(
-    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
-  );
-  React.useEffect(() => {
-    const obs = new MutationObserver(() =>
-      setDark(document.documentElement.classList.contains('dark'))
-    );
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => obs.disconnect();
-  }, []);
-  return {
-    grid: dark ? '#333' : '#d4d4d8',
-    axis: dark ? '#666' : '#71717a',
-    tooltipBg: dark ? '#121212' : '#ffffff',
-    tooltipBorder: dark ? '1px solid #333' : '1px solid #e4e4e7',
-    tooltipText: dark ? '#fff' : '#18181b',
-  };
-};
-
-const PARETO_COLORS = ['#D32F2F', '#F59E0B', '#F59E0B', '#14B8A6', '#3B82F6'];
-
-const ParetoChartComponent = () => {
-  const ct = useChartTheme();
-  const data = [
-    { name: 'Causa A', value: 450, cumulative: 45 },
-    { name: 'Causa B', value: 300, cumulative: 75 },
-    { name: 'Causa C', value: 150, cumulative: 90 },
-    { name: 'Causa D', value: 60, cumulative: 96 },
-    { name: 'Causa E', value: 40, cumulative: 100 },
-  ];
-
-  return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
-          <XAxis dataKey="name" stroke={ct.axis} fontSize={12} />
-          <YAxis yAxisId="left" stroke={ct.axis} fontSize={12} />
-          <YAxis yAxisId="right" orientation="right" stroke="#F59E0B" fontSize={12} unit="%" />
-          <Tooltip
-            contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
-            itemStyle={{ color: ct.tooltipText }}
-          />
-          <Bar yAxisId="left" dataKey="value" radius={[4, 4, 0, 0]}>
-            {data.map((_, i) => (
-              <Cell key={i} fill={PARETO_COLORS[i % PARETO_COLORS.length]} />
-            ))}
-          </Bar>
-          <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke="#F59E0B" strokeWidth={3} dot={{ fill: '#fff', stroke: '#F59E0B', strokeWidth: 2 }} />
-        </ComposedChart>
-      </ResponsiveContainer>
-    </div>
-  );
-};
-
-const IshikawaDiagram = () => {
-  const top = [
-    { label: 'Mano de Obra', x: 150 },
-    { label: 'Maquinaria', x: 280 },
-    { label: 'Métodos', x: 410 },
-  ];
-  const bottom = [
-    { label: 'Materiales', x: 150 },
-    { label: 'Medición', x: 280 },
-    { label: 'Medio Ambiente', x: 410 },
-  ];
-  const SPINE_Y = 150;
-
-  return (
-    <div className="w-full h-[300px]">
-      <svg viewBox="0 0 700 300" className="w-full h-full" fontFamily="inherit">
-        {/* Spine */}
-        <line x1="30" y1={SPINE_Y} x2="555" y2={SPINE_Y} stroke="#D32F2F" strokeOpacity="0.5" strokeWidth="2" />
-        {/* Arrowhead */}
-        <polygon points="555,135 595,150 555,165" fill="#D32F2F" />
-        <text x="608" y={SPINE_Y + 6} fill="#D32F2F" fontSize="18" fontWeight="900" letterSpacing="1">
-          PROBLEMA
-        </text>
-
-        {top.map((cat, i) => (
-          <g key={`t-${i}`}>
-            <line x1={cat.x - 90} y1="55" x2={cat.x} y2={SPINE_Y} stroke="#D32F2F" strokeOpacity="0.55" strokeWidth="2" />
-            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D32F2F" />
-            <text x={cat.x - 95} y="45" textAnchor="start" fill="#9CA3AF" fontSize="12" fontWeight="700" letterSpacing="0.5">
-              {cat.label.toUpperCase()}
-            </text>
-          </g>
-        ))}
-
-        {bottom.map((cat, i) => (
-          <g key={`b-${i}`}>
-            <line x1={cat.x - 90} y1="245" x2={cat.x} y2={SPINE_Y} stroke="#D32F2F" strokeOpacity="0.55" strokeWidth="2" />
-            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D32F2F" />
-            <text x={cat.x - 95} y="262" textAnchor="start" fill="#9CA3AF" fontSize="12" fontWeight="700" letterSpacing="0.5">
-              {cat.label.toUpperCase()}
-            </text>
-          </g>
-        ))}
-      </svg>
-    </div>
-  );
-};
-
-const RadarChartComponent = () => {
-  const ct = useChartTheme();
-  const data = [
-    { subject: 'Calidad', A: 120, B: 110, fullMark: 150 },
-    { subject: 'Costo', A: 98, B: 130, fullMark: 150 },
-    { subject: 'Entrega', A: 86, B: 130, fullMark: 150 },
-    { subject: 'Seguridad', A: 99, B: 100, fullMark: 150 },
-    { subject: 'Moral', A: 85, B: 90, fullMark: 150 },
-    { subject: 'Eficiencia', A: 65, B: 85, fullMark: 150 },
-  ];
-
-  return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-          <PolarGrid stroke={ct.grid} />
-          <PolarAngleAxis dataKey="subject" stroke={ct.axis} fontSize={10} />
-          <PolarRadiusAxis angle={30} domain={[0, 150]} stroke={ct.grid} fontSize={10} />
-          <Radar name="Actual" dataKey="A" stroke="#D32F2F" fill="#D32F2F" fillOpacity={0.5} />
-          <Radar name="Target" dataKey="B" stroke="#14B8A6" fill="#14B8A6" fillOpacity={0.25} />
-          <Tooltip 
-            contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
-            itemStyle={{ color: ct.tooltipText }}
-          />
-        </RadarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-};
-
-const TrendChartComponent = () => {
-  const ct = useChartTheme();
-  const data = [
-    { name: 'Sem 1', value: 400, pred: 400 },
-    { name: 'Sem 2', value: 300, pred: 350 },
-    { name: 'Sem 3', value: 500, pred: 450 },
-    { name: 'Sem 4', value: 450, pred: 500 },
-    { name: 'Sem 5', value: 600, pred: 550 },
-    { name: 'Sem 6', value: 550, pred: 650 },
-    { name: 'Sem 7', value: null, pred: 700 },
-    { name: 'Sem 8', value: null, pred: 750 },
-  ];
-
-  return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data}>
-          <defs>
-            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#D32F2F" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#D32F2F" stopOpacity={0}/>
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
-          <XAxis dataKey="name" stroke={ct.axis} fontSize={12} />
-          <YAxis stroke={ct.axis} fontSize={12} />
-          <Tooltip
-            contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
-            itemStyle={{ color: ct.tooltipText }}
-          />
-          <Area type="monotone" dataKey="value" stroke="#D32F2F" fillOpacity={1} fill="url(#colorValue)" strokeWidth={3} />
-          <Area type="monotone" dataKey="pred" stroke="#F59E0B" strokeDasharray="5 5" fill="transparent" strokeWidth={2} />
-        </AreaChart>
-      </ResponsiveContainer>
-    </div>
-  );
-};
-
-const LiveDashboard = ({ lang }: { lang: 'es' | 'en' }) => {
-  const t = translations[lang].analytics.dashboard;
-  const pieData = [
-    { name: 'Producción', value: 85, fill: '#14B8A6' },
-    { name: 'Merma', value: 15, fill: '#D32F2F' },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="glass p-6 rounded-3xl text-center">
-        <Activity className="mx-auto text-brand-red mb-4" size={32} />
-        <div className="text-3xl font-black mb-1">94.2%</div>
-        <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.efficiency}</div>
-      </div>
-      <div className="glass p-6 rounded-3xl text-center">
-        <div className="h-24 w-full flex items-center justify-center">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={pieData} innerRadius={30} outerRadius={40} paddingAngle={5} dataKey="value">
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="text-3xl font-black mb-1">98.5%</div>
-        <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.quality}</div>
-      </div>
-      <div className="glass p-6 rounded-3xl text-center">
-        <div className="text-3xl font-black mb-1 text-brand-red">12m</div>
-        <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.downtime}</div>
-        <div className="mt-4 h-2 bg-white/5 rounded-full overflow-hidden">
-          <motion.div 
-            initial={{ width: 0 }}
-            whileInView={{ width: '15%' }}
-            className="h-full bg-brand-red"
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// --- Data Analyzer Component ---
-
-const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
-  const ct = useChartTheme();
-  const t = translations[lang].analyzer;
-  const [data, setData] = useState<any[]>([]);
-  const [paretoData, setParetoData] = useState<any[]>([]);
-  const [regressionData, setRegressionData] = useState<any[]>([]);
-  const [regressionLine, setRegressionLine] = useState<{ m: number, b: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    Papa.parse(file, {
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        try {
-          // Case-insensitive header check
-          const raw = results.data.map((row: any) => {
-            const normalizedRow: any = {};
-            Object.keys(row).forEach(key => {
-              const lowerKey = key.toLowerCase();
-              if (lowerKey === 'causa' || lowerKey === 'cause') normalizedRow.Causa = row[key];
-              if (lowerKey === 'valor' || lowerKey === 'value') normalizedRow.Valor = row[key];
-            });
-            return normalizedRow;
-          }).filter((row: any) => row.Causa !== undefined && row.Valor !== undefined);
-
-          if (raw.length === 0) throw new Error("No data");
-
-          // Process Pareto
-          const sorted = [...raw].sort((a, b) => b.Valor - a.Valor);
-          const total = sorted.reduce((acc, curr) => acc + curr.Valor, 0);
-          let runningTotal = 0;
-          const pareto = sorted.map(item => {
-            runningTotal += item.Valor;
-            return {
-              name: item.Causa,
-              value: item.Valor,
-              cumulative: Math.round((runningTotal / total) * 100)
-            };
-          });
-
-          // Process Regression (assuming X is index, Y is Valor)
-          const regression = raw.map((item, i) => ({ x: i, y: item.Valor, name: item.Causa }));
-          const n = regression.length;
-          const sumX = regression.reduce((acc, curr) => acc + curr.x, 0);
-          const sumY = regression.reduce((acc, curr) => acc + curr.y, 0);
-          const sumXY = regression.reduce((acc, curr) => acc + curr.x * curr.y, 0);
-          const sumXX = regression.reduce((acc, curr) => acc + curr.x * curr.x, 0);
-
-          const denominator = (n * sumXX - sumX * sumX);
-          const m = denominator !== 0 ? (n * sumXY - sumX * sumY) / denominator : 0;
-          const b = (sumY - m * sumX) / n;
-
-          setData(raw);
-          setParetoData(pareto);
-          setRegressionData(regression);
-          setRegressionLine({ m, b });
-          setError(null);
-        } catch (err) {
-          setError(t.error);
-        }
-      }
-    });
-  };
-
-  const stats = data.length > 0 ? {
-    count: data.length,
-    sum: data.reduce((acc, curr) => acc + curr.Valor, 0),
-    avg: data.reduce((acc, curr) => acc + curr.Valor, 0) / data.length,
-    max: Math.max(...data.map(d => d.Valor)),
-    min: Math.min(...data.map(d => d.Valor))
-  } : null;
-
-  const downloadTemplate = () => {
-    const csvContent = "Causa,Valor\nCausa A,450\nCausa B,300\nCausa C,150\nCausa D,60\nCausa E,40";
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'plantilla_base.csv';
-    a.click();
-  };
-
-  return (
-    <section id="analyzer" className="py-32 px-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-black mb-4">{t.title}</h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">{t.subtitle}</p>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <label className="px-8 py-3 bg-brand-red rounded-xl font-bold cursor-pointer hover:scale-105 transition-transform flex items-center gap-2">
-            <Database size={20} />
-            {t.upload}
-            <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
-          </label>
-          <button 
-            onClick={downloadTemplate}
-            className="px-8 py-3 glass rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-all flex items-center gap-2"
-          >
-            <FileJson size={20} />
-            {t.downloadTemplate}
-          </button>
-        </div>
-
-        {error && (
-          <div className="glass p-6 rounded-2xl border-brand-red/50 text-brand-red text-center mb-8">
-            {error}
-          </div>
-        )}
-
-        {data.length > 0 ? (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-              {[
-                { label: lang === 'es' ? 'Muestra' : 'Sample', value: stats?.count },
-                { label: lang === 'es' ? 'Total' : 'Total', value: stats?.sum.toLocaleString() },
-                { label: lang === 'es' ? 'Promedio' : 'Average', value: stats?.avg.toFixed(2) },
-                { label: lang === 'es' ? 'Máximo' : 'Maximum', value: stats?.max.toLocaleString() },
-                { label: lang === 'es' ? 'Mínimo' : 'Minimum', value: stats?.min.toLocaleString() },
-              ].map((s, i) => (
-                <div key={i} className="glass p-4 rounded-2xl text-center">
-                  <div className="text-brand-red font-black text-xl">{s.value}</div>
-                  <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{s.label}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
-            >
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <BarChart3 className="text-brand-red" size={20} />
-                {t.pareto}
-              </h3>
-              <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={paretoData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
-                    <XAxis dataKey="name" stroke={ct.axis} fontSize={12} />
-                    <YAxis yAxisId="left" stroke={ct.axis} fontSize={12} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#D32F2F" fontSize={12} unit="%" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
-                      itemStyle={{ color: ct.tooltipText }}
-                    />
-                    <Bar yAxisId="left" dataKey="value" fill="#D32F2F" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke={ct.axis} strokeWidth={3} dot={{ fill: '#D32F2F', stroke: '#fff', strokeWidth: 2 }} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
-            >
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <TrendingUp className="text-brand-red" size={20} />
-                {t.regression}
-              </h3>
-              <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart>
-                    <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} />
-                    <XAxis type="number" dataKey="x" name="Index" stroke={ct.axis} />
-                    <YAxis type="number" dataKey="y" name="Valor" stroke={ct.axis} />
-                    <ZAxis range={[60, 100]} />
-                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                    <Scatter name="Data" data={regressionData} fill="#D32F2F" />
-                    {regressionLine && (
-                      <Line 
-                        type="monotone" 
-                        data={[
-                          { x: 0, y: regressionLine.b },
-                          { x: regressionData.length - 1, y: regressionLine.m * (regressionData.length - 1) + regressionLine.b }
-                        ]} 
-                        dataKey="y" 
-                        stroke={ct.axis} 
-                        strokeWidth={2} 
-                        dot={false}
-                        activeDot={false}
-                      />
-                    )}
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 p-4 glass rounded-2xl text-xs font-mono text-gray-600 dark:text-gray-400">
-                y = {regressionLine?.m.toFixed(4)}x + {regressionLine?.b.toFixed(4)}
-              </div>
-            </motion.div>
-          </div>
-          </>
-        ) : (
-          <label className="block rounded-[40px] border-2 border-dashed border-gray-300 dark:border-white/10 hover:border-brand-red/50 bg-white dark:bg-white/[0.02] cursor-pointer transition-colors group overflow-hidden">
-            <div className="p-10 md:p-14 text-center">
-              <div className="w-20 h-20 mx-auto rounded-2xl bg-brand-red/10 flex items-center justify-center group-hover:bg-brand-red/20 group-hover:scale-105 transition-all mb-6">
-                <Database className="text-brand-red" size={34} />
-              </div>
-              <p className="text-lg font-bold mb-2">
-                {lang === 'es' ? 'Arrastra tu CSV o haz clic aquí' : 'Drop your CSV or click here'}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
-                {lang === 'es'
-                  ? 'Al cargarlo se calculan automáticamente el diagrama de Pareto, la regresión lineal y las estadísticas descriptivas.'
-                  : 'Once loaded, the Pareto chart, linear regression and descriptive statistics are computed automatically.'}
-              </p>
-
-              {/* Formato esperado, para que se entienda sin tener que probar */}
-              <div className="max-w-xs mx-auto text-left">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">
-                  {lang === 'es' ? 'Formato esperado' : 'Expected format'}
-                </p>
-                <div className="rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden font-mono text-xs">
-                  <div className="grid grid-cols-2 bg-gray-100 dark:bg-white/5 font-bold text-gray-700 dark:text-gray-300">
-                    <span className="px-3 py-2 border-r border-gray-200 dark:border-white/10">Causa</span>
-                    <span className="px-3 py-2">Valor</span>
-                  </div>
-                  {[['Causa A', '450'], ['Causa B', '300'], ['Causa C', '150']].map(([a, b]) => (
-                    <div key={a} className="grid grid-cols-2 border-t border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400">
-                      <span className="px-3 py-1.5 border-r border-gray-200 dark:border-white/10">{a}</span>
-                      <span className="px-3 py-1.5">{b}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-[11px] text-gray-500 mt-3">
-                  {lang === 'es'
-                    ? '¿No tienes un archivo? Descarga la plantilla base de arriba.'
-                    : 'No file yet? Download the base template above.'}
-                </p>
-              </div>
-            </div>
-            <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
-          </label>
-        )}
-      </div>
-    </section>
-  );
-};
 
 export default function App() {
   const [lang, setLang] = useState<'es' | 'en'>('es');
@@ -1970,7 +1395,11 @@ export default function App() {
   };
 
   if (currentPage === 'resume') {
-    return <Resume onBack={() => setCurrentPage('home')} lang={lang} />;
+    return (
+      <Suspense fallback={<PantallaCargando />}>
+        <Resume onBack={() => setCurrentPage('home')} lang={lang} />
+      </Suspense>
+    );
   }
 
   if (currentPage === 'datalab') {
@@ -1978,7 +1407,9 @@ export default function App() {
       <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <BackButton onBack={() => setCurrentPage('home')} lang={lang} />
-          <DataAnalyzer lang={lang} />
+          <Suspense fallback={<CargandoBloque alto="h-[420px]" />}>
+            <DataAnalyzer lang={lang} />
+          </Suspense>
         </div>
       </div>
     );
@@ -1997,6 +1428,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen selection:bg-brand-red selection:text-white bg-gray-50 text-gray-900 dark:bg-brand-black dark:text-brand-white transition-colors duration-300 relative">
+      <BarraProgreso />
+
       {/* --- Navbar --- */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-gray-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -2052,7 +1485,7 @@ export default function App() {
           {[0, 1, 2, 3].map((n) => (
             <img
               key={n}
-              src={`/fondo/bg${n + 1}.jpg`}
+              src={`/fondo/bg${n + 1}.webp`}
               alt=""
               aria-hidden
               fetchPriority={n === 0 ? 'high' : 'low'}
@@ -2085,7 +1518,7 @@ export default function App() {
             animate={{ opacity: 1, scale: 1 }}
             className="w-40 h-40 mx-auto mb-8 rounded-full overflow-hidden border-4 border-brand-red/20 shadow-[0_0_50px_rgba(211,47,47,0.2)]"
           >
-            <img src="/profile.jpg" alt="Diego Hernández" className="w-full h-full object-cover" />
+            <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
           </motion.div>
 
           <motion.div
@@ -2245,14 +1678,14 @@ export default function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 className="rounded-[32px] overflow-hidden h-64 glass border-gray-200 dark:border-white/5"
               >
-                <img src="/team1.jpg" alt="Equipo de trabajo" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                <img src="/team1.webp" alt="Equipo de trabajo" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
               </motion.div>
               <motion.div 
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 className="rounded-[32px] overflow-hidden h-64 glass border-white/5 mt-12"
               >
-                <img src="/team2.jpg" alt="Trabajo en campo" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                <img src="/team2.webp" alt="Trabajo en campo" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
               </motion.div>
             </div>
           </div>
@@ -2288,7 +1721,7 @@ export default function App() {
                 <h3 className="text-xl font-bold">{t.analytics.pareto.title}</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-8">{t.analytics.pareto.desc}</p>
-              <ParetoChartComponent />
+              <Suspense fallback={<CargandoBloque alto="h-[300px]" />}><ParetoChartComponent /></Suspense>
             </motion.div>
 
             {/* Ishikawa */}
@@ -2304,7 +1737,7 @@ export default function App() {
                 <h3 className="text-xl font-bold">{t.analytics.ishikawa.title}</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-8">{t.analytics.ishikawa.desc}</p>
-              <IshikawaDiagram />
+              <Suspense fallback={<CargandoBloque alto="h-[300px]" />}><IshikawaDiagram /></Suspense>
             </motion.div>
           </div>
 
@@ -2322,7 +1755,7 @@ export default function App() {
                 <h3 className="text-xl font-bold">{t.analytics.radar.title}</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-8">{t.analytics.radar.desc}</p>
-              <RadarChartComponent />
+              <Suspense fallback={<CargandoBloque alto="h-[300px]" />}><RadarChartComponent /></Suspense>
             </motion.div>
 
             {/* Trends Chart */}
@@ -2339,7 +1772,7 @@ export default function App() {
                 <h3 className="text-xl font-bold">{t.analytics.trends.title}</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-8">{t.analytics.trends.desc}</p>
-              <TrendChartComponent />
+              <Suspense fallback={<CargandoBloque alto="h-[300px]" />}><TrendChartComponent /></Suspense>
             </motion.div>
           </div>
 
@@ -2363,7 +1796,7 @@ export default function App() {
                   <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest">Live System</span>
                 </div>
               </div>
-              <LiveDashboard lang={lang} />
+              <Suspense fallback={<CargandoBloque alto="h-[150px]" />}><LiveDashboard lang={lang} /></Suspense>
             </motion.div>
           </div>
         </div>
