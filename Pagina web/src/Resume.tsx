@@ -13,7 +13,8 @@ import {
   User,
   Loader2,
   ChevronRight,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Languages
 } from 'lucide-react';
 
 import fallbackCoursesData from './data/curriculum.json';
@@ -100,6 +101,40 @@ const InstituteLogo = ({ institute, className = 'h-6 max-w-[110px]' }: { institu
 };
 
 const SITE_URL = 'https://didakus1177.github.io/';
+const CV_PDF = '/Diego_Hernandez_Blanco_Hoja_de_Vida.pdf';
+
+// Certificacion de idioma. Los puntajes salen de la constancia oficial del
+// CENLEX y se pueden verificar en el sitio del IPN.
+const LANGUAGES = {
+  nativo: { es: 'Español — Nativo', en: 'Spanish — Native' },
+  cert: {
+    idioma: { es: 'Inglés', en: 'English' },
+    nivel: 'B1',
+    marco: { es: 'Marco Común Europeo de Referencia (MCER)', en: 'Common European Framework (CEFR)' },
+    emisor: 'CENLEX Unidad Zacatenco — Instituto Politécnico Nacional (IPN)',
+    tipo: { es: 'Examen de dominio del idioma inglés para maestría', en: 'English proficiency exam for master\'s admission' },
+    fecha: { es: 'Junio 2026 · vigente hasta junio 2027', en: 'June 2026 · valid until June 2027' },
+    verificar: 'https://www.servicios.cenlexz.ipn.mx/examenes/valida',
+    puntajes: [
+      { es: 'Comprensión de lectura', en: 'Reading comprehension', v: 90 },
+      { es: 'Comprensión auditiva', en: 'Listening comprehension', v: 90 },
+      { es: 'Expresión escrita', en: 'Written expression', v: 90 },
+      { es: 'Expresión oral', en: 'Oral expression', v: 65 },
+    ],
+  },
+};
+
+// Referencias laborales.
+// Los telefonos NO se publican aqui: son datos personales de terceros que no
+// dieron su consentimiento para aparecer en una web publica. Van unicamente en
+// la version privada del CV, que se entrega a cada reclutador.
+const REFERENCES = [
+  { nombre: 'Iván Numpaké', cargo: { es: 'Especialista en Sostenibilidad', en: 'Sustainability Specialist' }, org: 'BHR Colombia' },
+  { nombre: 'Rocío Téllez', cargo: { es: 'Consultora Especialista de Calidad', en: 'Quality Consultant' }, org: '—' },
+  { nombre: 'Felipe Torres', cargo: { es: 'Especialista API — Integridad de Activos', en: 'API Specialist — Asset Integrity' }, org: 'ADEMINCOL' },
+  { nombre: 'Javier Carvajal', cargo: { es: 'Coordinador de Mejora Continua', en: 'Continuous Improvement Coordinator' }, org: 'Acerías Paz del Río' },
+  { nombre: 'Carlos Falcão', cargo: { es: 'Director de Alto Horno', en: 'Blast Furnace Director' }, org: 'Acerías Paz del Río' },
+];
 
 // Experiencia laboral. `photos` = cuántas imágenes hay en
 // public/experiencia/{id}/{1..n}.jpg — al subirlas y aumentar el número
@@ -349,11 +384,20 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             <h2 className="text-xl md:text-2xl text-brand-red font-bold mb-6">
               Ingeniero Metalúrgico | Especialista en Productividad y Mejora Continua | Data Scientist
             </h2>
-            <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm">
+            <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm mb-6">
               <span>📍 Ciudad de México (CDMX)</span>
               <span>📱 +57 321 629 1861</span>
               <span>✉️ dialhebl.dh@gmail.com</span>
             </div>
+
+            <a
+              href={CV_PDF}
+              download="Diego_Hernandez_Blanco_Hoja_de_Vida.pdf"
+              className="inline-flex items-center gap-2.5 px-6 py-3 red-gradient rounded-xl font-bold text-sm text-white hover:scale-105 transition-transform shadow-[0_8px_20px_rgba(211,47,47,0.3)]"
+            >
+              <Download size={18} />
+              {lang === 'es' ? 'Descargar hoja de vida (PDF)' : 'Download resume (PDF)'}
+            </a>
           </div>
 
           {/* QR al portafolio: util al imprimir el CV o mostrarlo en pantalla.
@@ -555,6 +599,100 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
               )}
             </div>
           </div>
+        </motion.div>
+
+        {/* Idiomas */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16"
+        >
+          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+            <Languages className="text-brand-red" />
+            {lang === 'es' ? 'IDIOMAS' : 'LANGUAGES'}
+          </h3>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="glass p-6 rounded-3xl flex flex-col justify-center">
+              <p className="text-lg font-black mb-1">{LANGUAGES.nativo[lang]}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {lang === 'es' ? 'Lengua materna' : 'Mother tongue'}
+              </p>
+            </div>
+
+            {/* Certificacion de ingles */}
+            <div className="glass p-6 rounded-3xl lg:col-span-2 border-l-4 border-l-brand-red">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div>
+                  <p className="text-lg font-black">
+                    {LANGUAGES.cert.idioma[lang]}
+                    <span className="ml-2 text-brand-red">{LANGUAGES.cert.nivel}</span>
+                  </p>
+                  <p className="text-xs text-gray-500">{LANGUAGES.cert.marco[lang]}</p>
+                </div>
+                <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-brand-red bg-brand-red/10 border border-brand-red/30 px-2.5 py-1 rounded-full">
+                  {lang === 'es' ? 'Certificado' : 'Certified'}
+                </span>
+              </div>
+
+              <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{LANGUAGES.cert.emisor}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{LANGUAGES.cert.tipo[lang]}</p>
+              <p className="text-xs text-gray-500 mb-4">{LANGUAGES.cert.fecha[lang]}</p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                {LANGUAGES.cert.puntajes.map((p) => (
+                  <div key={p.en} className="bg-gray-100 dark:bg-white/5 rounded-xl p-2.5 text-center">
+                    <div className="text-xl font-black text-brand-red">{p.v}</div>
+                    <div className="text-[9px] font-bold uppercase tracking-wide text-gray-500 leading-tight">
+                      {p[lang]}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <a
+                href={LANGUAGES.cert.verificar}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-red hover:underline"
+              >
+                {lang === 'es' ? 'Verificar constancia en el IPN' : 'Verify certificate at IPN'}
+                <ChevronRight size={13} />
+              </a>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Referencias laborales */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16"
+        >
+          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+            <User className="text-brand-red" />
+            {lang === 'es' ? 'REFERENCIAS LABORALES' : 'PROFESSIONAL REFERENCES'}
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {REFERENCES.map((r) => (
+              <div key={r.nombre} className="glass p-5 rounded-2xl">
+                <p className="font-bold mb-1">{r.nombre}</p>
+                <p className="text-sm text-brand-red font-bold leading-snug">{r.cargo[lang]}</p>
+                {r.org !== '—' && (
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{r.org}</p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-gray-500 mt-5 italic">
+            {lang === 'es'
+              ? 'Datos de contacto de las referencias disponibles a solicitud.'
+              : 'Reference contact details available upon request.'}
+          </p>
         </motion.div>
 
       </div>

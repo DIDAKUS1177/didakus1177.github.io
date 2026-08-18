@@ -20,3 +20,7 @@ Thumbs.db
 desktop.ini
 .DS_Store
 *.log
+
+# Version privada del CV: incluye los telefonos personales de las referencias
+# laborales. NO debe publicarse; se entrega solo a reclutadores concretos.
+*_CON_REFERENCIAS.pdf
