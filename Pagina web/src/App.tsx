@@ -1953,11 +1953,13 @@ export default function App() {
     }
   }, [theme]);
 
-  // Background slider effect
+  // Rotacion de las fotos de fondo del hero.
+  // 8 s por foto: con 5 s la transicion de 2,2 s ocupaba casi la mitad del
+  // tiempo y no se alcanzaba a apreciar cada imagen.
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % 4); // Assuming 4 background images: 0, 1, 2, 3
-    }, 5000);
+      setBgIndex((prev) => (prev + 1) % 4);
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
 
@@ -2041,21 +2043,27 @@ export default function App() {
       <section id="hero" className="relative pt-40 pb-24 px-6 overflow-hidden min-h-[800px] flex items-center">
         {/* Background: animated glow + photo slider */}
         <div className="absolute inset-0 -z-20 overflow-hidden bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-          {/* Las 4 fotos quedan montadas y solo cambia la opacidad por CSS.
-              Con AnimatePresence la imagen se quedaba congelada en opacity 0
-              y el fondo aparecia vacio. */}
+          {/* Las 4 fotos quedan montadas y solo cambia la opacidad.
+              La opacidad va en `style` y no en clases de Tailwind porque
+              `dark:opacity-45` no existe en la escala por defecto y el fondo
+              se quedaba al 25% tambien en modo oscuro.
+              Tampoco se cargan en diferido: al rotar, la siguiente foto
+              todavia no habia llegado y el fondo aparecia vacio. */}
           {[0, 1, 2, 3].map((n) => (
             <img
               key={n}
               src={`/fondo/bg${n + 1}.jpg`}
               alt=""
               aria-hidden
-              loading={n === 0 ? 'eager' : 'lazy'}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
-                n === bgIndex ? 'opacity-25 dark:opacity-45' : 'opacity-0'
+              fetchPriority={n === 0 ? 'high' : 'low'}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2200ms] ease-in-out ${
+                n === bgIndex ? 'hero-ken-burns' : ''
               }`}
+              style={{ opacity: n === bgIndex ? (theme === 'dark' ? 0.55 : 0.28) : 0 }}
             />
           ))}
+          {/* Velo para que el texto siga legible sobre la foto */}
+          <div className="absolute inset-0 bg-gray-50/55 dark:bg-brand-black/45" />
           <div className="hero-gradient-bg" />
           <div className="tech-grid" />
           {/* Manchas de color que flotan lentamente: dan movimiento al fondo */}
