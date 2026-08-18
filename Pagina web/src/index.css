@@ -70,8 +70,12 @@
 }
 
 /* --- Textura de fondo --- */
-/* Rejilla tecnica: da profundidad sin competir con el texto.
-   Se desvanece hacia los bordes con una mascara radial. */
+/* Textura de fondo.
+   En oscuro: tejido de fibra de carbono en CSS puro (dos diagonales opuestas
+   alternadas en cuadricula). Sin imagenes, asi que no suma peso de descarga
+   y se ve nitido en cualquier densidad de pantalla.
+   En claro: la fibra de carbono no funciona sobre fondo blanco, asi que se
+   mantiene la rejilla tecnica. */
 .tech-grid {
   --grid-line: rgba(15, 23, 42, 0.07);
   --grid-size: 46px;
@@ -86,11 +90,7 @@
   -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 30%, transparent 78%);
 }
 
-.dark .tech-grid {
-  --grid-line: rgba(255, 255, 255, 0.055);
-}
-
-/* Puntos donde se cruzan las lineas: refuerza la lectura de rejilla */
+/* Puntos en los cruces, solo en modo claro */
 .tech-grid::after {
   content: '';
   position: absolute;
@@ -98,6 +98,32 @@
   background-image: radial-gradient(circle, rgba(245, 158, 11, 0.30) 1.2px, transparent 1.2px);
   background-size: calc(var(--grid-size) * 4) calc(var(--grid-size) * 4);
   background-position: center;
+}
+
+.dark .tech-grid {
+  /* intensidad del tejido: subir con cuidado, compite con el texto */
+  --hilo: 0.018;
+  /* la regla base calcula background-size con esta variable */
+  --grid-size: 8px;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, var(--hilo)) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, calc(var(--hilo) * 2.2)) 0 1px, transparent 1px 4px);
+  background-size: 8px 8px;
+  mask-image: radial-gradient(ellipse 85% 80% at 50% 45%, #000 45%, transparent 92%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 45%, #000 45%, transparent 92%);
+}
+
+/* Segunda trama, desfasada media celda: es lo que da el aspecto tejido */
+.dark .tech-grid::after {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, calc(var(--hilo) * 1.6)) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, var(--hilo)) 0 1px, transparent 1px 4px);
+  background-size: 8px 8px;
+  background-position: 4px 4px;
+  mask-image: repeating-conic-gradient(#000 0% 25%, transparent 0% 50%);
+  -webkit-mask-image: repeating-conic-gradient(#000 0% 25%, transparent 0% 50%);
+  mask-size: 16px 16px;
+  -webkit-mask-size: 16px 16px;
 }
 
 /* Halo suave para separar el contenido del fondo con textura */
