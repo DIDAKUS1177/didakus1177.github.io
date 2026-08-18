@@ -99,7 +99,7 @@ const RotatingWord = ({ lang }: { lang: 'es' | 'en' }) => {
 
   return (
     <div className="flex items-center justify-center gap-3 h-12 mb-2 overflow-hidden">
-      <span className="h-px w-10 bg-brand-red/50" />
+      <span className="h-px w-10 bg-brand/50" />
       <AnimatePresence mode="wait">
         <motion.span
           key={`${lang}-${i}`}
@@ -107,12 +107,12 @@ const RotatingWord = ({ lang }: { lang: 'es' | 'en' }) => {
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           exit={{ opacity: 0, y: -24, filter: 'blur(6px)' }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="text-2xl md:text-4xl font-black text-brand-red tracking-[0.2em]"
+          className="text-2xl md:text-4xl font-black text-brand tracking-[0.2em]"
         >
           {words[i]}
         </motion.span>
       </AnimatePresence>
-      <span className="h-px w-10 bg-brand-red/50" />
+      <span className="h-px w-10 bg-brand/50" />
     </div>
   );
 };
@@ -287,7 +287,7 @@ const ProjectCarousel = ({ project }: { project: Project }) => {
     return (
       <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 flex items-center justify-center">
         <div className="text-center px-6">
-          <Lightbulb className="text-brand-red/40 mx-auto mb-3" size={40} />
+          <Lightbulb className="text-brand/40 mx-auto mb-3" size={40} />
           <p className="text-xs text-gray-500 dark:text-gray-500 uppercase tracking-widest font-bold">Capturas próximamente</p>
         </div>
       </div>
@@ -345,7 +345,7 @@ const ProjectCarousel = ({ project }: { project: Project }) => {
                 onClick={() => setIndex(i)}
                 aria-label={`Ver captura ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === index ? 'w-6 bg-brand-red' : 'w-1.5 bg-white/50 hover:bg-white/80'
+                  i === index ? 'w-6 bg-brand' : 'w-1.5 bg-white/50 hover:bg-white/80'
                 }`}
               />
             ))}
@@ -444,7 +444,7 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
           onClick={() => setRegion('todos')}
           className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
             region === 'todos'
-              ? 'bg-brand-red text-white'
+              ? 'bg-brand text-brand-black'
               : 'bg-gray-200/70 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-white/10'
           }`}
         >
@@ -456,7 +456,7 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
             onClick={() => setRegion(c)}
             className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
               region === c
-                ? 'bg-brand-red text-white'
+                ? 'bg-brand text-brand-black'
                 : 'bg-gray-200/70 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-white/10'
             }`}
           >
@@ -485,17 +485,17 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
               onClick={p.onClick}
               className={region === 'todos' ? 'cursor-pointer' : ''}
             >
-              <circle cx={p.x} cy={p.y} r="16" fill="#D32F2F" opacity="0.18">
+              <circle cx={p.x} cy={p.y} r="16" fill="#D97706" opacity="0.18">
                 <animate attributeName="r" values="12;22;12" dur="2.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.28;0;0.28" dur="2.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
               </circle>
-              <circle cx={p.x} cy={p.y} r="7" fill="#D32F2F" stroke="#fff" strokeWidth="2.5" />
+              <circle cx={p.x} cy={p.y} r="7" fill="#D97706" stroke="#fff" strokeWidth="2.5" />
 
               {/* Línea guía cuando la etiqueta tuvo que alejarse del pin */}
               {Math.abs(p.dy) > 30 && (
                 <line
                   x1={p.x} y1={p.y} x2={p.x} y2={p.y + p.dy + (p.dy < 0 ? 8 : -18)}
-                  stroke="#D32F2F" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6"
+                  stroke="#D97706" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6"
                 />
               )}
 
@@ -509,7 +509,7 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
               </text>
               <text
                 x={p.x} y={p.y + p.dy + 18} textAnchor="middle"
-                fill="#D32F2F" fontSize="15" fontWeight="700"
+                fill="#D97706" fontSize="15" fontWeight="700"
                 stroke="var(--map-halo)" strokeWidth="3.5" paintOrder="stroke"
               >
                 {p.sub}
@@ -540,10 +540,10 @@ const CLIENT_LOGOS: { file: string; name: string }[] = [
 export const BackButton = ({ onBack, lang }: { onBack: () => void; lang: 'es' | 'en' }) => (
   <button
     onClick={onBack}
-    className="group inline-flex items-center gap-2.5 pl-3 pr-5 py-2.5 rounded-full glass border-gray-200 dark:border-white/10 hover:border-brand-red/50 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand-red transition-all hover:-translate-x-0.5"
+    className="group inline-flex items-center gap-2.5 pl-3 pr-5 py-2.5 rounded-full glass border-gray-200 dark:border-white/10 hover:border-brand/50 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand transition-all hover:-translate-x-0.5"
   >
-    <span className="w-7 h-7 rounded-full bg-brand-red/10 group-hover:bg-brand-red flex items-center justify-center transition-colors">
-      <ChevronLeft size={16} className="text-brand-red group-hover:text-white transition-colors" />
+    <span className="w-7 h-7 rounded-full bg-brand/10 group-hover:bg-brand flex items-center justify-center transition-colors">
+      <ChevronLeft size={16} className="text-brand group-hover:text-white transition-colors" />
     </span>
     {lang === 'es' ? 'Volver al portafolio' : 'Back to portfolio'}
   </button>
@@ -706,7 +706,7 @@ const SERVICES: Service[] = [
 // tema, se ven nitidos a cualquier tamaño y no dependen de licencias ajenas.
 const D = {
   caja: 'fill-white dark:fill-white/[0.06] stroke-gray-300 dark:stroke-white/15',
-  cajaRoja: 'fill-brand-red/10 stroke-brand-red/50',
+  cajaRoja: 'fill-brand/10 stroke-brand/50',
   texto: 'fill-gray-700 dark:fill-gray-300',
   textoTenue: 'fill-gray-500',
   linea: 'stroke-gray-400 dark:stroke-white/25',
@@ -715,7 +715,7 @@ const D = {
 const Flecha = ({ x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2: number }) => (
   <>
     <line x1={x1} y1={y1} x2={x2 - 7} y2={y2} className={D.linea} strokeWidth="1.5" strokeDasharray="4 3" />
-    <polygon points={`${x2},${y2} ${x2 - 8},${y2 - 4} ${x2 - 8},${y2 + 4}`} className="fill-brand-red" />
+    <polygon points={`${x2},${y2} ${x2 - 8},${y2 - 4} ${x2 - 8},${y2 + 4}`} className="fill-brand" />
   </>
 );
 
@@ -731,7 +731,7 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
       ))}
       <Flecha x1={114} y1={95} x2={150} y2={95} />
       <rect x="152" y="52" width="112" height="86" rx="12" className={D.cajaRoja} strokeWidth="2" />
-      <text x="208" y="88" textAnchor="middle" fontSize="13" fontWeight="900" className="fill-brand-red">ERP / CRM</text>
+      <text x="208" y="88" textAnchor="middle" fontSize="13" fontWeight="900" className="fill-brand">ERP / CRM</text>
       <text x="208" y="106" textAnchor="middle" fontSize="10" className={D.textoTenue}>web + móvil</text>
       <Flecha x1={268} y1={95} x2={304} y2={95} />
       <ellipse cx="356" cy="64" rx="48" ry="12" className={D.caja} strokeWidth="1.5" />
@@ -751,7 +751,7 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
         </g>
       ))}
       <polygon points="142,58 214,58 186,100 186,132 170,124 170,100" className={D.cajaRoja} strokeWidth="2" />
-      <text x="178" y="84" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand-red">ETL</text>
+      <text x="178" y="84" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand">ETL</text>
       <Flecha x1={220} y1={95} x2={258} y2={95} />
       <ellipse cx="312" cy="62" rx="52" ry="13" className={D.caja} strokeWidth="1.5" />
       <path d="M260 62v66c0 7.2 23.3 13 52 13s52-5.8 52-13V62" className={D.caja} strokeWidth="1.5" />
@@ -773,13 +773,13 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
       ))}
       <text x="330" y="49" fontSize="11" fontWeight="700" className={D.textoTenue}>3 h</text>
 
-      <text x="8" y="104" fontSize="10" fontWeight="900" className="fill-brand-red">DESPUÉS · automático</text>
+      <text x="8" y="104" fontSize="10" fontWeight="900" className="fill-brand">DESPUÉS · automático</text>
       <rect x="8" y="114" width="110" height="38" rx="8" className={D.cajaRoja} strokeWidth="2" />
-      <text x="63" y="138" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand-red">1 clic</text>
+      <text x="63" y="138" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand">1 clic</text>
       <Flecha x1={122} y1={133} x2={160} y2={133} />
       <rect x="164" y="114" width="140" height="38" rx="8" className={D.caja} strokeWidth="1.5" />
       <text x="234" y="138" textAnchor="middle" fontSize="11" fontWeight="700" className={D.texto}>Informe generado</text>
-      <text x="330" y="138" fontSize="11" fontWeight="900" className="fill-brand-red">2 min</text>
+      <text x="330" y="138" fontSize="11" fontWeight="900" className="fill-brand">2 min</text>
     </svg>
   ),
 
@@ -800,16 +800,16 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
 
       {/* barras + tendencia */}
       <rect x="176" y="26" width="128" height="138" rx="10" className={D.caja} strokeWidth="1.5" />
-      <text x="240" y="20" textAnchor="middle" fontSize="10" fontWeight="900" className="fill-brand-red">INDICADORES</text>
+      <text x="240" y="20" textAnchor="middle" fontSize="10" fontWeight="900" className="fill-brand">INDICADORES</text>
       {[38, 62, 30, 76, 52].map((h, i) => (
         <rect key={i} x={190 + i * 23} y={146 - h} width="15" height={h} rx="3"
-              className={i === 3 ? 'fill-brand-red' : 'fill-brand-red/35'} />
+              className={i === 3 ? 'fill-brand' : 'fill-brand/35'} />
       ))}
       <polyline points="197,112 220,92 243,120 266,76 289,100" fill="none" className="stroke-amber-500" strokeWidth="2" />
       <Flecha x1={310} y1={95} x2={344} y2={95} />
 
       <rect x="348" y="60" width="66" height="70" rx="10" className={D.cajaRoja} strokeWidth="2" />
-      <text x="381" y="88" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand-red">Decisión</text>
+      <text x="381" y="88" textAnchor="middle" fontSize="11" fontWeight="900" className="fill-brand">Decisión</text>
       <text x="381" y="106" textAnchor="middle" fontSize="9" className={D.textoTenue}>con evidencia</text>
     </svg>
   ),
@@ -825,17 +825,17 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
         { t: 'ACTUAR', x: 78, y: 99 },
       ].map((q) => (
         <text key={q.t} x={q.x} y={q.y} textAnchor="middle" fontSize="10" fontWeight="900"
-              className="fill-brand-red">{q.t}</text>
+              className="fill-brand">{q.t}</text>
       ))}
-      <path d="M140 42a53 53 0 1 1-37 91" fill="none" className="stroke-brand-red" strokeWidth="2.5" strokeDasharray="6 4" />
-      <polygon points="103,133 112,126 113,138" className="fill-brand-red" />
+      <path d="M140 42a53 53 0 1 1-37 91" fill="none" className="stroke-brand" strokeWidth="2.5" strokeDasharray="6 4" />
+      <polygon points="103,133 112,126 113,138" className="fill-brand" />
       <text x="140" y="92" textAnchor="middle" fontSize="12" fontWeight="900" className={D.texto}>MEJORA</text>
       <text x="140" y="108" textAnchor="middle" fontSize="12" fontWeight="900" className={D.texto}>CONTINUA</text>
 
       {['ISO 9001', 'ISO 14001', 'ISO 45001', 'ISO 17025', 'API 580 / 581'].map((n, i) => (
         <g key={n}>
           <rect x="248" y={16 + i * 32} width="164" height="24" rx="12" className={D.cajaRoja} strokeWidth="1.5" />
-          <text x="330" y={32 + i * 32} textAnchor="middle" fontSize="11" fontWeight="700" className="fill-brand-red">{n}</text>
+          <text x="330" y={32 + i * 32} textAnchor="middle" fontSize="11" fontWeight="700" className="fill-brand">{n}</text>
         </g>
       ))}
     </svg>
@@ -929,7 +929,7 @@ const ServiceAreas = ({ lang }: { lang: 'es' | 'en' }) => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.5 }}
-          className="glass rounded-[28px] p-6 md:p-9 border-gray-200 dark:border-white/5 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center hover:border-brand-red/30 transition-colors"
+          className="glass rounded-[28px] p-6 md:p-9 border-gray-200 dark:border-white/5 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center hover:border-brand/30 transition-colors"
         >
           <div className={i % 2 === 1 ? 'lg:order-2' : ''}>
             <div className="rounded-2xl bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/5 p-4">
@@ -939,10 +939,10 @@ const ServiceAreas = ({ lang }: { lang: 'es' | 'en' }) => (
 
           <div className={i % 2 === 1 ? 'lg:order-1' : ''}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-11 h-11 rounded-xl bg-brand-red/10 flex items-center justify-center shrink-0">
-                <Icono className="text-brand-red" size={22} />
+              <div className="w-11 h-11 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
+                <Icono className="text-brand" size={22} />
               </div>
-              <span className="text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em]">
                 {String(i + 1).padStart(2, '0')} · {lang === 'es' ? 'Área de servicio' : 'Service area'}
               </span>
             </div>
@@ -951,7 +951,7 @@ const ServiceAreas = ({ lang }: { lang: 'es' | 'en' }) => (
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2">
               {area.bullets[lang].map((b) => (
                 <li key={b} className="flex gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <CheckCircle2 size={15} className="text-brand-red shrink-0 mt-0.5" />
+                  <CheckCircle2 size={15} className="text-brand shrink-0 mt-0.5" />
                   <span>{b}</span>
                 </li>
               ))}
@@ -974,7 +974,7 @@ const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number
       transition={{ delay: (index % 3) * 0.08 }}
       viewport={{ once: true }}
       className={`glass rounded-3xl transition-all group border-gray-200 dark:border-white/5 ${
-        open ? 'border-brand-red/40' : 'hover:border-brand-red/40'
+        open ? 'border-brand/40' : 'hover:border-brand/40'
       }`}
     >
       <button
@@ -985,11 +985,11 @@ const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number
         <div className="flex items-start justify-between gap-4 mb-5">
           <div
             className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center transition-colors ${
-              open ? 'bg-brand-red' : 'bg-brand-red/10 group-hover:bg-brand-red'
+              open ? 'bg-brand' : 'bg-brand/10 group-hover:bg-brand'
             }`}
           >
             <Icono
-              className={`transition-colors ${open ? 'text-white' : 'text-brand-red group-hover:text-white'}`}
+              className={`transition-colors ${open ? 'text-brand-black' : 'text-brand group-hover:text-brand-black'}`}
               size={26}
             />
           </div>
@@ -1014,7 +1014,7 @@ const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number
             <ul className="space-y-2.5 mb-5">
               {service.items[lang].map((it) => (
                 <li key={it} className="flex gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                  <CheckCircle2 size={16} className="text-brand-red shrink-0 mt-0.5" />
+                  <CheckCircle2 size={16} className="text-brand shrink-0 mt-0.5" />
                   <span>{it}</span>
                 </li>
               ))}
@@ -1032,7 +1032,7 @@ const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number
           </div>
         </div>
 
-        <span className="mt-5 inline-block text-[10px] font-black uppercase tracking-widest text-brand-red">
+        <span className="mt-5 inline-block text-[10px] font-black uppercase tracking-widest text-brand">
           {open
             ? (lang === 'es' ? 'Ocultar detalle' : 'Hide detail')
             : (lang === 'es' ? 'Ver qué incluye' : 'See what is included')}
@@ -1111,14 +1111,14 @@ const HowIWork = ({ lang }: { lang: 'es' | 'en' }) => (
               transition={{ delay: i * 0.1 }}
               className="glass rounded-3xl p-6 border-gray-200 dark:border-white/5 relative flex flex-col"
             >
-              <span className="absolute top-5 right-6 text-4xl font-black text-brand-red/12 dark:text-brand-red/20 leading-none">
+              <span className="absolute top-5 right-6 text-4xl font-black text-brand/12 dark:text-brand/20 leading-none">
                 {i + 1}
               </span>
-              <div className="w-11 h-11 rounded-xl bg-brand-red/10 flex items-center justify-center mb-4">
-                <Icono className="text-brand-red" size={21} />
+              <div className="w-11 h-11 rounded-xl bg-brand/10 flex items-center justify-center mb-4">
+                <Icono className="text-brand" size={21} />
               </div>
               <h3 className="text-lg font-black mb-1.5">{step.title[lang]}</h3>
-              <span className="inline-block self-start text-[9px] font-black uppercase tracking-widest text-brand-red bg-brand-red/10 border border-brand-red/25 px-2 py-1 rounded-full mb-3">
+              <span className="inline-block self-start text-[9px] font-black uppercase tracking-widest text-brand bg-brand/10 border border-brand/25 px-2 py-1 rounded-full mb-3">
                 {step.badge[lang]}
               </span>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{step.desc[lang]}</p>
@@ -1135,13 +1135,13 @@ const HowIWork = ({ lang }: { lang: 'es' | 'en' }) => (
 // que el contenido de abajo no salte cuando termina de cargar.
 const CargandoBloque = ({ alto = 'h-[300px]' }: { alto?: string }) => (
   <div className={`${alto} w-full rounded-2xl bg-gray-100 dark:bg-white/[0.03] animate-pulse flex items-center justify-center`}>
-    <Loader2 className="text-brand-red/50 animate-spin" size={26} />
+    <Loader2 className="text-brand/50 animate-spin" size={26} />
   </div>
 );
 
 const PantallaCargando = () => (
   <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center">
-    <Loader2 className="text-brand-red animate-spin" size={34} />
+    <Loader2 className="text-brand animate-spin" size={34} />
   </div>
 );
 
@@ -1172,7 +1172,7 @@ const BarraProgreso = () => {
   return (
     <div className="fixed top-0 left-0 right-0 h-[3px] z-[60] pointer-events-none">
       <div
-        className="h-full red-gradient transition-[width] duration-150 ease-out"
+        className="h-full brand-gradient transition-[width] duration-150 ease-out"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -1197,7 +1197,7 @@ const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyect
         </p>
         <button
           onClick={onVerProyectos}
-          className="inline-flex items-center gap-3 px-8 py-4 red-gradient rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform text-white"
+          className="inline-flex items-center gap-3 px-8 py-4 brand-gradient rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform text-brand-black"
         >
           {lang === 'es' ? 'Ver todos los proyectos' : 'View all projects'}
           <ArrowRight size={20} />
@@ -1252,14 +1252,14 @@ const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.5, delay: (i % 2) * 0.1 }}
-            className="glass rounded-[32px] p-5 md:p-7 border-gray-200 dark:border-white/5 flex flex-col hover:border-brand-red/30 transition-colors"
+            className="glass rounded-[32px] p-5 md:p-7 border-gray-200 dark:border-white/5 flex flex-col hover:border-brand/30 transition-colors"
           >
             <ProjectCarousel project={project} />
 
             <div className="flex items-center gap-3 mt-6 mb-3">
               <Flag country={project.country} className="w-9 shrink-0" />
               <div className="flex flex-col min-w-0">
-                <span className="text-[10px] font-black text-brand-red uppercase tracking-[0.2em] truncate">
+                <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] truncate">
                   {project.client}
                 </span>
                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
@@ -1329,7 +1329,7 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
           placeholder={t.formName}
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
+          className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
         />
         <input
           type="email"
@@ -1337,7 +1337,7 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
           placeholder={t.formEmail}
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
+          className="bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
         />
       </div>
       <textarea
@@ -1346,17 +1346,17 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
         placeholder={t.formMessage}
         value={form.message}
         onChange={(e) => setForm({ ...form, message: e.target.value })}
-        className="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors mb-4 resize-none"
+        className="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors mb-4 resize-none"
       />
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full sm:w-auto px-8 py-3 red-gradient rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform disabled:opacity-60 disabled:hover:scale-100"
+        className="w-full sm:w-auto px-8 py-3 brand-gradient text-brand-black rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform disabled:opacity-60 disabled:hover:scale-100"
       >
         {status === 'sending' ? t.formSending : t.formSubmit}
       </button>
       {status === 'success' && <p className="mt-4 text-sm font-bold text-teal-500">{t.formSuccess}</p>}
-      {status === 'error' && <p className="mt-4 text-sm font-bold text-brand-red">{t.formError}</p>}
+      {status === 'error' && <p className="mt-4 text-sm font-bold text-brand">{t.formError}</p>}
     </form>
   );
 };
@@ -1427,7 +1427,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen selection:bg-brand-red selection:text-white bg-gray-50 text-gray-900 dark:bg-brand-black dark:text-brand-white transition-colors duration-300 relative">
+    <div className="min-h-screen selection:bg-brand selection:text-brand-black bg-gray-50 text-gray-900 dark:bg-brand-black dark:text-brand-white transition-colors duration-300 relative">
       <BarraProgreso />
 
       {/* --- Navbar --- */}
@@ -1435,7 +1435,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <a href="#hero" className="flex items-center gap-3">
             <span className="font-black text-lg md:text-xl tracking-tighter uppercase">
-              Diego <span className="text-brand-red">Hernández</span>
+              Diego <span className="text-brand">Hernández</span>
             </span>
             <span className="hidden lg:block text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-[0.2em] border-l border-gray-300 dark:border-white/10 pl-3">
               Analytica Industrial &amp; IA
@@ -1465,7 +1465,7 @@ export default function App() {
               onClick={toggleLang}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
             >
-              <Languages size={14} className="text-brand-red" />
+              <Languages size={14} className="text-brand" />
               {lang}
             </button>
           </div>
@@ -1500,7 +1500,7 @@ export default function App() {
           <div className="hero-gradient-bg" />
           <div className="tech-grid" />
           {/* Manchas de color que flotan lentamente: dan movimiento al fondo */}
-          <div className="section-halo float-slow w-[420px] h-[420px] bg-brand-red/25 dark:bg-brand-red/20 -top-20 -left-24" />
+          <div className="section-halo float-slow w-[420px] h-[420px] bg-brand/25 dark:bg-brand/20 -top-20 -left-24" />
           <div
             className="section-halo float-slow w-[360px] h-[360px] bg-amber-500/15 dark:bg-amber-500/10 bottom-0 right-0"
             style={{ animationDelay: '-9s' }}
@@ -1509,14 +1509,14 @@ export default function App() {
         </div>
 
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-brand-red/20 blur-[120px] rounded-full" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-brand/20 blur-[120px] rounded-full" />
         </div>
 
         <div className="max-w-7xl mx-auto text-center w-full relative z-10">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-40 h-40 mx-auto mb-8 rounded-full overflow-hidden border-4 border-brand-red/20 shadow-[0_0_50px_rgba(211,47,47,0.2)]"
+            className="w-40 h-40 mx-auto mb-8 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_50px_rgba(245,158,11,0.25)]"
           >
             <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
           </motion.div>
@@ -1525,7 +1525,7 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 text-sm font-medium text-brand-red"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 text-sm font-medium text-brand"
           >
             <Cpu size={16} />
             {t.hero.subtitle}
@@ -1544,7 +1544,7 @@ export default function App() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.7, ease: "easeOut" }}
-              className="block text-brand-red"
+              className="block text-brand"
             >
               HERNÁNDEZ BLANCO
             </motion.span>
@@ -1575,7 +1575,7 @@ export default function App() {
           >
             <button 
               onClick={() => setCurrentPage('resume')} 
-              className="px-8 py-3 glass rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 dark:hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-brand-red inline-flex items-center gap-2"
+              className="px-8 py-3 glass rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 dark:hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-brand inline-flex items-center gap-2"
             >
               <FileJson size={20} />
               {lang === 'es' ? 'Ver Curriculum Completo' : 'View Full Resume'}
@@ -1587,7 +1587,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-full bg-brand-red/8 dark:bg-brand-red/12 border border-brand-red/30 text-sm font-bold text-brand-red"
+            className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-full bg-brand/8 dark:bg-brand/12 border border-brand/30 text-sm font-bold text-brand"
           >
             <CheckCircle2 size={17} />
             {t.hero.freeConsult}
@@ -1602,7 +1602,7 @@ export default function App() {
             <div className="flex flex-wrap justify-center gap-4">
               <button 
                 onClick={openGmail}
-                className="px-10 py-4 red-gradient rounded-xl font-bold text-xl shadow-[0_10px_30px_rgba(211,47,47,0.3)] hover:scale-105 transition-transform flex items-center gap-3"
+                className="px-10 py-4 brand-gradient text-brand-black rounded-xl font-bold text-xl shadow-[0_10px_30px_rgba(245,158,11,0.35)] hover:scale-105 transition-transform flex items-center gap-3"
               >
                 {t.hero.cta}
                 <ArrowRight size={24} />
@@ -1612,7 +1612,7 @@ export default function App() {
                 <a 
                   href="https://wa.me/573337279204"
                   target="_blank"
-                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-brand-red flex items-center gap-2 font-bold whitespace-nowrap"
+                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-brand flex items-center gap-2 font-bold whitespace-nowrap"
                 >
                   <MessageCircle size={20} />
                   +57 333 727 9204
@@ -1696,7 +1696,7 @@ export default function App() {
       <section id="analytics" className="pb-32 px-6 bg-gray-100/50 dark:bg-white/[0.01]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <span className="text-[10px] font-black text-brand-red uppercase tracking-[0.25em]">
+            <span className="text-[10px] font-black text-brand uppercase tracking-[0.25em]">
               {lang === 'es' ? 'Muestra de trabajo' : 'Work sample'}
             </span>
             <h3 className="text-3xl md:text-4xl font-black mb-4 mt-3">{t.analytics.title}</h3>
@@ -1715,8 +1715,8 @@ export default function App() {
               className="glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center">
-                  <BarChart3 className="text-brand-red" size={20} />
+                <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
+                  <BarChart3 className="text-brand" size={20} />
                 </div>
                 <h3 className="text-xl font-bold">{t.analytics.pareto.title}</h3>
               </div>
@@ -1731,8 +1731,8 @@ export default function App() {
               className="glass p-8 rounded-[40px] border-white/5 overflow-hidden"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center">
-                  <Target className="text-brand-red" size={20} />
+                <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
+                  <Target className="text-brand" size={20} />
                 </div>
                 <h3 className="text-xl font-bold">{t.analytics.ishikawa.title}</h3>
               </div>
@@ -1749,8 +1749,8 @@ export default function App() {
               className="lg:col-span-1 glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center">
-                  <Target className="text-brand-red" size={20} />
+                <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
+                  <Target className="text-brand" size={20} />
                 </div>
                 <h3 className="text-xl font-bold">{t.analytics.radar.title}</h3>
               </div>
@@ -1766,8 +1766,8 @@ export default function App() {
               className="lg:col-span-2 glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center">
-                  <TrendingUp className="text-brand-red" size={20} />
+                <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
+                  <TrendingUp className="text-brand" size={20} />
                 </div>
                 <h3 className="text-xl font-bold">{t.analytics.trends.title}</h3>
               </div>
@@ -1782,12 +1782,12 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="glass p-8 rounded-[40px] border-brand-red/20 bg-brand-red/[0.02]"
+              className="glass p-8 rounded-[40px] border-brand/20 bg-brand/[0.02]"
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center">
-                    <Activity className="text-brand-red" size={20} />
+                  <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
+                    <Activity className="text-brand" size={20} />
                   </div>
                   <h3 className="text-xl font-bold">{t.analytics.dashboard.title}</h3>
                 </div>
@@ -1808,7 +1808,7 @@ export default function App() {
       {/* --- Servicios: areas, detalle y muestra de analisis --- */}
       <section id="solutions" className="pt-32 pb-24 px-6 relative overflow-hidden bg-gray-100/50 dark:bg-white/[0.01]">
         <div className="tech-grid opacity-70" />
-        <div className="section-halo float-slow w-[500px] h-[500px] bg-brand-red/10 dark:bg-brand-red/[0.07] top-1/4 -right-40" />
+        <div className="section-halo float-slow w-[500px] h-[500px] bg-brand/10 dark:bg-brand/[0.07] top-1/4 -right-40" />
 
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-16">
@@ -1826,7 +1826,7 @@ export default function App() {
             <h3 className="text-2xl md:text-3xl font-black mb-3">
               {lang === 'es' ? 'El detalle de cada servicio' : 'The detail of each service'}
             </h3>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-brand-red">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-brand">
               {lang === 'es' ? 'Toca cada tarjeta para desplegarla' : 'Tap each card to expand it'}
             </p>
           </div>
@@ -1861,7 +1861,7 @@ export default function App() {
               con un icono de chip que no aportaba nada. */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             {[
-              { onClick: openGmail, icon: Mail, bg: 'bg-brand-red',
+              { onClick: openGmail, icon: Mail, bg: 'bg-brand',
                 title: t.contact.gmail, sub: 'dialhebl.dh@gmail.com' },
               { href: 'https://wa.me/573337279204', icon: MessageCircle, bg: 'bg-[#25D366]',
                 title: t.contact.whatsapp, sub: '+57 333 727 9204' },
@@ -1882,10 +1882,10 @@ export default function App() {
                       <p className="text-sm text-gray-500 truncate">{c.sub}</p>
                     </div>
                   </div>
-                  <ChevronRight className="shrink-0 text-gray-400 group-hover:text-brand-red group-hover:translate-x-1 transition-all" />
+                  <ChevronRight className="shrink-0 text-gray-400 group-hover:text-brand group-hover:translate-x-1 transition-all" />
                 </>
               );
-              const clase = "flex items-center justify-between gap-3 p-5 glass rounded-2xl border-gray-200 dark:border-white/5 hover:border-brand-red/40 transition-all group w-full";
+              const clase = "flex items-center justify-between gap-3 p-5 glass rounded-2xl border-gray-200 dark:border-white/5 hover:border-brand/40 transition-all group w-full";
               return c.href ? (
                 <a key={c.sub} href={c.href} target="_blank" rel="noreferrer" className={clase}>{contenido}</a>
               ) : (
@@ -1901,11 +1901,11 @@ export default function App() {
               {lang === 'es' ? 'Disponible para nuevos proyectos' : 'Available for new projects'}
             </span>
             <span className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <MapPin size={15} className="text-brand-red" />
+              <MapPin size={15} className="text-brand" />
               {lang === 'es' ? 'Ciudad de México · remoto' : 'Mexico City · remote'}
             </span>
             <span className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <Languages size={15} className="text-brand-red" />
+              <Languages size={15} className="text-brand" />
               {lang === 'es' ? 'Español · Inglés' : 'Spanish · English'}
             </span>
           </div>
@@ -1920,7 +1920,7 @@ export default function App() {
       <footer className="py-12 px-6 border-t border-gray-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <a href="#hero" className="font-black text-sm tracking-tighter uppercase">
-            Diego <span className="text-brand-red">Hernández</span>
+            Diego <span className="text-brand">Hernández</span>
           </a>
           
           <p className="text-gray-500 dark:text-gray-500 text-sm">
@@ -1928,8 +1928,8 @@ export default function App() {
           </p>
 
           <div className="flex items-center gap-4">
-            <a href="#" className="p-2 glass rounded-lg hover:text-brand-red transition-colors"><Linkedin size={18} /></a>
-            <a href="#" className="p-2 glass rounded-lg hover:text-brand-red transition-colors"><Mail size={18} /></a>
+            <a href="#" className="p-2 glass rounded-lg hover:text-brand transition-colors"><Linkedin size={18} /></a>
+            <a href="#" className="p-2 glass rounded-lg hover:text-brand transition-colors"><Mail size={18} /></a>
           </div>
         </div>
       </footer>
@@ -1939,7 +1939,7 @@ export default function App() {
         <a 
           href="https://wa.me/573337279204" 
           target="_blank"
-          className="w-14 h-14 bg-brand-red rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(211,47,47,0.5)] hover:scale-110 transition-transform group relative"
+          className="w-14 h-14 bg-brand rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(211,47,47,0.5)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsapp}
         >
           <MessageCircle className="text-white" size={28} />
@@ -2011,11 +2011,11 @@ export default function App() {
           background: rgba(255, 255, 255, 0.05);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(211, 47, 47, 0.5);
+          background: rgba(245, 158, 11, 0.5);
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(211, 47, 47, 0.8);
+          background: rgba(245, 158, 11, 0.8);
         }
       `}} />
     </div>

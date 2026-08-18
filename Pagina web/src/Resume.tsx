@@ -260,7 +260,7 @@ const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lan
                 onClick={() => setI(n)}
                 aria-label={`Ver foto ${n + 1}`}
                 className={`h-1 rounded-full transition-all ${
-                  n === i ? 'w-4 bg-brand-red' : 'w-1 bg-white/60 hover:bg-white/90'
+                  n === i ? 'w-4 bg-brand' : 'w-1 bg-white/60 hover:bg-white/90'
                 }`}
               />
             ))}
@@ -361,7 +361,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
   );
 
   const selectClass =
-    "bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 hover:border-gray-400 dark:hover:border-white/25 transition-colors cursor-pointer";
+    "bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 hover:border-gray-400 dark:hover:border-white/25 transition-colors cursor-pointer";
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
@@ -377,13 +377,13 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           animate={{ opacity: 1, y: 0 }}
           className="glass p-12 rounded-[40px] mb-12 relative overflow-hidden flex flex-col md:flex-row items-center gap-8"
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red/10 blur-[100px] -z-10" />
-          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-brand-red/20 shadow-[0_0_30px_rgba(211,47,47,0.2)]">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand/10 blur-[100px] -z-10" />
+          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_30px_rgba(245,158,11,0.25)]">
             <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="text-4xl md:text-5xl font-black mb-4">DIEGO ALEJANDRO HERNÁNDEZ BLANCO</h1>
-            <h2 className="text-xl md:text-2xl text-brand-red font-bold mb-6">
+            <h2 className="text-xl md:text-2xl text-brand font-bold mb-6">
               Ingeniero Metalúrgico | Especialista en Productividad y Mejora Continua | Data Scientist
             </h2>
             <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm mb-6">
@@ -395,7 +395,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             <a
               href={CV_PDF}
               download="Diego_Hernandez_Blanco_Hoja_de_Vida.pdf"
-              className="inline-flex items-center gap-2.5 px-6 py-3 red-gradient rounded-xl font-bold text-sm text-white hover:scale-105 transition-transform shadow-[0_8px_20px_rgba(211,47,47,0.3)]"
+              className="inline-flex items-center gap-2.5 px-6 py-3 brand-gradient rounded-xl font-bold text-sm text-brand-black hover:scale-105 transition-transform shadow-[0_8px_20px_rgba(245,158,11,0.35)]"
             >
               <Download size={18} />
               {lang === 'es' ? 'Descargar hoja de vida (PDF)' : 'Download resume (PDF)'}
@@ -409,7 +409,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             className="shrink-0 md:ml-auto text-center group"
             title={lang === 'es' ? 'Abrir el portafolio' : 'Open the portfolio'}
           >
-            <div className="w-28 h-28 rounded-2xl bg-white p-2 ring-1 ring-gray-300 dark:ring-white/20 shadow-sm group-hover:ring-brand-red transition-all">
+            <div className="w-28 h-28 rounded-2xl bg-white p-2 ring-1 ring-gray-300 dark:ring-white/20 shadow-sm group-hover:ring-brand transition-all">
               <img
                 src="/qr-sitio.svg"
                 alt={lang === 'es' ? 'Código QR del portafolio de Diego Hernández' : 'QR code to Diego Hernández portfolio'}
@@ -433,7 +433,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           className="mb-16"
         >
           <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
-            <User className="text-brand-red" />
+            <User className="text-brand" />
             {lang === 'es' ? 'PERFIL PROFESIONAL' : 'PROFESSIONAL PROFILE'}
           </h3>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
@@ -449,16 +449,16 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           className="mb-16"
         >
           <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
-            <Briefcase className="text-brand-red" />
+            <Briefcase className="text-brand" />
             {lang === 'es' ? 'EXPERIENCIA LABORAL' : 'WORK EXPERIENCE'}
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {EXPERIENCE.map((exp) => (
-              <div key={exp.id} className="glass p-6 rounded-3xl border-l-4 border-l-brand-red flex flex-col">
+              <div key={exp.id} className="glass p-6 rounded-3xl border-l-4 border-l-brand flex flex-col">
                 <ExperiencePhotos exp={exp} lang={lang} />
                 <h4 className="text-lg font-bold leading-snug">{exp.title}</h4>
-                <div className="text-brand-red text-xs font-bold mb-4 mt-1">
+                <div className="text-brand text-xs font-bold mb-4 mt-1">
                   {exp.org} | {exp.period}
                 </div>
                 <ul className="list-disc list-outside pl-4 text-sm text-gray-600 dark:text-gray-400 space-y-2">
@@ -477,7 +477,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           className="mb-16"
         >
           <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
-            <GraduationCap className="text-brand-red" />
+            <GraduationCap className="text-brand" />
             {lang === 'es' ? 'FORMACIÓN ACADÉMICA' : 'EDUCATION'}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -493,7 +493,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                 </div>
                 <div className="flex items-center gap-2.5 mb-3">
                   <InstituteLogo institute={e.logo} className="h-7 max-w-[80px]" />
-                  <p className="text-sm text-brand-red font-bold">
+                  <p className="text-sm text-brand font-bold">
                     {e.institute} · {e.years}
                   </p>
                 </div>
@@ -504,7 +504,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                   {e.highlights.map((h) => (
                     <span
                       key={h}
-                      className="px-2.5 py-1 rounded-full bg-brand-red/8 dark:bg-brand-red/12 border border-brand-red/25 text-[10px] font-bold text-brand-red uppercase tracking-wide"
+                      className="px-2.5 py-1 rounded-full bg-brand/8 dark:bg-brand/12 border border-brand/25 text-[10px] font-bold text-brand uppercase tracking-wide"
                     >
                       {h}
                     </span>
@@ -524,7 +524,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <h3 className="text-2xl font-black flex items-center gap-3">
-              <BookOpen className="text-brand-red" />
+              <BookOpen className="text-brand" />
               {lang === 'es' ? 'CURSOS Y CERTIFICACIONES' : 'COURSES & CERTIFICATIONS'}
               {loading && <Loader2 className="animate-spin text-gray-500" size={18} />}
               {fromSheet && (
@@ -581,7 +581,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                   {filteredCourses.map((course) => (
                     <tr key={course.id} className="hover:bg-white/5 transition-colors">
                       <td className="p-4">
-                        <span className="px-2 py-1 rounded bg-brand-red/20 text-brand-red text-[10px] font-bold uppercase">
+                        <span className="px-2 py-1 rounded bg-brand/20 text-brand text-[10px] font-bold uppercase">
                           {course.topic}
                         </span>
                       </td>
@@ -611,7 +611,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           className="mb-16"
         >
           <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
-            <Languages className="text-brand-red" />
+            <Languages className="text-brand" />
             {lang === 'es' ? 'IDIOMAS' : 'LANGUAGES'}
           </h3>
 
@@ -624,16 +624,16 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             </div>
 
             {/* Certificacion de ingles */}
-            <div className="glass p-6 rounded-3xl lg:col-span-2 border-l-4 border-l-brand-red">
+            <div className="glass p-6 rounded-3xl lg:col-span-2 border-l-4 border-l-brand">
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div>
                   <p className="text-lg font-black">
                     {LANGUAGES.cert.idioma[lang]}
-                    <span className="ml-2 text-brand-red">{LANGUAGES.cert.nivel}</span>
+                    <span className="ml-2 text-brand">{LANGUAGES.cert.nivel}</span>
                   </p>
                   <p className="text-xs text-gray-500">{LANGUAGES.cert.marco[lang]}</p>
                 </div>
-                <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-brand-red bg-brand-red/10 border border-brand-red/30 px-2.5 py-1 rounded-full">
+                <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-brand bg-brand/10 border border-brand/30 px-2.5 py-1 rounded-full">
                   {lang === 'es' ? 'Certificado' : 'Certified'}
                 </span>
               </div>
@@ -645,7 +645,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                 {LANGUAGES.cert.puntajes.map((p) => (
                   <div key={p.en} className="bg-gray-100 dark:bg-white/5 rounded-xl p-2.5 text-center">
-                    <div className="text-xl font-black text-brand-red">{p.v}</div>
+                    <div className="text-xl font-black text-brand">{p.v}</div>
                     <div className="text-[9px] font-bold uppercase tracking-wide text-gray-500 leading-tight">
                       {p[lang]}
                     </div>
@@ -657,7 +657,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                 href={LANGUAGES.cert.verificar}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-red hover:underline"
+                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand hover:underline"
               >
                 {lang === 'es' ? 'Verificar constancia en el IPN' : 'Verify certificate at IPN'}
                 <ChevronRight size={13} />
@@ -674,7 +674,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           className="mb-16"
         >
           <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
-            <User className="text-brand-red" />
+            <User className="text-brand" />
             {lang === 'es' ? 'REFERENCIAS LABORALES' : 'PROFESSIONAL REFERENCES'}
           </h3>
 
@@ -682,7 +682,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             {REFERENCES.map((r) => (
               <div key={r.nombre} className="glass p-5 rounded-2xl flex flex-col">
                 <p className="font-bold mb-1">{r.nombre}</p>
-                <p className="text-sm text-brand-red font-bold leading-snug">{r.cargo[lang]}</p>
+                <p className="text-sm text-brand font-bold leading-snug">{r.cargo[lang]}</p>
                 {r.org !== '—' && (
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{r.org}</p>
                 )}
@@ -690,9 +690,9 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                 <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-white/10">
                   <a
                     href={`tel:${r.tel.replace(/\s/g, '')}`}
-                    className="flex items-center gap-1.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand-red transition-colors"
+                    className="flex items-center gap-1.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand transition-colors"
                   >
-                    <Phone size={14} className="text-brand-red shrink-0" />
+                    <Phone size={14} className="text-brand shrink-0" />
                     {r.tel}
                   </a>
                   <a

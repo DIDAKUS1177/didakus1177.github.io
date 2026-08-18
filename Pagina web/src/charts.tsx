@@ -65,7 +65,7 @@ const useChartTheme = () => {
   };
 };
 
-const PARETO_COLORS = ['#D32F2F', '#F59E0B', '#F59E0B', '#14B8A6', '#3B82F6'];
+const PARETO_COLORS = ['#D97706', '#F59E0B', '#F59E0B', '#14B8A6', '#3B82F6'];
 
 export const ParetoChartComponent = () => {
   const ct = useChartTheme();
@@ -118,17 +118,17 @@ export const IshikawaDiagram = () => {
     <div className="w-full h-[300px]">
       <svg viewBox="0 0 700 300" className="w-full h-full" fontFamily="inherit">
         {/* Spine */}
-        <line x1="30" y1={SPINE_Y} x2="555" y2={SPINE_Y} stroke="#D32F2F" strokeOpacity="0.5" strokeWidth="2" />
+        <line x1="30" y1={SPINE_Y} x2="555" y2={SPINE_Y} stroke="#D97706" strokeOpacity="0.5" strokeWidth="2" />
         {/* Arrowhead */}
-        <polygon points="555,135 595,150 555,165" fill="#D32F2F" />
-        <text x="608" y={SPINE_Y + 6} fill="#D32F2F" fontSize="18" fontWeight="900" letterSpacing="1">
+        <polygon points="555,135 595,150 555,165" fill="#D97706" />
+        <text x="608" y={SPINE_Y + 6} fill="#D97706" fontSize="18" fontWeight="900" letterSpacing="1">
           PROBLEMA
         </text>
 
         {top.map((cat, i) => (
           <g key={`t-${i}`}>
-            <line x1={cat.x - 90} y1="55" x2={cat.x} y2={SPINE_Y} stroke="#D32F2F" strokeOpacity="0.55" strokeWidth="2" />
-            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D32F2F" />
+            <line x1={cat.x - 90} y1="55" x2={cat.x} y2={SPINE_Y} stroke="#D97706" strokeOpacity="0.55" strokeWidth="2" />
+            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D97706" />
             <text x={cat.x - 95} y="45" textAnchor="start" fill="#9CA3AF" fontSize="12" fontWeight="700" letterSpacing="0.5">
               {cat.label.toUpperCase()}
             </text>
@@ -137,8 +137,8 @@ export const IshikawaDiagram = () => {
 
         {bottom.map((cat, i) => (
           <g key={`b-${i}`}>
-            <line x1={cat.x - 90} y1="245" x2={cat.x} y2={SPINE_Y} stroke="#D32F2F" strokeOpacity="0.55" strokeWidth="2" />
-            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D32F2F" />
+            <line x1={cat.x - 90} y1="245" x2={cat.x} y2={SPINE_Y} stroke="#D97706" strokeOpacity="0.55" strokeWidth="2" />
+            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D97706" />
             <text x={cat.x - 95} y="262" textAnchor="start" fill="#9CA3AF" fontSize="12" fontWeight="700" letterSpacing="0.5">
               {cat.label.toUpperCase()}
             </text>
@@ -167,7 +167,7 @@ export const RadarChartComponent = () => {
           <PolarGrid stroke={ct.grid} />
           <PolarAngleAxis dataKey="subject" stroke={ct.axis} fontSize={10} />
           <PolarRadiusAxis angle={30} domain={[0, 150]} stroke={ct.grid} fontSize={10} />
-          <Radar name="Actual" dataKey="A" stroke="#D32F2F" fill="#D32F2F" fillOpacity={0.5} />
+          <Radar name="Actual" dataKey="A" stroke="#D97706" fill="#D97706" fillOpacity={0.5} />
           <Radar name="Target" dataKey="B" stroke="#14B8A6" fill="#14B8A6" fillOpacity={0.25} />
           <Tooltip 
             contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
@@ -198,8 +198,8 @@ export const TrendChartComponent = () => {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#D32F2F" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#D32F2F" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#D97706" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#D97706" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
@@ -209,7 +209,7 @@ export const TrendChartComponent = () => {
             contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
             itemStyle={{ color: ct.tooltipText }}
           />
-          <Area type="monotone" dataKey="value" stroke="#D32F2F" fillOpacity={1} fill="url(#colorValue)" strokeWidth={3} />
+          <Area type="monotone" dataKey="value" stroke="#D97706" fillOpacity={1} fill="url(#colorValue)" strokeWidth={3} />
           <Area type="monotone" dataKey="pred" stroke="#F59E0B" strokeDasharray="5 5" fill="transparent" strokeWidth={2} />
         </AreaChart>
       </ResponsiveContainer>
@@ -221,13 +221,13 @@ export const LiveDashboard = ({ lang }: { lang: 'es' | 'en' }) => {
   const t = translations[lang].analytics.dashboard;
   const pieData = [
     { name: 'Producción', value: 85, fill: '#14B8A6' },
-    { name: 'Merma', value: 15, fill: '#D32F2F' },
+    { name: 'Merma', value: 15, fill: '#D97706' },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="glass p-6 rounded-3xl text-center">
-        <Activity className="mx-auto text-brand-red mb-4" size={32} />
+        <Activity className="mx-auto text-brand mb-4" size={32} />
         <div className="text-3xl font-black mb-1">94.2%</div>
         <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.efficiency}</div>
       </div>
@@ -247,13 +247,13 @@ export const LiveDashboard = ({ lang }: { lang: 'es' | 'en' }) => {
         <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.quality}</div>
       </div>
       <div className="glass p-6 rounded-3xl text-center">
-        <div className="text-3xl font-black mb-1 text-brand-red">12m</div>
+        <div className="text-3xl font-black mb-1 text-brand">12m</div>
         <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.downtime}</div>
         <div className="mt-4 h-2 bg-white/5 rounded-full overflow-hidden">
           <motion.div 
             initial={{ width: 0 }}
             whileInView={{ width: '15%' }}
-            className="h-full bg-brand-red"
+            className="h-full bg-brand"
           />
         </div>
       </div>
@@ -358,7 +358,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <label className="px-8 py-3 bg-brand-red rounded-xl font-bold cursor-pointer hover:scale-105 transition-transform flex items-center gap-2">
+          <label className="px-8 py-3 bg-brand rounded-xl font-bold cursor-pointer hover:scale-105 transition-transform flex items-center gap-2">
             <Database size={20} />
             {t.upload}
             <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
@@ -373,7 +373,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
         </div>
 
         {error && (
-          <div className="glass p-6 rounded-2xl border-brand-red/50 text-brand-red text-center mb-8">
+          <div className="glass p-6 rounded-2xl border-brand/50 text-brand text-center mb-8">
             {error}
           </div>
         )}
@@ -389,7 +389,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
                 { label: lang === 'es' ? 'Mínimo' : 'Minimum', value: stats?.min.toLocaleString() },
               ].map((s, i) => (
                 <div key={i} className="glass p-4 rounded-2xl text-center">
-                  <div className="text-brand-red font-black text-xl">{s.value}</div>
+                  <div className="text-brand font-black text-xl">{s.value}</div>
                   <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{s.label}</div>
                 </div>
               ))}
@@ -402,7 +402,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
               className="glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
             >
               <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <BarChart3 className="text-brand-red" size={20} />
+                <BarChart3 className="text-brand" size={20} />
                 {t.pareto}
               </h3>
               <div className="h-[350px]">
@@ -411,13 +411,13 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
                     <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
                     <XAxis dataKey="name" stroke={ct.axis} fontSize={12} />
                     <YAxis yAxisId="left" stroke={ct.axis} fontSize={12} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#D32F2F" fontSize={12} unit="%" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#D97706" fontSize={12} unit="%" />
                     <Tooltip 
                       contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
                       itemStyle={{ color: ct.tooltipText }}
                     />
-                    <Bar yAxisId="left" dataKey="value" fill="#D32F2F" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke={ct.axis} strokeWidth={3} dot={{ fill: '#D32F2F', stroke: '#fff', strokeWidth: 2 }} />
+                    <Bar yAxisId="left" dataKey="value" fill="#D97706" radius={[4, 4, 0, 0]} />
+                    <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke={ct.axis} strokeWidth={3} dot={{ fill: '#D97706', stroke: '#fff', strokeWidth: 2 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -430,7 +430,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
               className="glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
             >
               <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <TrendingUp className="text-brand-red" size={20} />
+                <TrendingUp className="text-brand" size={20} />
                 {t.regression}
               </h3>
               <div className="h-[350px]">
@@ -441,7 +441,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
                     <YAxis type="number" dataKey="y" name="Valor" stroke={ct.axis} />
                     <ZAxis range={[60, 100]} />
                     <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                    <Scatter name="Data" data={regressionData} fill="#D32F2F" />
+                    <Scatter name="Data" data={regressionData} fill="#D97706" />
                     {regressionLine && (
                       <Line 
                         type="monotone" 
@@ -466,10 +466,10 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
           </div>
           </>
         ) : (
-          <label className="block rounded-[40px] border-2 border-dashed border-gray-300 dark:border-white/10 hover:border-brand-red/50 bg-white dark:bg-white/[0.02] cursor-pointer transition-colors group overflow-hidden">
+          <label className="block rounded-[40px] border-2 border-dashed border-gray-300 dark:border-white/10 hover:border-brand/50 bg-white dark:bg-white/[0.02] cursor-pointer transition-colors group overflow-hidden">
             <div className="p-10 md:p-14 text-center">
-              <div className="w-20 h-20 mx-auto rounded-2xl bg-brand-red/10 flex items-center justify-center group-hover:bg-brand-red/20 group-hover:scale-105 transition-all mb-6">
-                <Database className="text-brand-red" size={34} />
+              <div className="w-20 h-20 mx-auto rounded-2xl bg-brand/10 flex items-center justify-center group-hover:bg-brand/20 group-hover:scale-105 transition-all mb-6">
+                <Database className="text-brand" size={34} />
               </div>
               <p className="text-lg font-bold mb-2">
                 {lang === 'es' ? 'Arrastra tu CSV o haz clic aquí' : 'Drop your CSV or click here'}

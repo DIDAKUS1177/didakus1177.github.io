@@ -9,13 +9,21 @@
   --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
-  --color-brand-red: #D32F2F;
+  /* Acento de marca: ambar (acero fundido). El tono cambia por tema porque
+     el ambar vivo no alcanza contraste suficiente sobre fondo claro
+     (2.06:1) y el ambar oscuro se apaga sobre fondo grafito. */
+  --color-brand: #F59E0B;
   --color-brand-black: #121212;
   --color-brand-white: #FAFAFA;
   --color-brand-amber: #F59E0B;
   --color-brand-teal: #14B8A6;
   --color-brand-blue: #3B82F6;
 }
+
+/* Ambar 700 sobre claro (4.81:1) y ambar 500 sobre oscuro (8.72:1):
+   ambos por encima del minimo de 4.5:1 para texto. */
+:root { --color-brand: #B45309; }
+.dark { --color-brand: #F59E0B; }
 
 @layer base {
   /* Sin esto el navegador dibuja los desplegables nativos de <select> en
@@ -37,8 +45,8 @@
   @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400;
 }
 
-.red-gradient {
-  @apply bg-gradient-to-br from-brand-red to-[#8B0000];
+.brand-gradient {
+  @apply bg-gradient-to-br from-amber-500 to-amber-600;
 }
 
 @keyframes heroGlowMove {
@@ -55,8 +63,8 @@
   position: absolute;
   inset: -15%;
   background:
-    radial-gradient(circle at 28% 32%, rgba(211, 47, 47, 0.55), transparent 55%),
-    radial-gradient(circle at 72% 62%, rgba(211, 47, 47, 0.35), transparent 50%);
+    radial-gradient(circle at 28% 32%, rgba(245, 158, 11, 0.42), transparent 55%),
+    radial-gradient(circle at 72% 62%, rgba(245, 158, 11, 0.26), transparent 50%);
   filter: blur(50px);
   animation: heroGlowMove 14s ease-in-out infinite alternate;
 }
@@ -87,7 +95,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(211, 47, 47, 0.28) 1.2px, transparent 1.2px);
+  background-image: radial-gradient(circle, rgba(245, 158, 11, 0.30) 1.2px, transparent 1.2px);
   background-size: calc(var(--grid-size) * 4) calc(var(--grid-size) * 4);
   background-position: center;
 }
@@ -143,7 +151,7 @@ html {
 
 /* Anillo de foco visible solo al navegar con teclado */
 :focus-visible {
-  outline: 2px solid var(--color-brand-red);
+  outline: 2px solid var(--color-brand);
   outline-offset: 3px;
   border-radius: 6px;
 }
@@ -157,7 +165,7 @@ html {
   border: 3px solid transparent;
   background-clip: content-box;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--color-brand-red); background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-brand); background-clip: content-box; }
 
 /* Evita el destello blanco al cargar en modo oscuro */
 .dark body { background-color: #121212; }
