@@ -14,7 +14,9 @@ import {
   Loader2,
   ChevronRight,
   Image as ImageIcon,
-  Languages
+  Languages,
+  Phone,
+  MessageCircle
 } from 'lucide-react';
 
 import fallbackCoursesData from './data/curriculum.json';
@@ -124,16 +126,16 @@ const LANGUAGES = {
   },
 };
 
-// Referencias laborales.
-// Los telefonos NO se publican aqui: son datos personales de terceros que no
-// dieron su consentimiento para aparecer en una web publica. Van unicamente en
-// la version privada del CV, que se entrega a cada reclutador.
+// Referencias laborales, con telefono a peticion expresa del titular del sitio.
+// Nota: al publicarse quedan visibles para cualquiera y son rastreables por
+// robots que recolectan numeros. El enlace `tel:` y el de WhatsApp los hacen
+// utiles desde el movil.
 const REFERENCES = [
-  { nombre: 'Iván Numpaké', cargo: { es: 'Especialista en Sostenibilidad', en: 'Sustainability Specialist' }, org: 'BHR Colombia' },
-  { nombre: 'Rocío Téllez', cargo: { es: 'Consultora Especialista de Calidad', en: 'Quality Consultant' }, org: '—' },
-  { nombre: 'Felipe Torres', cargo: { es: 'Especialista API — Integridad de Activos', en: 'API Specialist — Asset Integrity' }, org: 'ADEMINCOL' },
-  { nombre: 'Javier Carvajal', cargo: { es: 'Coordinador de Mejora Continua', en: 'Continuous Improvement Coordinator' }, org: 'Acerías Paz del Río' },
-  { nombre: 'Carlos Falcão', cargo: { es: 'Director de Alto Horno', en: 'Blast Furnace Director' }, org: 'Acerías Paz del Río' },
+  { nombre: 'Iván Numpaké', cargo: { es: 'Especialista en Sostenibilidad', en: 'Sustainability Specialist' }, org: 'BHR Colombia', tel: '+57 317 501 3135' },
+  { nombre: 'Rocío Téllez', cargo: { es: 'Consultora Especialista de Calidad', en: 'Quality Consultant' }, org: '—', tel: '+57 311 811 8722' },
+  { nombre: 'Felipe Torres', cargo: { es: 'Especialista API — Integridad de Activos', en: 'API Specialist — Asset Integrity' }, org: 'ADEMINCOL', tel: '+57 317 401 6701' },
+  { nombre: 'Javier Carvajal', cargo: { es: 'Coordinador de Mejora Continua', en: 'Continuous Improvement Coordinator' }, org: 'Acerías Paz del Río', tel: '+57 320 302 3095' },
+  { nombre: 'Carlos Falcão', cargo: { es: 'Director de Alto Horno', en: 'Blast Furnace Director' }, org: 'Acerías Paz del Río', tel: '+57 320 890 9138' },
 ];
 
 // Experiencia laboral. `photos` = cuántas imágenes hay en
@@ -678,21 +680,35 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {REFERENCES.map((r) => (
-              <div key={r.nombre} className="glass p-5 rounded-2xl">
+              <div key={r.nombre} className="glass p-5 rounded-2xl flex flex-col">
                 <p className="font-bold mb-1">{r.nombre}</p>
                 <p className="text-sm text-brand-red font-bold leading-snug">{r.cargo[lang]}</p>
                 {r.org !== '—' && (
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{r.org}</p>
                 )}
+
+                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-white/10">
+                  <a
+                    href={`tel:${r.tel.replace(/\s/g, '')}`}
+                    className="flex items-center gap-1.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-brand-red transition-colors"
+                  >
+                    <Phone size={14} className="text-brand-red shrink-0" />
+                    {r.tel}
+                  </a>
+                  <a
+                    href={`https://wa.me/${r.tel.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`WhatsApp de ${r.nombre}`}
+                    title="WhatsApp"
+                    className="ml-auto w-7 h-7 shrink-0 rounded-lg bg-[#25D366]/15 hover:bg-[#25D366] text-[#25D366] hover:text-white flex items-center justify-center transition-colors"
+                  >
+                    <MessageCircle size={14} />
+                  </a>
+                </div>
               </div>
             ))}
           </div>
-
-          <p className="text-xs text-gray-500 mt-5 italic">
-            {lang === 'es'
-              ? 'Datos de contacto de las referencias disponibles a solicitud.'
-              : 'Reference contact details available upon request.'}
-          </p>
         </motion.div>
 
       </div>
