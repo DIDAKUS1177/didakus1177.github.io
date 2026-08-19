@@ -5,14 +5,12 @@
 
 import React, { Suspense, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import Papa from 'papaparse';
 import { 
   BarChart3, 
   Bot, 
   Database, 
   Mail, 
-  MessageCircle, 
-  MessageSquare,
+  MessageCircle,
   User,
   Zap, 
   Cpu, 
@@ -25,14 +23,11 @@ import {
   MapPin,
   CheckCircle2,
   ArrowRight,
-  PieChart as PieChartIcon,
   Activity,
   TrendingUp,
   Target,
   ShieldCheck,
-  AlertTriangle,
   Lightbulb,
-  Users,
   Github,
   Loader2,
   Code,
@@ -41,29 +36,7 @@ import {
   Moon
 } from 'lucide-react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Line,
-  ComposedChart,
-  Cell,
-  PieChart,
-  Pie,
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  AreaChart,
-  Area,
-  ScatterChart,
-  Scatter,
-  ZAxis
-} from 'recharts';
+  Area} from 'recharts';
 
 import { translations } from './translations';
 
@@ -1629,6 +1602,7 @@ export default function App() {
                 <a 
                   href="https://wa.me/573337279204"
                   target="_blank"
+                  rel="noreferrer"
                   className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-brand flex items-center gap-2 font-bold whitespace-nowrap"
                 >
                   <MessageCircle size={20} />
@@ -1637,6 +1611,7 @@ export default function App() {
                 <a 
                   href="https://wa.me/573216291861"
                   target="_blank"
+                  rel="noreferrer"
                   className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-orange-600 flex items-center gap-2 font-bold whitespace-nowrap"
                 >
                   <MessageCircle size={20} />
@@ -1645,6 +1620,7 @@ export default function App() {
                 <a 
                   href="https://github.com/DIDAKUS1177/didakus1177.github.io"
                   target="_blank"
+                  rel="noreferrer"
                   className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-gray-600 dark:text-gray-400 flex items-center gap-2 font-bold whitespace-nowrap"
                 >
                   <Github size={20} />
@@ -1956,7 +1932,8 @@ export default function App() {
         <a 
           href="https://wa.me/573337279204" 
           target="_blank"
-          className="w-14 h-14 bg-brand rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(211,47,47,0.5)] hover:scale-110 transition-transform group relative"
+          rel="noreferrer"
+          className="w-14 h-14 bg-brand rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(245,158,11,0.45)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsapp}
         >
           <MessageCircle className="text-white" size={28} />
@@ -1968,6 +1945,7 @@ export default function App() {
         <a 
           href="https://wa.me/573216291861" 
           target="_blank"
+          rel="noreferrer"
           className="w-14 h-14 bg-orange-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(234,88,12,0.3)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsappPersonal}
         >
@@ -1980,6 +1958,7 @@ export default function App() {
         <a 
           href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" 
           target="_blank"
+          rel="noreferrer"
           className="w-14 h-14 bg-[#0A66C2] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(10,102,194,0.3)] hover:scale-110 transition-transform group relative"
           title={t.contact.linkedin}
         >
@@ -1992,6 +1971,7 @@ export default function App() {
         <a 
           href="https://github.com/DIDAKUS1177/didakus1177.github.io" 
           target="_blank"
+          rel="noreferrer"
           className="w-14 h-14 bg-[#333] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
           title="GitHub"
         >

@@ -4,8 +4,6 @@ import Papa from 'papaparse';
 import {
   Briefcase,
   GraduationCap,
-  Award,
-  Code,
   ChevronLeft,
   Download,
   BookOpen,

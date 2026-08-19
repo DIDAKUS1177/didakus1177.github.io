@@ -13,9 +13,7 @@ import {
   BarChart3,
   Database,
   FileJson,
-  Target,
-  TrendingUp,
-} from 'lucide-react';
+  TrendingUp} from 'lucide-react';
 import {
   Area,
   AreaChart,
@@ -37,8 +35,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  ZAxis,
-} from 'recharts';
+  ZAxis} from 'recharts';
 
 import { translations } from './translations';
 
