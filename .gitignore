@@ -24,3 +24,7 @@ desktop.ini
 # Version privada del CV: incluye los telefonos personales de las referencias
 # laborales. NO debe publicarse; se entrega solo a reclutadores concretos.
 *_CON_REFERENCIAS.pdf
+
+# Cache de Python de los scripts de _tools/
+__pycache__/
+*.pyc
