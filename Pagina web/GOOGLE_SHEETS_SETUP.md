@@ -27,51 +27,86 @@ Esto usa un **Google Apps Script** como intermediario gratuito entre el
 formulario y tu hoja (los sitios estáticos no pueden escribir directo a
 Sheets sin un backend).
 
-1. Crea una Google Sheet nueva (puede ser la misma u otra) con esta primera
-   fila: `Fecha, Nombre, Correo, Mensaje, Idioma`.
-2. En esa hoja: Extensiones → Apps Script.
-3. Borra el contenido de `Code.gs` y pega esto:
+El código ya está escrito en [`_tools/contacto.gs`](../_tools/contacto.gs).
+Además de guardar en la hoja, te avisa por correo, valida los datos y
+descarta el spam.
+
+1. Abre la hoja donde quieras guardar los mensajes (puede ser la misma del
+   currículum). No hace falta crear encabezados: el script arma la pestaña
+   `Mensajes` la primera vez que llega uno.
+2. En esa hoja: **Extensiones → Apps Script**.
+3. Borra el contenido de `Code.gs` y pega el de `_tools/contacto.gs`.
+4. Revisa la primera línea de configuración y guarda:
 
    ```javascript
-   function doPost(e) {
-     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-     const data = JSON.parse(e.postData.contents);
-
-     sheet.appendRow([
-       new Date(),
-       data.name || '',
-       data.email || '',
-       data.message || '',
-       data.lang || ''
-     ]);
-
-     return ContentService
-       .createTextOutput(JSON.stringify({ ok: true }))
-       .setMimeType(ContentService.MimeType.JSON);
-   }
+   var AVISAR_A = 'diealeherbla.dh@gmail.com';   // donde llega el aviso
    ```
 
-4. Guarda (icono de disquete, nómbralo por ejemplo "contacto-didakus").
-5. Implementar → Nueva implementación → tipo **Aplicación web**.
-   - Ejecutar como: **Yo** (tu cuenta)
-   - Quién tiene acceso: **Cualquier usuario**
+5. **Implementar → Nueva implementación**, engranaje ⚙️ → **Aplicación web**:
+
+   | Campo | Valor | Por qué |
+   |---|---|---|
+   | Ejecutar como | **Yo** (tu cuenta) | para que pueda escribir en tu hoja |
+   | Quién tiene acceso | **Cualquier usuario** | el visitante no tiene cuenta de Google |
+
 6. Autoriza los permisos que pida (es tu propio script, sobre tu propia hoja).
+   Aparecerá el aviso de "app no verificada": entra en **Configuración
+   avanzada → Ir a (nombre del proyecto)**.
 7. Copia la URL que termina en `/exec`.
 8. Pégala como `VITE_CONTACT_WEBHOOK_URL` en tu `.env`.
+
+> **Comprobación rápida:** pega esa URL en el navegador. Debe responder
+> `{"ok":true,"servicio":"formulario de contacto activo"}`. Si te pide iniciar
+> sesión, el acceso quedó mal en el paso 5.
 
 El formulario de contacto solo aparece en el sitio cuando esta variable está
 configurada — así que hasta que hagas esto, el sitio se ve exactamente igual
 que ahora (solo con los botones de WhatsApp/Email/LinkedIn).
+
+### Qué pasa con cada mensaje
+
+1. Se guarda en la pestaña `Mensajes`: fecha, nombre, correo, mensaje, idioma
+   y origen.
+2. Te llega un correo. Al **responderlo**, la respuesta sale directo a la
+   persona: el script pone su dirección en `replyTo`.
+
+### Protecciones incluidas
+
+| Riesgo | Cómo se maneja |
+|---|---|
+| Robots de spam | Campo trampa `empresa`, oculto fuera de pantalla. Si llega lleno, se descarta. |
+| Texto malicioso en la hoja | El backend quita etiquetas HTML y recorta la longitud. |
+| Correos inventados | Se valida el formato antes de guardar. |
+| Que falle el envío | El sitio ofrece un enlace que abre tu correo con el mensaje ya escrito. |
+
+Límite de la cuota gratuita: **100 correos al día** con Gmail personal. Para un
+portafolio sobra, y si algún día se llena, los mensajes se siguen guardando en
+la hoja aunque no llegue el aviso.
+
+> Después de **cualquier cambio** en el código de Apps Script hay que hacer
+> **Implementar → Gestionar implementaciones → ✏️ → Versión: Nueva versión**.
+> Si no, sigue corriendo la versión vieja.
 
 ## 3. Para que funcione también en producción (GitHub Pages)
 
 Las variables de `.env` solo aplican en tu máquina. Para que el sitio publicado
 en GitHub Pages también las tenga, agrégalas como **Secrets** del repositorio:
 
-Settings → Secrets and variables → Actions → New repository secret:
+[Settings → Secrets and variables → Actions](https://github.com/DIDAKUS1177/didakus1177.github.io/settings/secrets/actions)
+→ New repository secret:
 
 - `VITE_CURRICULUM_SHEET_CSV_URL`
 - `VITE_CONTACT_WEBHOOK_URL`
 
-y avísame para conectarlas en `.github/workflows/deploy.yml` (ahora mismo el
-workflow solo pasa `GEMINI_API_KEY`; hay que agregarles esas dos ahí también).
+El workflow [`deploy.yml`](../.github/workflows/deploy.yml) ya las lee, así que
+no hay que tocar nada más: en cuanto guardes el secreto, lanza **Actions →
+Deploy sitio web a GitHub Pages → Run workflow** y en ~2 minutos aparece el
+formulario.
+
+### Si algo falla
+
+| Síntoma | Causa probable |
+|---|---|
+| El formulario no aparece | El secreto no está puesto, o no se ha vuelto a desplegar desde que lo pusiste. |
+| Sale el mensaje de error al enviar | La URL no termina en `/exec`, o el acceso no quedó en "Cualquier usuario". |
+| Llega a la hoja pero no el correo | Se agotó la cuota diaria, o `AVISAR_A` está mal escrito. |

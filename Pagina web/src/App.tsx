@@ -1286,10 +1286,20 @@ const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
 
 const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
   const t = translations[lang].contact;
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  // `empresa` es la trampa antispam: va oculta y una persona nunca la llena,
+  // asi que si llega con texto el backend descarta el envio.
+  const [form, setForm] = useState({ name: '', email: '', message: '', empresa: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
   if (!CONTACT_WEBHOOK_URL) return null;
+
+  // Si el envio falla, el mensaje no se pierde: se abre el correo con todo
+  // ya escrito para que baste con darle enviar.
+  const respaldoMailto = () => {
+    const asunto = encodeURIComponent(`Contacto desde tu sitio — ${form.name || ''}`.trim());
+    const cuerpo = encodeURIComponent(`${form.message}\n\n---\n${form.name}\n${form.email}`);
+    return `mailto:diealeherbla.dh@gmail.com?subject=${asunto}&body=${cuerpo}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1302,7 +1312,7 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setStatus('success');
-      setForm({ name: '', email: '', message: '' });
+      setForm({ name: '', email: '', message: '', empresa: '' });
     } catch (err) {
       console.error('Contact form error:', err);
       setStatus('error');
@@ -1338,6 +1348,20 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
         onChange={(e) => setForm({ ...form, message: e.target.value })}
         className="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors mb-4 resize-none"
       />
+      {/* Trampa antispam. Oculta con CSS en vez de type="hidden" porque los
+          robots que llenan formularios sí escriben en los campos ocultos por
+          atributo. aria-hidden y tabIndex la sacan del paso de los lectores
+          de pantalla y del recorrido con Tab. */}
+      <input
+        type="text"
+        name="empresa"
+        value={form.empresa}
+        onChange={(e) => setForm({ ...form, empresa: e.target.value })}
+        className="absolute w-px h-px -left-[9999px] opacity-0"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+      />
       <button
         type="submit"
         disabled={status === 'sending'}
@@ -1346,7 +1370,14 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
         {status === 'sending' ? t.formSending : t.formSubmit}
       </button>
       {status === 'success' && <p className="mt-4 text-sm font-bold text-teal-500">{t.formSuccess}</p>}
-      {status === 'error' && <p className="mt-4 text-sm font-bold text-brand">{t.formError}</p>}
+      {status === 'error' && (
+        <p className="mt-4 text-sm font-bold text-brand">
+          {t.formError}{' '}
+          <a href={respaldoMailto()} className="underline hover:no-underline">
+            {t.formErrorLink}
+          </a>
+        </p>
+      )}
     </form>
   );
 };
