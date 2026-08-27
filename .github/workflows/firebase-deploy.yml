@@ -1,0 +1,72 @@
+# Despliegue a Firebase Hosting.
+#
+# Convive con deploy.yml (GitHub Pages) a proposito: el codigo QR de la hoja
+# de vida impresa, las etiquetas Open Graph y la URL canonica apuntan a
+# didakus1177.github.io. Si ese dominio dejara de responder, los QR ya
+# repartidos quedarian muertos.
+#
+# Secretos que necesita:
+#   FIREBASE_SERVICE_ACCOUNT        JSON de la cuenta de servicio
+#   VITE_CURRICULUM_SHEET_CSV_URL   opcional, curriculum en vivo
+#   VITE_CONTACT_WEBHOOK_URL        opcional, formulario de contacto
+
+name: Deploy sitio web a Firebase Hosting
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: "firebase-hosting-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: "Pagina web/package-lock.json"
+
+      - name: Install dependencies
+        working-directory: "Pagina web"
+        run: npm ci
+
+      - name: Build
+        working-directory: "Pagina web"
+        run: npm run build
+        env:
+          VITE_CURRICULUM_SHEET_CSV_URL: ${{ secrets.VITE_CURRICULUM_SHEET_CSV_URL }}
+          VITE_CONTACT_WEBHOOK_URL: ${{ secrets.VITE_CONTACT_WEBHOOK_URL }}
+
+      # En un pull request publica un canal temporal con su propia URL, que
+      # caduca a los 7 dias. Sirve para revisar los cambios antes de que
+      # lleguen al sitio real.
+      - name: Desplegar vista previa (pull request)
+        if: github.event_name == 'pull_request'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          expires: 7d
+
+      - name: Desplegar a produccion
+        if: github.event_name != 'pull_request'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          channelId: live

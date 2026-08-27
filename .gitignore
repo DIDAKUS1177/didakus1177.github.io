@@ -28,3 +28,11 @@ desktop.ini
 # Cache de Python de los scripts de _tools/
 __pycache__/
 *.pyc
+
+# Firebase: cache local y, sobre todo, claves de cuenta de servicio.
+# Un JSON de service account en el repo da acceso de despliegue a cualquiera.
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+*-firebase-adminsdk-*.json
+serviceAccountKey.json
