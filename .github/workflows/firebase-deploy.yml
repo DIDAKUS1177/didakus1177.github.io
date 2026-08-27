@@ -32,6 +32,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Mientras no esten configurados el secreto y la variable, el workflow
+      # avisa y se salta el despliegue en vez de fallar. Un aspa roja en cada
+      # push acabaria tapando un fallo de verdad.
+      - name: Comprobar credenciales de Firebase
+        id: credenciales
+        env:
+          CUENTA_SERVICIO: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          ID_PROYECTO: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: |
+          if [ -n "$CUENTA_SERVICIO" ] && [ -n "$ID_PROYECTO" ]; then
+            echo "listo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "listo=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Falta el secreto FIREBASE_SERVICE_ACCOUNT o la variable FIREBASE_PROJECT_ID. Se omite el despliegue a Firebase; ver FIREBASE_SETUP.md."
+          fi
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -54,7 +70,7 @@ jobs:
       # caduca a los 7 dias. Sirve para revisar los cambios antes de que
       # lleguen al sitio real.
       - name: Desplegar vista previa (pull request)
-        if: github.event_name == 'pull_request'
+        if: steps.credenciales.outputs.listo == 'true' && github.event_name == 'pull_request'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
@@ -63,7 +79,7 @@ jobs:
           expires: 7d
 
       - name: Desplegar a produccion
-        if: github.event_name != 'pull_request'
+        if: steps.credenciales.outputs.listo == 'true' && github.event_name != 'pull_request'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

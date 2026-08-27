@@ -1,17 +1,15 @@
 # Desplegar el sitio en Firebase Hosting
 
-La configuración ya está en el repositorio ([`firebase.json`](firebase.json) y
-[`.github/workflows/firebase-deploy.yml`](.github/workflows/firebase-deploy.yml)).
-Faltan los pasos que solo puedes hacer tú, porque van con tu cuenta de Google.
-
-> [!warning] Revisa con qué cuenta estás
-> El CLI estaba con `contact@businessandhumanrights.es`, que es la cuenta del
-> cliente. Si despliegas con esa, tu portafolio queda dentro del Firebase de
-> BHR y lo pierdes si esa relación termina. Tiene que ser tu cuenta personal.
+> [!success] El sitio ya está en línea
+> **https://didakus-portafolio.web.app**
+>
+> Proyecto `didakus-portafolio`, cuenta `diealeherbla.dh@gmail.com`.
+> El despliegue manual funciona. Lo único pendiente es el automático desde
+> GitHub (sección 4).
 
 ---
 
-## 1. Entrar con tu cuenta
+## 1. Entrar con tu cuenta ✅ hecho
 
 ```bash
 firebase logout
@@ -27,7 +25,7 @@ Se abre el navegador. Entra con **diealeherbla.dh@gmail.com** y confirma:
 firebase login:list
 ```
 
-## 2. Crear el proyecto
+## 2. Crear el proyecto ✅ hecho
 
 ```bash
 firebase projects:create didakus-portafolio --display-name "Portafolio Diego Hernandez"
@@ -44,7 +42,7 @@ firebase use --add
 
 Elige el proyecto y ponle el alias `default`. Eso crea `.firebaserc`.
 
-## 3. Primer despliegue manual
+## 3. Primer despliegue manual ✅ hecho
 
 ```bash
 npm --prefix "Pagina web" run build
@@ -56,7 +54,7 @@ firebase deploy --only hosting
 
 Al terminar te da la URL. Ábrela y revisa que todo se vea bien.
 
-## 4. Despliegue automático desde GitHub
+## 4. Despliegue automático desde GitHub ← **pendiente**
 
 Para que cada `push` publique solo:
 
@@ -75,9 +73,14 @@ Falta un dato más. En
 [Settings → Secrets and variables → Actions → **Variables**](https://github.com/DIDAKUS1177/didakus1177.github.io/settings/variables/actions):
 
 - Name: `FIREBASE_PROJECT_ID`
-- Value: el identificador del paso 2 (por ejemplo `didakus-portafolio`)
+- Value: `didakus-portafolio`
 
 Es una *variable*, no un *secreto* — el identificador del proyecto es público.
+
+> [!note] Mientras tanto no falla
+> Si el secreto o la variable no están, el workflow avisa y se salta el
+> despliegue en vez de marcar error. Un aspa roja en cada push acabaría
+> tapando un fallo de verdad.
 
 ---
 
@@ -93,7 +96,7 @@ defecto:
 | `/assets/**` | 1 año, inmutable | Vite les pone un hash en el nombre; ese archivo nunca cambia de contenido |
 | Imágenes (`.webp`, `.png`…) | 1 día | **No llevan hash.** `bg3.webp` o `team1.webp` se reemplazan conservando el nombre, y con caché inmutable los visitantes verían la versión vieja durante meses |
 | PDFs | 1 hora | La hoja de vida y el seguimiento se regeneran seguido |
-| `index.html` | sin caché | Es lo que apunta a los assets nuevos tras cada despliegue |
+| `/` y `**/*.html` | sin caché | Es lo que apunta a los assets nuevos tras cada despliegue. La regla cubre `/` porque con `cleanUrls` esa es la ruta que se pide, no `/index.html` |
 
 ### Vistas previa en cada pull request
 
