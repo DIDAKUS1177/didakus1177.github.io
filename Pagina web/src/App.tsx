@@ -1648,6 +1648,15 @@ export default function App() {
                   <MessageCircle size={20} />
                   +57 321 629 1861
                 </a>
+                <a
+                  href="https://wa.me/525647901745"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-teal-600 dark:text-teal-400 flex items-center gap-2 font-bold whitespace-nowrap"
+                >
+                  <MessageCircle size={20} />
+                  +52 56 4790 1745
+                </a>
                 <a 
                   href="https://github.com/DIDAKUS1177/didakus1177.github.io"
                   target="_blank"
@@ -1891,6 +1900,8 @@ export default function App() {
                 title: t.contact.whatsapp, sub: '+57 333 727 9204' },
               { href: 'https://wa.me/573216291861', icon: MessageCircle, bg: 'bg-[#25D366]',
                 title: t.contact.whatsappPersonal, sub: '+57 321 629 1861' },
+              { href: 'https://wa.me/525647901745', icon: MessageCircle, bg: 'bg-[#25D366]',
+                title: t.contact.whatsappMx, sub: '+52 56 4790 1745' },
               { href: 'https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b',
                 icon: Linkedin, bg: 'bg-[#0A66C2]', title: t.contact.linkedin, sub: 'Diego A. Hernández Blanco' },
             ].map((c) => {
@@ -1952,8 +1963,22 @@ export default function App() {
           </p>
 
           <div className="flex items-center gap-4">
-            <a href="#" className="p-2 glass rounded-lg hover:text-brand transition-colors"><Linkedin size={18} /></a>
-            <a href="#" className="p-2 glass rounded-lg hover:text-brand transition-colors"><Mail size={18} /></a>
+            <a
+              href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="LinkedIn"
+              className="p-2 glass rounded-lg hover:text-brand transition-colors"
+            >
+              <Linkedin size={18} />
+            </a>
+            <button
+              onClick={openGmail}
+              aria-label={t.contact.gmail}
+              className="p-2 glass rounded-lg hover:text-brand transition-colors"
+            >
+              <Mail size={18} />
+            </button>
           </div>
         </div>
       </footer>
@@ -1967,7 +1992,10 @@ export default function App() {
           className="w-14 h-14 bg-brand rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(245,158,11,0.45)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsapp}
         >
-          <MessageCircle className="text-white" size={28} />
+          {/* Icono grafito, no blanco: sobre el ambar del modo oscuro el
+              blanco da 2.15:1 y un icono necesita 3:1. El grafito da 3.6:1
+              en claro y 8.3:1 en oscuro. */}
+          <MessageCircle className="text-brand-black" size={28} />
           <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             {t.contact.whatsapp}
           </span>
@@ -2003,7 +2031,7 @@ export default function App() {
           href="https://github.com/DIDAKUS1177/didakus1177.github.io" 
           target="_blank"
           rel="noreferrer"
-          className="w-14 h-14 bg-[#333] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          className="w-14 h-14 bg-[#333] rounded-full flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
           title="GitHub"
         >
           <Github className="text-white" size={28} />
@@ -2012,9 +2040,13 @@ export default function App() {
           </span>
         </a>
 
-        <button 
+        {/* Este boton usaba `glass`, que en modo claro es bg-white/70, con el
+            icono en text-white: blanco sobre blanco, desaparecia. Ahora lleva
+            fondo solido como los otros cuatro, asi un unico icono blanco
+            funciona en ambos temas sin depender de la variante dark. */}
+        <button
           onClick={openGmail}
-          className="w-14 h-14 glass rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          className="w-14 h-14 bg-slate-600 rounded-full flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
           title={t.contact.gmail}
         >
           <Mail className="text-white" size={28} />

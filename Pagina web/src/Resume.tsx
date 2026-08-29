@@ -430,7 +430,10 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             </h2>
             <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm mb-6">
               <span>📍 Ciudad de México (CDMX)</span>
-              <span>📱 +57 321 629 1861</span>
+              {/* El numero mexicano va primero: el sitio se dirige sobre todo
+                  a reclutadores locales y una linea de MX baja la friccion. */}
+              <span>📱 +52 56 4790 1745 (MX)</span>
+              <span>📱 +57 321 629 1861 (CO)</span>
               <span>✉️ dialhebl.dh@gmail.com</span>
             </div>
 
