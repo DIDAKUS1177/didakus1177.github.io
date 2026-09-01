@@ -82,8 +82,8 @@ LOGOS = [
 
 OTRAS = [
     ('profile.webp', 'Foto de perfil', 'Inicio + Hoja de vida + Schema.org', ''),
-    ('team1.webp', 'Equipo de trabajo', 'Sección "Sobre mí"', 'Reemplazar: solo 10 KB, se ve pixelada'),
-    ('team2.webp', 'Trabajo en campo', 'Sección "Sobre mí"', ''),
+    ('team1.webp', 'Equipo de trabajo', 'Sin usar (retirada del sitio)', 'No reutilizar: lleva "Equipo didakus" impreso en la propia imagen'),
+    ('team2.webp', 'Trabajo en campo', 'Sin usar (retirada del sitio)', 'Queda en disco por si vuelve la seccion'),
     ('fondo/bg1.webp', 'Fondo industrial 1', 'Portada (rotación)', ''),
     ('fondo/bg2.webp', 'Fondo industrial 2', 'Portada (rotación)', ''),
     ('fondo/bg3.webp', 'Fondo industrial 3', 'Portada (rotación)', 'Reemplazar: es la que menos encaja'),

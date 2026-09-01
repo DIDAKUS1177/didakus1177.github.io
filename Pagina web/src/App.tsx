@@ -1558,15 +1558,15 @@ export default function App() {
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2200ms] ease-in-out ${
                 n === bgIndex ? 'hero-ken-burns' : ''
               }`}
-              style={{ opacity: n === bgIndex ? (theme === 'dark' ? 0.55 : 0.28) : 0 }}
+              style={{ opacity: n === bgIndex ? (theme === 'dark' ? 0.55 : 0.34) : 0 }}
             />
           ))}
           {/* Velo para que el texto siga legible sobre la foto */}
-          <div className="absolute inset-0 bg-gray-50/55 dark:bg-brand-black/45" />
+          <div className="absolute inset-0 bg-gray-50/50 dark:bg-brand-black/45" />
           <div className="hero-gradient-bg" />
           <div className="tech-grid" />
           {/* Manchas de color que flotan lentamente: dan movimiento al fondo */}
-          <div className="section-halo float-slow w-[420px] h-[420px] bg-brand/25 dark:bg-brand/20 -top-20 -left-24" />
+          <div className="section-halo float-slow w-[420px] h-[420px] bg-brand/30 dark:bg-brand/20 -top-20 -left-24" />
           <div
             className="section-halo float-slow w-[360px] h-[360px] bg-blue-500/15 dark:bg-blue-500/10 bottom-0 right-0"
             style={{ animationDelay: '-9s' }}
@@ -1747,7 +1747,7 @@ export default function App() {
       {/* --- About --- */}
       <section id="about" className="py-32 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="max-w-3xl">
             <div>
               <h2 className="text-4xl md:text-5xl font-black mb-6">{t.nav.about}</h2>
               <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed mb-6">
@@ -1760,22 +1760,6 @@ export default function App() {
                   ? 'Experto en la implementación de metodologías de mejora continua y desarrollo de software para la automatización de reportes y toma de decisiones. Destaco por mi capacidad para generar impacto en los resultados del negocio a través de soluciones tecnológicas ágiles.'
                   : 'Expert in implementing continuous improvement methodologies and software development for report automation and decision making. I stand out for my ability to generate impact on business results through agile technological solutions.'}
               </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                className="rounded-[32px] overflow-hidden h-64 glass border-gray-200 dark:border-white/5"
-              >
-                <img src="/team1.webp" alt="Equipo de trabajo" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
-              </motion.div>
-              <motion.div 
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                className="rounded-[32px] overflow-hidden h-64 glass border-white/5 mt-12"
-              >
-                <img src="/team2.webp" alt="Trabajo en campo" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
-              </motion.div>
             </div>
           </div>
         </div>
