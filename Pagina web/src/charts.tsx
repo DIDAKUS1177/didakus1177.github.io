@@ -9,7 +9,6 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import Papa from 'papaparse';
 import {
-  Activity,
   BarChart3,
   Database,
   FileJson,
@@ -22,8 +21,6 @@ import {
   Cell,
   ComposedChart,
   Line,
-  Pie,
-  PieChart,
   PolarAngleAxis,
   PolarGrid,
   PolarRadiusAxis,
@@ -216,44 +213,128 @@ export const TrendChartComponent = () => {
 
 export const LiveDashboard = ({ lang }: { lang: 'es' | 'en' }) => {
   const t = translations[lang].analytics.dashboard;
-  const pieData = [
-    { name: 'Producción', value: 85, fill: '#14B8A6' },
-    { name: 'Merma', value: 15, fill: '#D97706' },
+
+  // Cuatro KPI con la misma estructura: valor, comparacion contra la meta y
+  // la serie de los ultimos turnos. Antes cada tarjeta tenia una forma
+  // distinta (una con icono, otra con un anillo, otra con una barra) y no se
+  // podian comparar de un vistazo.
+  const KPIS = [
+    {
+      etiqueta: t.efficiency,
+      valor: '94.2', unidad: '%',
+      meta: 90, actual: 94.2, mejorEsMayor: true,
+      delta: +2.4,
+      serie: [88, 89, 91, 90, 92, 93, 93, 94.2],
+    },
+    {
+      etiqueta: t.quality,
+      valor: '98.5', unidad: '%',
+      meta: 97, actual: 98.5, mejorEsMayor: true,
+      delta: +0.8,
+      serie: [96, 97, 96.5, 97.5, 98, 98.2, 98.1, 98.5],
+    },
+    {
+      etiqueta: t.downtime,
+      valor: '12', unidad: 'min',
+      meta: 20, actual: 12, mejorEsMayor: false,
+      delta: -6.0,
+      serie: [26, 24, 22, 19, 17, 15, 14, 12],
+    },
+    {
+      etiqueta: t.throughput,
+      valor: '318', unidad: 't',
+      meta: 300, actual: 318, mejorEsMayor: true,
+      delta: +4.1,
+      serie: [292, 297, 301, 305, 308, 312, 315, 318],
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="glass p-6 rounded-3xl text-center">
-        <Activity className="mx-auto text-brand mb-4" size={32} />
-        <div className="text-3xl font-black mb-1">94.2%</div>
-        <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.efficiency}</div>
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {KPIS.map((k, i) => {
+          const cumple = k.mejorEsMayor ? k.actual >= k.meta : k.actual <= k.meta;
+          // La barra mide el avance contra la meta; en los KPI donde "menos es
+          // mejor" se invierte para que llena siga significando bien.
+          const avance = k.mejorEsMayor
+            ? Math.min(100, (k.actual / k.meta) * 100)
+            : Math.min(100, (k.meta / Math.max(k.actual, 0.1)) * 100);
+          const max = Math.max(...k.serie);
+          const min = Math.min(...k.serie);
+          const buenoDelta = k.mejorEsMayor ? k.delta > 0 : k.delta < 0;
+
+          return (
+            <motion.div
+              key={k.etiqueta}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05, duration: 0.35 }}
+              className="glass p-5 rounded-3xl flex flex-col gap-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest leading-tight">
+                  {k.etiqueta}
+                </span>
+                <span
+                  className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                    buenoDelta
+                      ? 'text-teal-700 bg-teal-500/15 dark:text-teal-300'
+                      : 'text-orange-700 bg-orange-500/15 dark:text-orange-300'
+                  }`}
+                >
+                  {k.delta > 0 ? '+' : ''}{k.delta}%
+                </span>
+              </div>
+
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-black tabular-nums leading-none">{k.valor}</span>
+                <span className="text-sm font-bold text-gray-500">{k.unidad}</span>
+              </div>
+
+              {/* Serie de los ultimos turnos */}
+              <div className="flex items-end gap-[3px] h-10" aria-hidden="true">
+                {k.serie.map((v, j) => {
+                  const alto = max === min ? 60 : 22 + ((v - min) / (max - min)) * 78;
+                  return (
+                    <span
+                      key={j}
+                      style={{ height: `${alto}%` }}
+                      className={`flex-1 rounded-sm ${
+                        j === k.serie.length - 1
+                          ? 'bg-brand'
+                          : 'bg-gray-300 dark:bg-white/15'
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* Avance contra la meta. La pista lleva color propio en cada
+                  tema: antes era bg-white/5, invisible sobre fondo claro. */}
+              <div>
+                <div className="h-1.5 rounded-full overflow-hidden bg-gray-200 dark:bg-white/10">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${avance}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: i * 0.05 }}
+                    className={`h-full rounded-full ${cumple ? 'bg-teal-500' : 'bg-orange-500'}`}
+                  />
+                </div>
+                <div className="mt-1.5 flex justify-between text-[9px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
+                  <span>{t.turno}</span>
+                  <span>{t.objetivo}: {k.meta}{k.unidad}</span>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
-      <div className="glass p-6 rounded-3xl text-center">
-        <div className="h-24 w-full flex items-center justify-center">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={pieData} innerRadius={30} outerRadius={40} paddingAngle={5} dataKey="value">
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="text-3xl font-black mb-1">98.5%</div>
-        <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.quality}</div>
-      </div>
-      <div className="glass p-6 rounded-3xl text-center">
-        <div className="text-3xl font-black mb-1 text-brand">12m</div>
-        <div className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-widest">{t.downtime}</div>
-        <div className="mt-4 h-2 bg-white/5 rounded-full overflow-hidden">
-          <motion.div 
-            initial={{ width: 0 }}
-            whileInView={{ width: '15%' }}
-            className="h-full bg-brand"
-          />
-        </div>
-      </div>
+
+      <p className="mt-4 text-center text-[10px] text-gray-500 dark:text-gray-500">
+        {t.demo}
+      </p>
     </div>
   );
 };

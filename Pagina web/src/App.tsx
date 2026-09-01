@@ -79,7 +79,7 @@ const RotatingWord = ({ lang }: { lang: 'es' | 'en' }) => {
           initial={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           exit={{ opacity: 0, y: -24, filter: 'blur(6px)' }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
           className="text-2xl md:text-4xl font-black text-brand tracking-[0.2em]"
         >
           {words[i]}
@@ -342,11 +342,15 @@ const CITY_XY: Record<string, { x: number; y: number }> = {
 };
 
 // Recuadros de encuadre por región, en coordenadas del mapa.
+// Los tres recuadros de pais miden lo mismo (300x210), asi que el zoom es
+// identico en los tres: k = 2.67. Antes cada uno tenia su propio tamano y
+// Colombia llegaba a 6.7x, donde la geometria de Natural Earth 110m (baja
+// resolucion, pensada para vista mundial) se deforma y parece una mancha.
 const MAP_VIEWS: Record<string, { x: number; y: number; w: number; h: number }> = {
   todos:      { x: 110, y: 200, w: 780, h: 370 },
-  'España':   { x: 762, y: 196, w: 120, h: 100 },
-  'México':   { x: 96,  y: 362, w: 130, h: 108 },
-  'Colombia': { x: 288, y: 486, w: 100, h: 84 },
+  'España':   { x: 671, y: 140, w: 300, h: 210 },
+  'México':   { x: 9,   y: 310, w: 300, h: 210 },
+  'Colombia': { x: 179, y: 415, w: 300, h: 210 },
 };
 
 const VB_W = 1000;
@@ -391,23 +395,35 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
           };
         });
 
-  // Separa las etiquetas que se solapan: Paipa y Sogamoso quedan a ~8 px entre sí.
-  const placed = pins.map((p) => ({ ...p, dy: -18 }));
+  // Colocacion de etiquetas. Paipa y Sogamoso estan a 0.4 unidades una de
+  // otra en el mapa: a cualquier zoom caen sobre el mismo punto, asi que
+  // ningun ajuste de "arriba o abajo" las separa. En vez de eso, cada
+  // etiqueta es una placa al costado del pin y se apilan en columna,
+  // unidas al pin por una linea guia.
+  const ALTO_PLACA = 42;
+  const SEPARACION = 8;
+
+  const placed = [...pins]
+    .sort((a, b) => a.y - b.y)
+    .map((p) => {
+      const anchoTexto = Math.max(p.label.length * 8.6, p.sub.length * 7.2);
+      const w = Math.round(anchoTexto + 26);
+      // Si no cabe a la derecha, la placa se voltea al otro lado del pin.
+      const cabeDerecha = p.x + 22 + w < VB_W - 12;
+      return { ...p, w, lado: cabeDerecha ? 1 : -1, cy: p.y };
+    });
+
+  // Empuja hacia abajo cada placa que invada la anterior.
   for (let i = 1; i < placed.length; i++) {
-    let intentos = 0;
-    while (
-      intentos < 6 &&
-      placed.slice(0, i).some(
-        (q) =>
-          Math.abs(q.x - placed[i].x) < 110 &&
-          Math.abs(q.y + q.dy - (placed[i].y + placed[i].dy)) < 34
-      )
-    ) {
-      // alterna arriba / abajo, alejándose del pin en cada intento
-      placed[i].dy = placed[i].dy < 0 ? 34 + intentos * 14 : -(52 + intentos * 14);
-      intentos++;
-    }
+    const minimo = placed[i - 1].cy + ALTO_PLACA + SEPARACION;
+    if (placed[i].cy < minimo) placed[i].cy = minimo;
   }
+
+  // Si la columna se sale por abajo, se sube el bloque completo.
+  const desborde = placed.length
+    ? placed[placed.length - 1].cy + ALTO_PLACA / 2 - (VB_H - 12)
+    : 0;
+  if (desborde > 0) placed.forEach((p) => { p.cy -= desborde; });
 
   return (
     <div className="mb-20">
@@ -458,35 +474,37 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
               onClick={p.onClick}
               className={region === 'todos' ? 'cursor-pointer' : ''}
             >
-              <circle cx={p.x} cy={p.y} r="16" fill="#D97706" opacity="0.18">
-                <animate attributeName="r" values="12;22;12" dur="2.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
+              {/* Halo que late. La animacion arranca escalonada por pin. */}
+              <circle cx={p.x} cy={p.y} r="14" fill="#D97706" opacity="0.18">
+                <animate attributeName="r" values="10;20;10" dur="2.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.28;0;0.28" dur="2.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
               </circle>
-              <circle cx={p.x} cy={p.y} r="7" fill="#D97706" stroke="#fff" strokeWidth="2.5" />
+              <circle cx={p.x} cy={p.y} r="6" fill="#D97706" stroke="var(--map-halo)" strokeWidth="2.5" />
 
-              {/* Línea guía cuando la etiqueta tuvo que alejarse del pin */}
-              {Math.abs(p.dy) > 30 && (
-                <line
-                  x1={p.x} y1={p.y} x2={p.x} y2={p.y + p.dy + (p.dy < 0 ? 8 : -18)}
-                  stroke="#D97706" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6"
+              {/* Linea guia del pin a su placa */}
+              <path
+                d={`M ${p.x + p.lado * 7} ${p.y} L ${p.x + p.lado * 16} ${p.cy}`}
+                stroke="#D97706" strokeWidth="1.5" opacity="0.55" fill="none"
+              />
+
+              {/* Placa con el nombre y el conteo */}
+              <g transform={`translate(${p.x + p.lado * 16 - (p.lado < 0 ? p.w : 0)}, ${p.cy - 21})`}>
+                <rect
+                  width={p.w} height="42" rx="10"
+                  className="fill-white/95 dark:fill-[#1b1d22]/95 stroke-gray-300 dark:stroke-white/15"
+                  strokeWidth="1"
                 />
-              )}
-
-              <text
-                x={p.x} y={p.y + p.dy} textAnchor="middle"
-                className="fill-gray-900 dark:fill-white"
-                fontSize="19" fontWeight="900"
-                stroke="var(--map-halo)" strokeWidth="4" paintOrder="stroke"
-              >
-                {p.label}
-              </text>
-              <text
-                x={p.x} y={p.y + p.dy + 18} textAnchor="middle"
-                fill="#D97706" fontSize="15" fontWeight="700"
-                stroke="var(--map-halo)" strokeWidth="3.5" paintOrder="stroke"
-              >
-                {p.sub}
-              </text>
+                <text
+                  x="13" y="18"
+                  className="fill-gray-900 dark:fill-white"
+                  fontSize="15" fontWeight="800"
+                >
+                  {p.label}
+                </text>
+                <text x="13" y="33" fill="#D97706" fontSize="12.5" fontWeight="700">
+                  {p.sub}
+                </text>
+              </g>
             </g>
           ))}
         </svg>
@@ -534,6 +552,29 @@ interface Service {
 }
 
 const SERVICES: Service[] = [
+  {
+    icon: Code,
+    title: { es: 'Desarrollo Web y de Software', en: 'Web & Software Development' },
+    desc: {
+      es: 'Aplicaciones y portales a la medida, del diseño de la interfaz a la base de datos y la puesta en producción.',
+      en: 'Custom applications and portals, from interface design to the database and going live.',
+    },
+    items: {
+      es: [
+        'Aplicaciones web completas: interfaz, servidor, base de datos y despliegue',
+        'Portales de consulta y trámites para entidades públicas',
+        'Plataformas internas de gestión con roles, permisos y trazabilidad',
+        'Integración con sistemas existentes por API y publicación en la nube',
+      ],
+      en: [
+        'Full web applications: interface, backend, database and deployment',
+        'Public-facing portals for citizen services and procedures',
+        'Internal management platforms with roles, permissions and audit trails',
+        'Integration with existing systems via API and cloud deployment',
+      ],
+    },
+    tools: ['React', 'TypeScript', 'Python', 'SQL', 'FastAPI', 'Firebase'],
+  },
   {
     icon: Bot,
     title: { es: 'Agentes de IA', en: 'AI Agents' },
@@ -918,7 +959,7 @@ const ServiceAreas = ({ lang }: { lang: 'es' | 'en' }) => (
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.35 }}
           className="glass rounded-[28px] p-6 md:p-9 border-gray-200 dark:border-white/5 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center hover:border-brand/30 transition-colors"
         >
           <div className={i % 2 === 1 ? 'lg:order-2' : ''}>
@@ -961,7 +1002,7 @@ const ServiceCard: React.FC<{ service: Service; lang: 'es' | 'en'; index: number
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: (index % 3) * 0.08 }}
+      transition={{ delay: (index % 3) * 0.05 }}
       viewport={{ once: true }}
       className={`glass rounded-3xl transition-all group border-gray-200 dark:border-white/5 ${
         open ? 'border-brand/40' : 'hover:border-brand/40'
@@ -1098,7 +1139,7 @@ const HowIWork = ({ lang }: { lang: 'es' | 'en' }) => (
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.05 }}
               className="glass rounded-3xl p-6 border-gray-200 dark:border-white/5 relative flex flex-col"
             >
               <span className="absolute top-5 right-6 text-4xl font-black text-brand/12 dark:text-brand/20 leading-none">
@@ -1241,7 +1282,7 @@ const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.5, delay: (i % 2) * 0.1 }}
+            transition={{ duration: 0.35, delay: (i % 2) * 0.06 }}
             className="glass rounded-[32px] p-5 md:p-7 border-gray-200 dark:border-white/5 flex flex-col hover:border-brand/30 transition-colors"
           >
             <ProjectCarousel project={project} />
@@ -1386,7 +1427,7 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
 export default function App() {
   const [lang, setLang] = useState<'es' | 'en'>('es');
   const [currentPage, setCurrentPage] = useState<'home' | 'resume' | 'datalab' | 'projects'>('home');
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [bgIndex, setBgIndex] = useState(0);
 
   const t = translations[lang];
@@ -1459,7 +1500,7 @@ export default function App() {
               Diego <span className="text-brand">Hernández</span>
             </span>
             <span className="hidden lg:block text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-[0.2em] border-l border-gray-300 dark:border-white/10 pl-3">
-              Analytica Industrial &amp; IA
+              Desarrollo &middot; Analítica Industrial &amp; IA
             </span>
           </a>
 
@@ -1545,7 +1586,7 @@ export default function App() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.05 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 text-sm font-medium text-brand"
           >
             <Cpu size={16} />
@@ -1556,7 +1597,7 @@ export default function App() {
             <motion.span
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.7, ease: "easeOut" }}
+              transition={{ delay: 0.08, duration: 0.45, ease: "easeOut" }}
               className="block"
             >
               DIEGO ALEJANDRO
@@ -1564,7 +1605,7 @@ export default function App() {
             <motion.span
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.7, ease: "easeOut" }}
+              transition={{ delay: 0.2, duration: 0.45, ease: "easeOut" }}
               className="block text-brand"
             >
               HERNÁNDEZ BLANCO
@@ -1574,7 +1615,7 @@ export default function App() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.3 }}
           >
             <RotatingWord lang={lang} />
           </motion.div>
@@ -1582,7 +1623,7 @@ export default function App() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.15 }}
             className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed"
           >
             {t.hero.description}
@@ -1591,7 +1632,7 @@ export default function App() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.35 }}
+            transition={{ delay: 0.18 }}
             className="mb-10"
           >
             <button 
@@ -1607,7 +1648,7 @@ export default function App() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.25 }}
             className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-full bg-brand/8 dark:bg-brand/12 border border-brand/30 text-sm font-bold text-brand"
           >
             <CheckCircle2 size={17} />
@@ -1617,7 +1658,7 @@ export default function App() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.2 }}
             className="flex flex-col items-center gap-6"
           >
             <div className="flex flex-wrap justify-center gap-4">
@@ -1795,7 +1836,7 @@ export default function App() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.05 }}
               className="lg:col-span-2 glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
             >
               <div className="flex items-center gap-3 mb-6">
@@ -1814,7 +1855,7 @@ export default function App() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.1 }}
               className="glass p-8 rounded-[40px] border-brand/20 bg-brand/[0.02]"
             >
               <div className="flex items-center justify-between mb-8">

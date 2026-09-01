@@ -12,8 +12,8 @@ export const translations = {
     },
     hero: {
       title: 'Diego Hernández',
-      subtitle: 'Analytica Industrial & IA',
-      description: 'Ayudo a empresas industriales y entidades públicas a convertir sus datos en decisiones: automatizo lo repetitivo, construyo el sistema que les falta y dejo al equipo sabiendo usarlo.',
+      subtitle: 'Desarrollo · Analítica Industrial & IA',
+      description: 'Desarrollador de software y analista de datos. Ayudo a empresas industriales y entidades públicas a convertir sus datos en decisiones: construyo la aplicación que les falta, automatizo lo repetitivo y dejo al equipo sabiendo usarlo.',
       cta: 'Agendar diagnóstico gratuito',
       freeConsult: 'La primera consulta de diagnóstico es gratuita',
     },
@@ -41,7 +41,11 @@ export const translations = {
         desc: 'Visualización de KPIs críticos para el monitoreo industrial.',
         efficiency: 'Eficiencia OEE',
         quality: 'Índice de Calidad',
-        downtime: 'Tiempo de Parada'
+        downtime: 'Tiempo de Parada',
+        throughput: 'Toneladas / Turno',
+        objetivo: 'Meta',
+        turno: 'últimos 8 turnos',
+        demo: 'Datos de ejemplo con la estructura de un tablero real'
       }
     },
     analyzer: {
@@ -96,7 +100,7 @@ export const translations = {
     },
     hero: {
       title: 'Diego Hernández',
-      subtitle: 'Industrial Analytics & AI',
+      subtitle: 'Development · Industrial Analytics & AI',
       description: 'I help industrial companies and public institutions turn their data into decisions: I automate the repetitive work, build the system they are missing, and leave the team knowing how to use it.',
       cta: 'Book a free diagnostic',
       freeConsult: 'The first diagnostic call is free',
@@ -125,7 +129,11 @@ export const translations = {
         desc: 'Visualization of critical KPIs for industrial monitoring.',
         efficiency: 'OEE Efficiency',
         quality: 'Quality Index',
-        downtime: 'Downtime'
+        downtime: 'Downtime',
+        throughput: 'Tons / Shift',
+        objetivo: 'Target',
+        turno: 'last 8 shifts',
+        demo: 'Sample data with the structure of a real control board'
       }
     },
     analyzer: {

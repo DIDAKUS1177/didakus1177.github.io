@@ -426,7 +426,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           <div>
             <h1 className="text-4xl md:text-5xl font-black mb-4">DIEGO ALEJANDRO HERNÁNDEZ BLANCO</h1>
             <h2 className="text-xl md:text-2xl text-brand font-bold mb-6">
-              Ingeniero Metalúrgico | Especialista en Productividad y Mejora Continua | Data Scientist
+              Desarrollador de Software | Ingeniero Metalúrgico | Data Scientist | Especialista en Mejora Continua
             </h2>
             <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm mb-6">
               <span>📍 Ciudad de México (CDMX)</span>
@@ -463,9 +463,6 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             </div>
             <p className="mt-2 text-[9px] font-bold uppercase tracking-widest text-gray-500">
               {lang === 'es' ? 'Escanea el portafolio' : 'Scan the portfolio'}
-            </p>
-            <p className="text-[9px] text-gray-500 dark:text-gray-600 break-all max-w-28">
-              didakus1177.github.io
             </p>
           </a>
         </motion.div>
