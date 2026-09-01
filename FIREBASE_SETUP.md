@@ -4,8 +4,8 @@
 > **https://didakus-portafolio.web.app**
 >
 > Proyecto `didakus-portafolio`, cuenta `diealeherbla.dh@gmail.com`.
-> El despliegue manual funciona. Lo único pendiente es el automático desde
-> GitHub (sección 4).
+> Despliegue manual funcionando y al día. Del automático falta solo pegar
+> el secreto en GitHub (sección 4) — la cuenta de servicio ya está creada.
 
 ---
 
@@ -54,28 +54,65 @@ firebase deploy --only hosting
 
 Al terminar te da la URL. Ábrela y revisa que todo se vea bien.
 
-## 4. Despliegue automático desde GitHub ← **pendiente**
+## 4. Despliegue automático desde GitHub
 
-Para que cada `push` publique solo:
+La cuenta de servicio **ya está creada** en tu proyecto:
 
-```bash
-firebase init hosting:github
+```
+github-deploy@didakus-portafolio.iam.gserviceaccount.com
 ```
 
-Te pregunta el repositorio (`DIDAKUS1177/didakus1177.github.io`), crea la
-cuenta de servicio y guarda el secreto `FIREBASE_SERVICE_ACCOUNT` en GitHub.
+Con los permisos mínimos para publicar en Hosting y nada más:
 
-Cuando pregunte si quiere sobrescribir el workflow, responde **No** — el que
-está en el repositorio ya tiene el build configurado con las variables del
-formulario y del currículum.
+| Rol | Para qué |
+|---|---|
+| `roles/firebasehosting.admin` | subir y publicar versiones del sitio |
+| `roles/firebase.viewer` | leer la configuración del proyecto |
+| `roles/serviceusage.serviceUsageConsumer` | usar las APIs del proyecto |
 
-Falta un dato más. En
-[Settings → Secrets and variables → Actions → **Variables**](https://github.com/DIDAKUS1177/didakus1177.github.io/settings/variables/actions):
+No tiene acceso a Firestore, Storage, Functions ni facturación. Si la clave se
+filtrara, lo peor que podría hacer alguien es publicar en el sitio — no tocar
+datos ni generar cobros.
+
+### Los dos pasos que faltan
+
+**a) Guardar la clave como secreto.** El archivo está en:
+
+```
+%LOCALAPPDATA%\Temp\claude\C--Users-dieal-OneDrive-Desktop-1--Carpetas-de-respaldo-como-tal\d749cbdf-82b0-42e6-8e62-d6f8816b8d61\scratchpad\FIREBASE_SERVICE_ACCOUNT.json
+```
+
+Ábrelo, copia **todo** el contenido (desde `{` hasta `}`) y pégalo en
+[Settings → Secrets and variables → Actions → **Secrets**](https://github.com/DIDAKUS1177/didakus1177.github.io/settings/secrets/actions):
+
+- Name: `FIREBASE_SERVICE_ACCOUNT`
+- Secret: el JSON completo
+
+**b) Guardar el identificador como variable.** En la pestaña
+[**Variables**](https://github.com/DIDAKUS1177/didakus1177.github.io/settings/variables/actions)
+de esa misma página:
 
 - Name: `FIREBASE_PROJECT_ID`
 - Value: `didakus-portafolio`
 
-Es una *variable*, no un *secreto* — el identificador del proyecto es público.
+Es una *variable*, no un *secreto*: el identificador del proyecto es público.
+
+**c) Borra el archivo local** una vez pegado. Es una credencial y no debe
+quedarse en el disco:
+
+```bash
+del "%LOCALAPPDATA%\Temp\claude\C--Users-dieal-OneDrive-Desktop-1--Carpetas-de-respaldo-como-tal\d749cbdf-82b0-42e6-8e62-d6f8816b8d61\scratchpad\FIREBASE_SERVICE_ACCOUNT.json"
+```
+
+### Si alguna vez hay que revocar la clave
+
+```bash
+gcloud iam service-accounts keys list --iam-account=github-deploy@didakus-portafolio.iam.gserviceaccount.com
+```
+
+```bash
+gcloud iam service-accounts keys delete ID_DE_LA_CLAVE --iam-account=github-deploy@didakus-portafolio.iam.gserviceaccount.com
+```
 
 > [!note] Mientras tanto no falla
 > Si el secreto o la variable no están, el workflow avisa y se salta el
