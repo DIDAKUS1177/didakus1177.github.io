@@ -420,7 +420,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           className="glass p-12 rounded-[40px] mb-12 relative overflow-hidden flex flex-col md:flex-row items-center gap-8"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand/10 blur-[100px] -z-10" />
-          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_30px_rgba(245,158,11,0.25)]">
+          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_30px_rgba(37,99,235,0.25)]">
             <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
           </div>
           <div>
@@ -440,7 +440,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             <a
               href={CV_PDF}
               download="Diego_Hernandez_Blanco_Hoja_de_Vida.pdf"
-              className="inline-flex items-center gap-2.5 px-6 py-3 brand-gradient rounded-xl font-bold text-sm text-brand-black hover:scale-105 transition-transform shadow-[0_8px_20px_rgba(245,158,11,0.35)]"
+              className="inline-flex items-center gap-2.5 px-6 py-3 brand-gradient rounded-xl font-bold text-sm text-white hover:scale-105 transition-transform shadow-[0_8px_20px_rgba(37,99,235,0.35)]"
             >
               <Download size={18} />
               {lang === 'es' ? 'Descargar hoja de vida (PDF)' : 'Download resume (PDF)'}
@@ -528,7 +528,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <h4 className="font-bold leading-snug">{e.title}</h4>
                   {e.status && (
-                    <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-full">
+                    <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-300 bg-blue-500/10 border border-blue-500/30 px-2 py-1 rounded-full">
                       {lang === 'es' ? e.status.es : e.status.en}
                     </span>
                   )}

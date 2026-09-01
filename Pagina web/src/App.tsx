@@ -6,6 +6,7 @@
 import React, { Suspense, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
+  Briefcase,
   BarChart3, 
   Bot, 
   Database, 
@@ -433,7 +434,7 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
           onClick={() => setRegion('todos')}
           className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
             region === 'todos'
-              ? 'bg-brand text-brand-black'
+              ? 'bg-brand text-white dark:text-brand-black'
               : 'bg-gray-200/70 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-white/10'
           }`}
         >
@@ -445,7 +446,7 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
             onClick={() => setRegion(c)}
             className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
               region === c
-                ? 'bg-brand text-brand-black'
+                ? 'bg-brand text-white dark:text-brand-black'
                 : 'bg-gray-200/70 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-white/10'
             }`}
           >
@@ -475,16 +476,16 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
               className={region === 'todos' ? 'cursor-pointer' : ''}
             >
               {/* Halo que late. La animacion arranca escalonada por pin. */}
-              <circle cx={p.x} cy={p.y} r="14" fill="#D97706" opacity="0.18">
+              <circle cx={p.x} cy={p.y} r="14" fill="#2563EB" opacity="0.18">
                 <animate attributeName="r" values="10;20;10" dur="2.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.28;0;0.28" dur="2.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
               </circle>
-              <circle cx={p.x} cy={p.y} r="6" fill="#D97706" stroke="var(--map-halo)" strokeWidth="2.5" />
+              <circle cx={p.x} cy={p.y} r="6" fill="#2563EB" stroke="var(--map-halo)" strokeWidth="2.5" />
 
               {/* Linea guia del pin a su placa */}
               <path
                 d={`M ${p.x + p.lado * 7} ${p.y} L ${p.x + p.lado * 16} ${p.cy}`}
-                stroke="#D97706" strokeWidth="1.5" opacity="0.55" fill="none"
+                stroke="#2563EB" strokeWidth="1.5" opacity="0.55" fill="none"
               />
 
               {/* Placa con el nombre y el conteo */}
@@ -501,7 +502,7 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
                 >
                   {p.label}
                 </text>
-                <text x="13" y="33" fill="#D97706" fontSize="12.5" fontWeight="700">
+                <text x="13" y="33" fill="#2563EB" fontSize="12.5" fontWeight="700">
                   {p.sub}
                 </text>
               </g>
@@ -819,7 +820,7 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
         <rect key={i} x={190 + i * 23} y={146 - h} width="15" height={h} rx="3"
               className={i === 3 ? 'fill-brand' : 'fill-brand/35'} />
       ))}
-      <polyline points="197,112 220,92 243,120 266,76 289,100" fill="none" className="stroke-amber-500" strokeWidth="2" />
+      <polyline points="197,112 220,92 243,120 266,76 289,100" fill="none" className="stroke-blue-500" strokeWidth="2" />
       <Flecha x1={310} y1={95} x2={344} y2={95} />
 
       <rect x="348" y="60" width="66" height="70" rx="10" className={D.cajaRoja} strokeWidth="2" />
@@ -844,8 +845,8 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
         { d: 'M90.0 76.3 A46 46 0 0 1 113.3 53.0', f: '121.5,49.3 111.3,48.4 115.3,57.5' },
       ].map((tramo, i) => (
         <g key={i}>
-          <path d={tramo.d} fill="none" stroke="#D97706" strokeWidth="3.5" strokeLinecap="round" />
-          <polygon points={tramo.f} fill="#D97706" />
+          <path d={tramo.d} fill="none" stroke="#2563EB" strokeWidth="3.5" strokeLinecap="round" />
+          <polygon points={tramo.f} fill="#2563EB" />
         </g>
       ))}
 
@@ -857,7 +858,7 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
         { t: 'ACTUAR', x: 62, y: 99 },
       ].map((q) => (
         <text key={q.t} x={q.x} y={q.y} textAnchor="middle" fontSize="11" fontWeight="900"
-              fill="#D97706">{q.t}</text>
+              fill="#2563EB">{q.t}</text>
       ))}
 
       <text x="132" y="92" textAnchor="middle" fontSize="11.5" fontWeight="900" className={D.texto}>MEJORA</text>
@@ -866,7 +867,7 @@ const DIAGRAMS: Record<string, React.ReactNode> = {
       {['ISO 9001', 'ISO 14001', 'ISO 45001', 'ISO 17025', 'API 580 / 581'].map((n, i) => (
         <g key={n}>
           <rect x="248" y={16 + i * 32} width="164" height="24" rx="12" className={D.cajaRoja} strokeWidth="1.5" />
-          <text x="330" y={32 + i * 32} textAnchor="middle" fontSize="11" fontWeight="700" fill="#D97706">{n}</text>
+          <text x="330" y={32 + i * 32} textAnchor="middle" fontSize="11" fontWeight="700" fill="#2563EB">{n}</text>
         </g>
       ))}
     </svg>
@@ -1228,7 +1229,7 @@ const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyect
         </p>
         <button
           onClick={onVerProyectos}
-          className="inline-flex items-center gap-3 px-8 py-4 brand-gradient rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform text-brand-black"
+          className="inline-flex items-center gap-3 px-8 py-4 brand-gradient rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform text-white"
         >
           {lang === 'es' ? 'Ver todos los proyectos' : 'View all projects'}
           <ArrowRight size={20} />
@@ -1406,7 +1407,7 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full sm:w-auto px-8 py-3 brand-gradient text-brand-black rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform disabled:opacity-60 disabled:hover:scale-100"
+        className="w-full sm:w-auto px-8 py-3 brand-gradient text-white rounded-xl font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform disabled:opacity-60 disabled:hover:scale-100"
       >
         {status === 'sending' ? t.formSending : t.formSubmit}
       </button>
@@ -1489,7 +1490,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen selection:bg-brand selection:text-brand-black bg-gray-50 text-gray-900 dark:bg-brand-black dark:text-brand-white transition-colors duration-300 relative">
+    <div className="min-h-screen selection:bg-brand selection:text-white bg-gray-50 text-gray-900 dark:bg-brand-black dark:text-brand-white transition-colors duration-300 relative">
       <BarraProgreso />
 
       {/* --- Navbar --- */}
@@ -1506,13 +1507,16 @@ export default function App() {
 
           <div className="flex items-center gap-8">
             <div className="hidden md:flex items-center gap-6 font-medium text-sm text-gray-600 dark:text-gray-400">
+              {/* Portafolio y Curriculum van primero y juntos: son las dos
+                  paginas que un reclutador busca, y antes quedaban en cuarto
+                  y sexto lugar entre anclas de la misma pagina. */}
+              <button onClick={() => setCurrentPage('projects')} className="font-bold text-brand hover:opacity-80 transition-opacity">{t.nav.portfolio}</button>
+              <button onClick={() => setCurrentPage('resume')} className="font-bold text-brand hover:opacity-80 transition-opacity">{t.nav.resume}</button>
+              <span className="w-px h-4 bg-gray-300 dark:bg-white/15" aria-hidden="true" />
               <a href="#about" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.about}</a>
               <a href="#solutions" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.solutions}</a>
               <a href="#process" className="hover:text-gray-900 dark:hover:text-white transition-colors">{lang === 'es' ? 'Cómo trabajo' : 'How I work'}</a>
-              <button onClick={() => setCurrentPage('projects')} className="hover:text-gray-900 dark:hover:text-white transition-colors">{lang === 'es' ? 'Proyectos' : 'Projects'}</button>
-              
               <button onClick={() => setCurrentPage('datalab')} className="hover:text-gray-900 dark:hover:text-white transition-colors">Data Lab</button>
-              <button onClick={() => setCurrentPage('resume')} className="hover:text-gray-900 dark:hover:text-white transition-colors">Curriculum</button>
               <a href="#contact" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.contact}</a>
             </div>
             
@@ -1564,7 +1568,7 @@ export default function App() {
           {/* Manchas de color que flotan lentamente: dan movimiento al fondo */}
           <div className="section-halo float-slow w-[420px] h-[420px] bg-brand/25 dark:bg-brand/20 -top-20 -left-24" />
           <div
-            className="section-halo float-slow w-[360px] h-[360px] bg-amber-500/15 dark:bg-amber-500/10 bottom-0 right-0"
+            className="section-halo float-slow w-[360px] h-[360px] bg-blue-500/15 dark:bg-blue-500/10 bottom-0 right-0"
             style={{ animationDelay: '-9s' }}
           />
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-gray-50 dark:from-brand-black to-transparent" />
@@ -1578,7 +1582,7 @@ export default function App() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-40 h-40 mx-auto mb-8 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_50px_rgba(245,158,11,0.25)]"
+            className="w-40 h-40 mx-auto mb-8 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_50px_rgba(37,99,235,0.25)]"
           >
             <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
           </motion.div>
@@ -1635,13 +1639,24 @@ export default function App() {
             transition={{ delay: 0.18 }}
             className="mb-10"
           >
-            <button 
-              onClick={() => setCurrentPage('resume')} 
-              className="px-8 py-3 glass rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 dark:hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-brand inline-flex items-center gap-2"
-            >
-              <FileJson size={20} />
-              {lang === 'es' ? 'Ver Curriculum Completo' : 'View Full Resume'}
-            </button>
+            {/* Las dos paginas principales, juntas. El portafolio va primero:
+                el trabajo hecho convence antes que la hoja de vida. */}
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => setCurrentPage('projects')}
+                className="px-8 py-3 rounded-xl font-bold brand-gradient text-white hover:scale-105 transition-transform inline-flex items-center gap-2 shadow-[0_8px_20px_rgba(37,99,235,0.3)]"
+              >
+                <Briefcase size={20} />
+                {t.nav.portfolioFull}
+              </button>
+              <button
+                onClick={() => setCurrentPage('resume')}
+                className="px-8 py-3 glass rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-brand inline-flex items-center gap-2"
+              >
+                <FileJson size={20} />
+                {lang === 'es' ? 'Ver Curriculum Completo' : 'View Full Resume'}
+              </button>
+            </div>
           </motion.div>
 
           {/* Gancho: quitar el riesgo de dar el primer paso */}
@@ -1664,7 +1679,7 @@ export default function App() {
             <div className="flex flex-wrap justify-center gap-4">
               <button 
                 onClick={openGmail}
-                className="px-10 py-4 brand-gradient text-brand-black rounded-xl font-bold text-xl shadow-[0_10px_30px_rgba(245,158,11,0.35)] hover:scale-105 transition-transform flex items-center gap-3"
+                className="px-10 py-4 brand-gradient text-white rounded-xl font-bold text-xl shadow-[0_10px_30px_rgba(37,99,235,0.35)] hover:scale-105 transition-transform flex items-center gap-3"
               >
                 {t.hero.cta}
                 <ArrowRight size={24} />
@@ -1684,7 +1699,7 @@ export default function App() {
                   href="https://wa.me/573216291861"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-orange-600 flex items-center gap-2 font-bold whitespace-nowrap"
+                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-cyan-700 dark:text-cyan-400 flex items-center gap-2 font-bold whitespace-nowrap"
                 >
                   <MessageCircle size={20} />
                   +57 321 629 1861
@@ -2030,13 +2045,10 @@ export default function App() {
           href="https://wa.me/573337279204" 
           target="_blank"
           rel="noreferrer"
-          className="w-14 h-14 bg-brand rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(245,158,11,0.45)] hover:scale-110 transition-transform group relative"
+          className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(37,99,235,0.45)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsapp}
         >
-          {/* Icono grafito, no blanco: sobre el ambar del modo oscuro el
-              blanco da 2.15:1 y un icono necesita 3:1. El grafito da 3.6:1
-              en claro y 8.3:1 en oscuro. */}
-          <MessageCircle className="text-brand-black" size={28} />
+          <MessageCircle className="text-white" size={28} />
           <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             {t.contact.whatsapp}
           </span>
@@ -2046,7 +2058,7 @@ export default function App() {
           href="https://wa.me/573216291861" 
           target="_blank"
           rel="noreferrer"
-          className="w-14 h-14 bg-orange-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(234,88,12,0.3)] hover:scale-110 transition-transform group relative"
+          className="w-14 h-14 bg-cyan-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(8,145,178,0.35)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsappPersonal}
         >
           <User className="text-white" size={28} />
@@ -2112,11 +2124,11 @@ export default function App() {
           background: rgba(255, 255, 255, 0.05);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(245, 158, 11, 0.5);
+          background: rgba(37, 99, 235, 0.5);
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(245, 158, 11, 0.8);
+          background: rgba(37, 99, 235, 0.8);
         }
       `}} />
     </div>

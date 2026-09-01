@@ -59,7 +59,7 @@ const useChartTheme = () => {
   };
 };
 
-const PARETO_COLORS = ['#D97706', '#F59E0B', '#F59E0B', '#14B8A6', '#3B82F6'];
+const PARETO_COLORS = ['#2563EB', '#60A5FA', '#60A5FA', '#14B8A6', '#3B82F6'];
 
 export const ParetoChartComponent = () => {
   const ct = useChartTheme();
@@ -78,7 +78,7 @@ export const ParetoChartComponent = () => {
           <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
           <XAxis dataKey="name" stroke={ct.axis} fontSize={12} />
           <YAxis yAxisId="left" stroke={ct.axis} fontSize={12} />
-          <YAxis yAxisId="right" orientation="right" stroke="#F59E0B" fontSize={12} unit="%" />
+          <YAxis yAxisId="right" orientation="right" stroke="#60A5FA" fontSize={12} unit="%" />
           <Tooltip
             contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
             itemStyle={{ color: ct.tooltipText }}
@@ -88,7 +88,7 @@ export const ParetoChartComponent = () => {
               <Cell key={i} fill={PARETO_COLORS[i % PARETO_COLORS.length]} />
             ))}
           </Bar>
-          <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke="#F59E0B" strokeWidth={3} dot={{ fill: '#fff', stroke: '#F59E0B', strokeWidth: 2 }} />
+          <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke="#60A5FA" strokeWidth={3} dot={{ fill: '#fff', stroke: '#60A5FA', strokeWidth: 2 }} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
@@ -112,17 +112,17 @@ export const IshikawaDiagram = () => {
     <div className="w-full h-[300px]">
       <svg viewBox="0 0 700 300" className="w-full h-full" fontFamily="inherit">
         {/* Spine */}
-        <line x1="30" y1={SPINE_Y} x2="555" y2={SPINE_Y} stroke="#D97706" strokeOpacity="0.5" strokeWidth="2" />
+        <line x1="30" y1={SPINE_Y} x2="555" y2={SPINE_Y} stroke="#2563EB" strokeOpacity="0.5" strokeWidth="2" />
         {/* Arrowhead */}
-        <polygon points="555,135 595,150 555,165" fill="#D97706" />
-        <text x="608" y={SPINE_Y + 6} fill="#D97706" fontSize="18" fontWeight="900" letterSpacing="1">
+        <polygon points="555,135 595,150 555,165" fill="#2563EB" />
+        <text x="608" y={SPINE_Y + 6} fill="#2563EB" fontSize="18" fontWeight="900" letterSpacing="1">
           PROBLEMA
         </text>
 
         {top.map((cat, i) => (
           <g key={`t-${i}`}>
-            <line x1={cat.x - 90} y1="55" x2={cat.x} y2={SPINE_Y} stroke="#D97706" strokeOpacity="0.55" strokeWidth="2" />
-            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D97706" />
+            <line x1={cat.x - 90} y1="55" x2={cat.x} y2={SPINE_Y} stroke="#2563EB" strokeOpacity="0.55" strokeWidth="2" />
+            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#2563EB" />
             <text x={cat.x - 95} y="45" textAnchor="start" fill="#9CA3AF" fontSize="12" fontWeight="700" letterSpacing="0.5">
               {cat.label.toUpperCase()}
             </text>
@@ -131,8 +131,8 @@ export const IshikawaDiagram = () => {
 
         {bottom.map((cat, i) => (
           <g key={`b-${i}`}>
-            <line x1={cat.x - 90} y1="245" x2={cat.x} y2={SPINE_Y} stroke="#D97706" strokeOpacity="0.55" strokeWidth="2" />
-            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#D97706" />
+            <line x1={cat.x - 90} y1="245" x2={cat.x} y2={SPINE_Y} stroke="#2563EB" strokeOpacity="0.55" strokeWidth="2" />
+            <circle cx={cat.x} cy={SPINE_Y} r="3.5" fill="#2563EB" />
             <text x={cat.x - 95} y="262" textAnchor="start" fill="#9CA3AF" fontSize="12" fontWeight="700" letterSpacing="0.5">
               {cat.label.toUpperCase()}
             </text>
@@ -161,7 +161,7 @@ export const RadarChartComponent = () => {
           <PolarGrid stroke={ct.grid} />
           <PolarAngleAxis dataKey="subject" stroke={ct.axis} fontSize={10} />
           <PolarRadiusAxis angle={30} domain={[0, 150]} stroke={ct.grid} fontSize={10} />
-          <Radar name="Actual" dataKey="A" stroke="#D97706" fill="#D97706" fillOpacity={0.5} />
+          <Radar name="Actual" dataKey="A" stroke="#2563EB" fill="#2563EB" fillOpacity={0.5} />
           <Radar name="Target" dataKey="B" stroke="#14B8A6" fill="#14B8A6" fillOpacity={0.25} />
           <Tooltip 
             contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
@@ -192,8 +192,8 @@ export const TrendChartComponent = () => {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#D97706" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#D97706" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#2563EB" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
@@ -203,8 +203,8 @@ export const TrendChartComponent = () => {
             contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
             itemStyle={{ color: ct.tooltipText }}
           />
-          <Area type="monotone" dataKey="value" stroke="#D97706" fillOpacity={1} fill="url(#colorValue)" strokeWidth={3} />
-          <Area type="monotone" dataKey="pred" stroke="#F59E0B" strokeDasharray="5 5" fill="transparent" strokeWidth={2} />
+          <Area type="monotone" dataKey="value" stroke="#2563EB" fillOpacity={1} fill="url(#colorValue)" strokeWidth={3} />
+          <Area type="monotone" dataKey="pred" stroke="#60A5FA" strokeDasharray="5 5" fill="transparent" strokeWidth={2} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -489,13 +489,13 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
                     <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
                     <XAxis dataKey="name" stroke={ct.axis} fontSize={12} />
                     <YAxis yAxisId="left" stroke={ct.axis} fontSize={12} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#D97706" fontSize={12} unit="%" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#2563EB" fontSize={12} unit="%" />
                     <Tooltip 
                       contentStyle={{ backgroundColor: ct.tooltipBg, border: ct.tooltipBorder, borderRadius: '8px' }}
                       itemStyle={{ color: ct.tooltipText }}
                     />
-                    <Bar yAxisId="left" dataKey="value" fill="#D97706" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke={ct.axis} strokeWidth={3} dot={{ fill: '#D97706', stroke: '#fff', strokeWidth: 2 }} />
+                    <Bar yAxisId="left" dataKey="value" fill="#2563EB" radius={[4, 4, 0, 0]} />
+                    <Line yAxisId="right" type="monotone" dataKey="cumulative" stroke={ct.axis} strokeWidth={3} dot={{ fill: '#2563EB', stroke: '#fff', strokeWidth: 2 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -519,7 +519,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
                     <YAxis type="number" dataKey="y" name="Valor" stroke={ct.axis} />
                     <ZAxis range={[60, 100]} />
                     <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                    <Scatter name="Data" data={regressionData} fill="#D97706" />
+                    <Scatter name="Data" data={regressionData} fill="#2563EB" />
                     {regressionLine && (
                       <Line 
                         type="monotone" 

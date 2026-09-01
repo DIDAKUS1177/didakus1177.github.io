@@ -9,6 +9,9 @@ export const translations = {
       about: 'Conoce sobre mi',
       solutions: 'Soluciones',
       contact: 'Contacto',
+      portfolio: 'Portafolio',
+      portfolioFull: 'Portafolio de proyectos',
+      resume: 'Curriculum',
     },
     hero: {
       title: 'Diego Hernández',
@@ -94,6 +97,9 @@ export const translations = {
   },
   en: {
     nav: {
+      portfolio: 'Portfolio',
+      portfolioFull: 'Project portfolio',
+      resume: 'Resume',
       about: 'Know about me',
       solutions: 'Solutions',
       contact: 'Contact',
