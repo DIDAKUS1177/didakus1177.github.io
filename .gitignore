@@ -36,3 +36,8 @@ firebase-debug.log
 firebase-debug.*.log
 *-firebase-adminsdk-*.json
 serviceAccountKey.json
+
+# Archivos personales sueltos que a veces quedan en la raiz al generar
+# entregables para el usuario (presentaciones, cotizaciones); no son parte
+# del sitio.
+/*.pptx
