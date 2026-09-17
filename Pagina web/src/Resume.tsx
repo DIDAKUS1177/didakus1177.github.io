@@ -99,7 +99,8 @@ const InstituteLogo = ({ institute, className = 'h-6 max-w-[110px]' }: { institu
     );
   }
 
-  return <span className={`font-black tracking-tighter ${textStyle || 'text-gray-300'}`}>{institute}</span>;
+  // Mismo bug que la tabla: 'text-gray-300' solo se ve sobre fondo oscuro.
+  return <span className={`font-black tracking-tighter ${textStyle || 'text-gray-500 dark:text-gray-300'}`}>{institute}</span>;
 };
 
 const SITE_URL = 'https://didakus1177.github.io/';
@@ -609,7 +610,13 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           <div className="glass rounded-[32px] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-white/5 text-gray-400 font-bold uppercase text-[10px] tracking-wider">
+                {/* Esta tabla se escribio solo para modo oscuro (texto gris
+                    claro sobre fondo oscuro) y nunca se actualizo cuando el
+                    sitio paso a claro por defecto: el nombre del curso quedo
+                    en 1.24:1 de contraste sobre blanco, practicamente
+                    invisible. Cada color ahora tiene su version para cada
+                    tema. */}
+                <thead className="bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-4">Temática</th>
                     <th className="p-4">Curso</th>
@@ -619,19 +626,19 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
                     <th className="p-4">Fecha</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-gray-200 dark:divide-white/5">
                   {filteredCourses.map((course) => (
-                    <tr key={course.id} className="hover:bg-white/5 transition-colors">
+                    <tr key={course.id} className="hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">
                       <td className="p-4">
                         <span className="px-2 py-1 rounded bg-brand/20 text-brand text-[10px] font-bold uppercase">
                           {course.topic}
                         </span>
                       </td>
-                      <td className="p-4 font-medium text-gray-200">{course.name}</td>
+                      <td className="p-4 font-medium text-gray-900 dark:text-gray-200">{course.name}</td>
                       <td className="p-4"><InstituteLogo institute={course.institute} /></td>
-                      <td className="p-4 text-gray-400">{course.type}</td>
-                      <td className="p-4 text-gray-400">{course.hours !== 'NA' ? `${course.hours}h` : '-'}</td>
-                      <td className="p-4 text-gray-400">{course.month}/{course.year}</td>
+                      <td className="p-4 text-gray-600 dark:text-gray-400">{course.type}</td>
+                      <td className="p-4 text-gray-600 dark:text-gray-400">{course.hours !== 'NA' ? `${course.hours}h` : '-'}</td>
+                      <td className="p-4 text-gray-600 dark:text-gray-400">{course.month}/{course.year}</td>
                     </tr>
                   ))}
                 </tbody>
