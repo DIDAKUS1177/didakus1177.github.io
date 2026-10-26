@@ -161,7 +161,19 @@ const Lectura = ({ nota, lang, onCerrar }: { nota: Nota; lang: Idioma; onCerrar:
         {nota.etiqueta[lang]} · {nota.minutos} {t.lectura}
       </p>
       <h1 className="font-display text-[clamp(2.2rem,5.5vw,3.8rem)] leading-[1.02] tracking-tight mb-5">{c.titulo}</h1>
-      <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed pb-8 mb-4 border-b border-black/15 dark:border-white/15">{c.resumen}</p>
+      <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed pb-8 mb-8 border-b border-black/15 dark:border-white/15">{c.resumen}</p>
+      {nota.imagen && (
+        <figure className="mb-10">
+          <div className="aspect-[16/9] rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5">
+            <img src={nota.imagen.src} alt={nota.imagen.alt[lang]} className="w-full h-full object-cover" />
+          </div>
+          <figcaption className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            <a href={nota.imagen.url} target="_blank" rel="noreferrer" className="hover:text-brand underline underline-offset-2">
+              {nota.imagen.credito[lang]}
+            </a>
+          </figcaption>
+        </figure>
+      )}
       {c.bloques.map((b, i) => <Fragment key={i}>{BloqueVista({ b })}</Fragment>)}
       <div className="mt-14 pt-6 border-t border-black/15 dark:border-white/15">
         <h4 className="text-[11px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-3">{t.fuentes}</h4>
@@ -184,8 +196,13 @@ const ListaNotas = ({ lang, onAbrir }: { lang: Idioma; onAbrir: (id: string) => 
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 + i * 0.1, duration: 0.6 }}
-          className="group text-left p-6 sm:p-8 border-b md:border-b-0 md:border-r last:border-r-0 border-black/20 dark:border-white/20 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors flex flex-col min-h-[340px]"
+          className="group text-left p-6 sm:p-8 border-b md:border-b-0 md:border-r last:border-r-0 border-black/20 dark:border-white/20 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors flex flex-col min-h-[420px]"
         >
+          {n.imagen && (
+            <span className="block aspect-[16/9] w-full rounded-xl overflow-hidden mb-5 bg-black/5 dark:bg-white/5">
+              <img src={n.imagen.src} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            </span>
+          )}
           <span className="text-[11px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
             {String(i + 1).padStart(2, '0')} · {n.etiqueta[lang]}
           </span>

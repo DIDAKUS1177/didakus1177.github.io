@@ -310,3 +310,31 @@ section h2 {
   .reveal { opacity: 1; transform: none; transition: none !important; }
   .bob { animation: none; }
 }
+
+/* --- Mapa de proyectos --- */
+:root {
+  --mapa-mar: #e2e7eb;
+  --mapa-tierra: #f6f6f3;
+  --mapa-borde: #c3c7cc;
+  --mapa-activo: rgba(37, 99, 235, 0.2);
+  --mapa-activo-fuerte: rgba(37, 99, 235, 0.36);
+  --mapa-activo-borde: #2563eb;
+}
+.dark {
+  --mapa-mar: #0e1013;
+  --mapa-tierra: #1b1d22;
+  --mapa-borde: #2f323a;
+  --mapa-activo: rgba(96, 165, 250, 0.22);
+  --mapa-activo-fuerte: rgba(96, 165, 250, 0.38);
+  --mapa-activo-borde: #60a5fa;
+}
+.mapa-pais {
+  fill: var(--mapa-tierra);
+  stroke: var(--mapa-borde);
+  stroke-width: 0.7px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  transition: fill 0.25s;
+}
+.mapa-pais-activo { fill: var(--mapa-activo); stroke: var(--mapa-activo-borde); stroke-width: 1.2px; cursor: pointer; }
+.mapa-pais-activo:hover, .mapa-pais-actual { fill: var(--mapa-activo-fuerte); }

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Briefcase,
@@ -59,7 +59,7 @@ const RadarChartComponent = React.lazy(() => import('./charts').then(m => ({ def
 const TrendChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.TrendChartComponent })));
 const LiveDashboard = React.lazy(() => import('./charts').then(m => ({ default: m.LiveDashboard })));
 const DataAnalyzer = React.lazy(() => import('./charts').then(m => ({ default: m.DataAnalyzer })));
-import { WORLD_PATH } from './data/worldMap';
+import type { PaisMapa } from './data/mapaPaises';
 
 // --- Translations ---
 
@@ -118,42 +118,67 @@ const COUNTRIES = ['España', 'México', 'Colombia'] as const;
 
 // Banderas dibujadas como SVG: Windows no trae los glifos de emoji de bandera
 // y los renderiza como las dos letras del país ("ES" en vez de 🇪🇸).
-const Flag = ({ country, className = 'w-9' }: { country: string; className?: string }) => {
-  const shell = `${className} inline-block rounded-[3px] ring-1 ring-black/15 dark:ring-white/25 shadow-sm align-middle`;
-
-  if (country === 'España') {
-    return (
-      <svg viewBox="0 0 90 60" className={shell} role="img" aria-label="Bandera de España">
+// Banderas dibujadas en SVG (los emojis de bandera no se ven en Windows).
+// Cada una declara su tamaño y su dibujo; Flag la muestra suelta y BanderaMini
+// la incrusta dentro del mapa.
+const BANDERAS: Record<string, { w: number; h: number; cuerpo: React.ReactNode }> = {
+  'España': {
+    w: 90, h: 60,
+    cuerpo: (
+      <>
         <rect width="90" height="60" fill="#AA151B" />
         <rect y="15" width="90" height="30" fill="#F1BF00" />
-      </svg>
-    );
-  }
-
-  if (country === 'México') {
-    return (
-      <svg viewBox="0 0 105 60" className={shell} role="img" aria-label="Bandera de México">
+      </>
+    ),
+  },
+  'México': {
+    w: 105, h: 60,
+    cuerpo: (
+      <>
         <rect width="105" height="60" fill="#CE1126" />
         <rect width="70" height="60" fill="#FFFFFF" />
         <rect width="35" height="60" fill="#006847" />
         {/* Emblema simplificado: sin él se confunde con la bandera de Italia */}
         <circle cx="52.5" cy="30" r="8.5" fill="none" stroke="#8C6239" strokeWidth="1.8" />
         <path d="M46.5 28.5q6-6.5 12 0-6 5.5-12 0z" fill="#8C6239" />
-      </svg>
-    );
-  }
-
-  if (country === 'Colombia') {
-    return (
-      <svg viewBox="0 0 90 60" className={shell} role="img" aria-label="Bandera de Colombia">
+      </>
+    ),
+  },
+  'Colombia': {
+    w: 90, h: 60,
+    cuerpo: (
+      <>
         <rect width="90" height="60" fill="#CE1126" />
         <rect width="90" height="45" fill="#003893" />
         <rect width="90" height="30" fill="#FCD116" />
-      </svg>
-    );
-  }
+      </>
+    ),
+  },
+};
 
-  return null;
+const Flag = ({ country, className = 'w-9' }: { country: string; className?: string }) => {
+  const b = BANDERAS[country];
+  if (!b) return null;
+  const shell = `${className} inline-block rounded-[3px] ring-1 ring-black/15 dark:ring-white/25 shadow-sm align-middle`;
+  return (
+    <svg viewBox={`0 0 ${b.w} ${b.h}`} className={shell} role="img" aria-label={`Bandera de ${country}`}>
+      {b.cuerpo}
+    </svg>
+  );
+};
+
+// Bandera pequeña para dentro de un <svg> (las placas del mapa), con borde fino.
+const BanderaMini = ({ country, x, y, w }: { country: string; x: number; y: number; w: number }) => {
+  const b = BANDERAS[country];
+  if (!b) return null;
+  const s = w / b.w;
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <clipPath id={`bandera-${country}`}><rect width={b.w} height={b.h} rx={4 / s} /></clipPath>
+      <g clipPath={`url(#bandera-${country})`}>{b.cuerpo}</g>
+      <rect width={b.w} height={b.h} rx={4 / s} fill="none" stroke="rgba(0,0,0,0.22)" strokeWidth={1 / s} />
+    </g>
+  );
 };
 
 const PROJECTS: Project[] = [
@@ -341,7 +366,7 @@ const ProjectCarousel = ({ project }: { project: Project }) => {
 
 // Panel de países: reemplaza el mapa abstracto anterior, que no dejaba claro
 // dónde se hicieron los proyectos.
-// Coordenadas ya proyectadas (Mercator) sobre el lienzo de WORLD_PATH.
+// Coordenadas ya proyectadas (Mercator) sobre el lienzo de mapaPaises.ts.
 const CITY_XY: Record<string, { x: number; y: number }> = {
   'Madrid': { x: 821.5, y: 245.3 },
   'Ciudad de México': { x: 158.8, y: 415.0 },
@@ -363,17 +388,97 @@ const MAP_VIEWS: Record<string, { x: number; y: number; w: number; h: number }> 
   'Colombia': { x: 179, y: 415, w: 300, h: 210 },
 };
 
+// --- Mapa de proyectos -------------------------------------------------------
+// Un contorno por país (src/data/mapaPaises.ts, Natural Earth 50m). Los tres
+// países con proyectos se resaltan y se pueden tocar; el resto da contexto con
+// su nombre en letra fina. Los datos se cargan solo al abrir el portafolio.
+const MAPA_LON0 = -122, MAPA_LON1 = 22, MAPA_LAT0 = -30, MAPA_LAT1 = 62;
+const mercY = (lat: number) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+const mapaX = (lon: number) => ((lon - MAPA_LON0) / (MAPA_LON1 - MAPA_LON0)) * 1000;
+const mapaY = (lat: number) => ((mercY(MAPA_LAT1) - mercY(lat)) / (mercY(MAPA_LAT1) - mercY(MAPA_LAT0))) * 771.3;
+
+// País del portafolio -> código ISO numérico del contorno
+const ID_PAIS: Record<string, string> = { 'España': '724', 'México': '484', 'Colombia': '170' };
+const REGION_DE_ID: Record<string, string> = Object.fromEntries(Object.entries(ID_PAIS).map(([r, id]) => [id, r]));
+const PAIS_EN: Record<string, string> = { 'España': 'Spain', 'México': 'Mexico', 'Colombia': 'Colombia' };
+const nombrePais = (c: string, lang: 'es' | 'en') => (lang === 'es' ? c : PAIS_EN[c] ?? c);
+
+// Países con rótulo de contexto (clave: nombre en inglés de Natural Earth)
+const ROTULOS: Record<string, { es: string; en: string }> = {
+  'United States of America': { es: 'Estados Unidos', en: 'United States' },
+  'Canada': { es: 'Canadá', en: 'Canada' },
+  'Greenland': { es: 'Groenlandia', en: 'Greenland' },
+  'Iceland': { es: 'Islandia', en: 'Iceland' },
+  'Ireland': { es: 'Irlanda', en: 'Ireland' },
+  'United Kingdom': { es: 'Reino Unido', en: 'United Kingdom' },
+  'France': { es: 'Francia', en: 'France' },
+  'Portugal': { es: 'Portugal', en: 'Portugal' },
+  'Germany': { es: 'Alemania', en: 'Germany' },
+  'Italy': { es: 'Italia', en: 'Italy' },
+  'Switzerland': { es: 'Suiza', en: 'Switzerland' },
+  'Belgium': { es: 'Bélgica', en: 'Belgium' },
+  'Netherlands': { es: 'Países Bajos', en: 'Netherlands' },
+  'Norway': { es: 'Noruega', en: 'Norway' },
+  'Sweden': { es: 'Suecia', en: 'Sweden' },
+  'Poland': { es: 'Polonia', en: 'Poland' },
+  'Morocco': { es: 'Marruecos', en: 'Morocco' },
+  'Algeria': { es: 'Argelia', en: 'Algeria' },
+  'Tunisia': { es: 'Túnez', en: 'Tunisia' },
+  'Libya': { es: 'Libia', en: 'Libya' },
+  'Mauritania': { es: 'Mauritania', en: 'Mauritania' },
+  'Mali': { es: 'Malí', en: 'Mali' },
+  'Niger': { es: 'Níger', en: 'Niger' },
+  'Senegal': { es: 'Senegal', en: 'Senegal' },
+  'Nigeria': { es: 'Nigeria', en: 'Nigeria' },
+  'Cuba': { es: 'Cuba', en: 'Cuba' },
+  'Guatemala': { es: 'Guatemala', en: 'Guatemala' },
+  'Honduras': { es: 'Honduras', en: 'Honduras' },
+  'Nicaragua': { es: 'Nicaragua', en: 'Nicaragua' },
+  'Costa Rica': { es: 'Costa Rica', en: 'Costa Rica' },
+  'Panama': { es: 'Panamá', en: 'Panama' },
+  'Venezuela': { es: 'Venezuela', en: 'Venezuela' },
+  'Guyana': { es: 'Guyana', en: 'Guyana' },
+  'Ecuador': { es: 'Ecuador', en: 'Ecuador' },
+  'Peru': { es: 'Perú', en: 'Peru' },
+  'Brazil': { es: 'Brasil', en: 'Brazil' },
+  'Bolivia': { es: 'Bolivia', en: 'Bolivia' },
+  'Paraguay': { es: 'Paraguay', en: 'Paraguay' },
+  'Chile': { es: 'Chile', en: 'Chile' },
+  'Argentina': { es: 'Argentina', en: 'Argentina' },
+  'Uruguay': { es: 'Uruguay', en: 'Uruguay' },
+  'Dominican Rep.': { es: 'Rep. Dominicana', en: 'Dominican Rep.' },
+  'Haiti': { es: 'Haití', en: 'Haiti' },
+  'Jamaica': { es: 'Jamaica', en: 'Jamaica' },
+};
+
+const MARES = [
+  { es: 'Océano Atlántico', en: 'Atlantic Ocean', lon: -42, lat: 24 },
+  { es: 'Mar Caribe', en: 'Caribbean Sea', lon: -75.5, lat: 14.6 },
+  { es: 'Océano Pacífico', en: 'Pacific Ocean', lon: -112, lat: 1 },
+];
+
 const VB_W = 1000;
 const VB_H = 560;
 
 const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
   const [region, setRegion] = useState<string>('todos');
+  const [paises, setPaises] = useState<PaisMapa[] | null>(null);
+
+  useEffect(() => {
+    let vivo = true;
+    import('./data/mapaPaises').then((m) => { if (vivo) setPaises(m.PAISES_MAPA); });
+    return () => { vivo = false; };
+  }, []);
 
   const view = MAP_VIEWS[region];
   const k = Math.min(VB_W / view.w, VB_H / view.h);
   const tx = VB_W / 2 - (view.x + view.w / 2) * k;
   const ty = VB_H / 2 - (view.y + view.h / 2) * k;
   const to = (p: { x: number; y: number }) => ({ x: p.x * k + tx, y: p.y * k + ty });
+  const enPantalla = (p: { x: number; y: number }, margen = 14) =>
+    p.x > margen && p.x < VB_W - margen && p.y > margen && p.y < VB_H - margen;
+  const proyectosTxt = (n: number) =>
+    `${n} ${lang === 'es' ? (n === 1 ? 'proyecto' : 'proyectos') : (n === 1 ? 'project' : 'projects')}`;
 
   // Vista mundial: un pin por país. Vista de país: un pin por ciudad.
   const pins =
@@ -388,8 +493,9 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
           const n = PROJECTS.filter((p) => p.country === c).length;
           return {
             key: c,
-            label: c,
-            sub: `${n} ${lang === 'es' ? (n === 1 ? 'proyecto' : 'proyectos') : (n === 1 ? 'project' : 'projects')}`,
+            label: nombrePais(c, lang),
+            pais: c as string | null,
+            sub: proyectosTxt(n),
             ...to(avg),
             onClick: () => setRegion(c),
           };
@@ -399,7 +505,8 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
           return {
             key: city,
             label: city,
-            sub: `${n} ${lang === 'es' ? (n === 1 ? 'proyecto' : 'proyectos') : (n === 1 ? 'project' : 'projects')}`,
+            pais: null as string | null,
+            sub: proyectosTxt(n),
             ...to(CITY_XY[city]),
             onClick: () => {},
           };
@@ -410,14 +517,14 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
   // ningun ajuste de "arriba o abajo" las separa. En vez de eso, cada
   // etiqueta es una placa al costado del pin y se apilan en columna,
   // unidas al pin por una linea guia.
-  const ALTO_PLACA = 42;
+  const ALTO_PLACA = 46;
   const SEPARACION = 8;
 
   const placed = [...pins]
     .sort((a, b) => a.y - b.y)
     .map((p) => {
-      const anchoTexto = Math.max(p.label.length * 8.6, p.sub.length * 7.2);
-      const w = Math.round(anchoTexto + 26);
+      const anchoTexto = Math.max(p.label.length * 9.4, p.sub.length * 6.4);
+      const w = Math.round(anchoTexto + 26 + (p.pais ? 38 : 0));
       // Si no cabe a la derecha, la placa se voltea al otro lado del pin.
       const cabeDerecha = p.x + 22 + w < VB_W - 12;
       return { ...p, w, lado: cabeDerecha ? 1 : -1, cy: p.y };
@@ -434,6 +541,11 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
     ? placed[placed.length - 1].cy + ALTO_PLACA / 2 - (VB_H - 12)
     : 0;
   if (desborde > 0) placed.forEach((p) => { p.cy -= desborde; });
+
+  // Los países con proyectos se dibujan al final para que su borde quede encima.
+  const ordenados = paises
+    ? [...paises].sort((a, b) => Number(!!REGION_DE_ID[a.id]) - Number(!!REGION_DE_ID[b.id]))
+    : [];
 
   return (
     <div className="mb-20">
@@ -460,22 +572,53 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
             }`}
           >
             <Flag country={c} className="w-5" />
-            {c}
+            {nombrePais(c, lang)}
           </button>
         ))}
       </div>
 
-      <div className="relative rounded-[32px] overflow-hidden border border-gray-200 dark:border-white/5 bg-gray-100 dark:bg-white/[0.02]">
+      <div className="relative rounded-[32px] overflow-hidden border border-black/10 dark:border-white/10" style={{ background: 'var(--mapa-mar)' }}>
         <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className="w-full h-auto block" role="img"
              aria-label={lang === 'es' ? 'Mapa de países donde se han realizado proyectos' : 'Map of countries where projects were delivered'}>
-          {/* Tierra firme: se escala con el zoom */}
+          {/* Tierra firme: un contorno por país, se escala con el zoom */}
           <g style={{ transform: `translate(${tx}px, ${ty}px) scale(${k})`, transition: 'transform 700ms cubic-bezier(0.4,0,0.2,1)' }}>
-            <path
-              d={WORLD_PATH}
-              className="fill-gray-300 dark:fill-white/[0.07] stroke-gray-400 dark:stroke-white/10"
-              strokeWidth={0.5 / k}
-            />
+            {ordenados.map((p) => {
+              const r = REGION_DE_ID[p.id];
+              const clase = r ? `mapa-pais mapa-pais-activo${region === r ? ' mapa-pais-actual' : ''}` : 'mapa-pais';
+              return (
+                <path
+                  key={p.id}
+                  d={p.d}
+                  className={clase}
+                  onClick={r && region === 'todos' ? () => setRegion(r) : undefined}
+                />
+              );
+            })}
           </g>
+
+          {/* Nombres de mares y de países vecinos: fuera del grupo escalado, así
+              mantienen su tamaño y solo aparecen cuando caben en su país. */}
+          {region === 'todos' && MARES.map((m) => {
+            const pos = to({ x: mapaX(m.lon), y: mapaY(m.lat) });
+            return enPantalla(pos, 60) ? (
+              <text key={m.es} x={pos.x} y={pos.y} textAnchor="middle" fontSize="21" fontStyle="italic"
+                    letterSpacing="3" className="fill-gray-500/45 dark:fill-white/20 pointer-events-none"
+                    style={{ fontFamily: 'var(--font-display)' }}>
+                {m[lang]}
+              </text>
+            ) : null;
+          })}
+          {paises && paises.filter((p) => ROTULOS[p.en] && !REGION_DE_ID[p.id]).map((p) => {
+            const texto = ROTULOS[p.en][lang];
+            const pos = to(p);
+            if (p.w * k < texto.length * 6.6 + 12 || !enPantalla(pos, 26)) return null;
+            return (
+              <text key={p.id} x={pos.x} y={pos.y} textAnchor="middle" fontSize="9.5" fontWeight="600"
+                    letterSpacing="1.8" className="fill-gray-500/80 dark:fill-gray-400/55 pointer-events-none">
+                {texto.toUpperCase()}
+              </text>
+            );
+          })}
 
           {/* Pines: fuera del grupo escalado para que no crezcan con el zoom */}
           {placed.map((p, i) => (
@@ -497,37 +640,49 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
                 stroke="#2563EB" strokeWidth="1.5" opacity="0.55" fill="none"
               />
 
-              {/* Placa con el nombre y el conteo */}
-              <g transform={`translate(${p.x + p.lado * 16 - (p.lado < 0 ? p.w : 0)}, ${p.cy - 21})`}>
+              {/* Placa: bandera (si es un país), nombre en serif y conteo */}
+              <g transform={`translate(${p.x + p.lado * 16 - (p.lado < 0 ? p.w : 0)}, ${p.cy - ALTO_PLACA / 2})`}>
                 <rect
-                  width={p.w} height="42" rx="10"
-                  className="fill-white/95 dark:fill-[#1b1d22]/95 stroke-gray-300 dark:stroke-white/15"
+                  width={p.w} height={ALTO_PLACA} rx="12"
+                  className="fill-white/95 dark:fill-[#1b1d22]/95 stroke-black/15 dark:stroke-white/15"
                   strokeWidth="1"
                 />
+                {p.pais && <BanderaMini country={p.pais} x={12} y={(ALTO_PLACA - 20) / 2} w={30} />}
                 <text
-                  x="13" y="18"
+                  x={p.pais ? 52 : 14} y="21"
                   className="fill-gray-900 dark:fill-white"
-                  fontSize="15" fontWeight="800"
+                  fontSize="20"
+                  style={{ fontFamily: 'var(--font-display)' }}
                 >
                   {p.label}
                 </text>
-                <text x="13" y="33" fill="#2563EB" fontSize="12.5" fontWeight="700">
-                  {p.sub}
+                <text x={p.pais ? 52 : 14} y="36" fill="#2563EB" fontSize="10.5" fontWeight="700" letterSpacing="1">
+                  {p.sub.toUpperCase()}
                 </text>
               </g>
             </g>
           ))}
         </svg>
 
-        <p className="absolute bottom-3 left-5 text-[10px] text-gray-500 dark:text-gray-600">
+        {/* Título de la vista de país: bandera y nombre grande en serif */}
+        {region !== 'todos' && (
+          <div className="absolute top-4 left-5 flex items-center gap-3 pl-3 pr-5 py-2 rounded-2xl bg-white/80 dark:bg-black/50 backdrop-blur-sm border border-black/10 dark:border-white/10 pointer-events-none">
+            <Flag country={region} className="w-10" />
+            <span className="font-display text-4xl leading-none">{nombrePais(region, lang)}</span>
+          </div>
+        )}
+
+        <p className="absolute bottom-3 left-5 text-[10px] text-gray-500 dark:text-gray-500">
           {region === 'todos'
             ? (lang === 'es' ? 'Toca un país para ver sus ciudades' : 'Tap a country to see its cities')
             : (lang === 'es' ? 'Ciudades donde se ejecutaron los proyectos' : 'Cities where projects were delivered')}
         </p>
+        <p className="absolute bottom-3 right-5 text-[10px] text-gray-500/80 dark:text-gray-500">Natural Earth</p>
       </div>
     </div>
   );
 };
+
 
 // Banda de cierre del inicio: lleva a la pagina de Proyectos.
 // Antes habia una franja de cifras (proyectos / paises / certificaciones);

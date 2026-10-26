@@ -19,8 +19,18 @@ export interface Contenido {
   bloques: Bloque[];
 }
 
+// Imagen de portada con licencia libre de Wikimedia Commons. El credito se
+// muestra junto a la imagen, como exigen las licencias.
+export interface ImagenNota {
+  src: string;
+  alt: { es: string; en: string };
+  credito: { es: string; en: string };
+  url: string; // pagina del archivo en Commons
+}
+
 export interface Nota {
   id: string;
+  imagen?: ImagenNota;
   etiqueta: { es: string; en: string };
   minutos: number;
   es: Contenido;
@@ -32,6 +42,12 @@ export const NOTAS: Nota[] = [
   // ---------------------------------------------------------------- 1
   {
     id: 'modelos-de-inferencia',
+    imagen: {
+      src: '/biblioteca/modelos-de-inferencia.webp',
+      alt: { es: 'Tablero de Galton con la curva normal dibujada sobre las bolas', en: 'Galton board with the normal curve drawn over the balls' },
+      credito: { es: 'Mark Hebner, CC BY-SA 4.0, vía Wikimedia Commons (recortada)', en: 'Mark Hebner, CC BY-SA 4.0, via Wikimedia Commons (cropped)' },
+      url: 'https://commons.wikimedia.org/wiki/File:GaltonBoard.png',
+    },
     etiqueta: { es: 'Estadística y datos', en: 'Statistics and data' },
     minutos: 6,
     es: {
@@ -217,6 +233,12 @@ export const NOTAS: Nota[] = [
   // ---------------------------------------------------------------- 2
   {
     id: 'escorias-de-alto-horno',
+    imagen: {
+      src: '/biblioteca/escorias-de-alto-horno.webp',
+      alt: { es: 'Sangría de escoria en un horno experimental, con vapor y un tanque al fondo', en: 'Slag tapping at an experimental blast furnace, with steam and a tank behind' },
+      credito: { es: 'Fotografía histórica, autor desconocido, dominio público, vía Wikimedia Commons (recortada)', en: 'Historical photograph, author unknown, public domain, via Wikimedia Commons (cropped)' },
+      url: 'https://commons.wikimedia.org/wiki/File:THC_2003.902.232_Tapping_Slag_from_Experimental_Blast_Furnace.tiff',
+    },
     etiqueta: { es: 'Metalurgia', en: 'Metallurgy' },
     minutos: 7,
     es: {
@@ -362,6 +384,12 @@ export const NOTAS: Nota[] = [
   // ---------------------------------------------------------------- 3
   {
     id: 'sistemas-integrados-de-gestion',
+    imagen: {
+      src: '/biblioteca/sistemas-integrados-de-gestion.webp',
+      alt: { es: 'Ciclo PHVA: planear, hacer, verificar y actuar', en: 'PDCA cycle: plan, do, check and act' },
+      credito: { es: 'Karn G. Bulsuk (bulsuk.com), CC BY-SA 3.0, vía Wikimedia Commons (recortada)', en: 'Karn G. Bulsuk (bulsuk.com), CC BY-SA 3.0, via Wikimedia Commons (cropped)' },
+      url: 'https://commons.wikimedia.org/wiki/File:PDCA-Cycle.png',
+    },
     etiqueta: { es: 'Calidad y gestión', en: 'Quality and management' },
     minutos: 6,
     es: {
