@@ -6,7 +6,7 @@ import { BarChart3, Bot, Database, FileJson, LineChart, Zap } from 'lucide-react
 export const translations = {
   es: {
     nav: {
-      about: 'Conoce sobre mi',
+      about: 'Conoce sobre mí',
       solutions: 'Soluciones',
       contact: 'Contacto',
       portfolio: 'Portafolio',
@@ -171,7 +171,7 @@ export const translations = {
       gmail: 'Send Email (Gmail)',
       whatsapp: 'Direct WhatsApp',
       whatsappPersonal: 'Personal WhatsApp',
-      whatsappMx: 'Mexico WhatsApp',
+      whatsappMx: 'México WhatsApp',
       linkedin: 'LinkedIn Profile',
       phone: 'Call Direct',
       formTitle: 'Or write to me directly',

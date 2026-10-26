@@ -186,6 +186,27 @@ const REFERENCES = [
 // aparecen solas, sin tocar nada más.
 const EXPERIENCE = [
   {
+    id: 'erpsoft',
+    photos: 0,
+    title: 'Desarrollador de Software PHP (OPS)',
+    org: 'ERPSOFT S.A.S.',
+    period: 'May 2026 – Actualidad',
+    bullets: [
+      'Desarrollo en PHP y SQL Server del sistema de declaración del impuesto de Industria y Comercio (ICA), retención y autorretención para las alcaldías de Paipa, Guateque, Macanal y Sutatenza, con formularios en PDF firmados.',
+      'Pagos en línea con Wompi y PSE, pago manual con cálculo de intereses, recaudo por documento y módulo de informes.',
+      'Portal del impuesto predial de Paipa en producción: liquidación, pago por PSE y paz y salvo oficial con firma.',
+    ],
+    en: {
+      title: 'PHP Software Developer (contractor)',
+      period: 'May 2026 – Present',
+      bullets: [
+        'PHP and SQL Server development of the municipal business tax (ICA), withholding and self-withholding filing system for the municipalities of Paipa, Guateque, Macanal and Sutatenza, with signed PDF forms.',
+        'Online payments with Wompi and PSE, manual payment with interest calculation, collection by document and a reporting module.',
+        'Paipa property tax portal in production: assessment, PSE payment and an official signed clearance certificate.',
+      ],
+    },
+  },
+  {
     id: 'ccd-uptc',
     photos: 0,
     title: 'Gestor de Proyectos y Procesos (OPS)',
@@ -196,6 +217,15 @@ const EXPERIENCE = [
       'Implementé metodologías ágiles para la gestión de proyectos conjuntos, asegurando el cumplimiento de cronogramas y entregables clave.',
       'Desarrollé tableros de control y KPIs para el monitoreo en tiempo real del desempeño de los proyectos asignados.',
     ],
+    en: {
+      title: 'Project and Process Manager (contractor)',
+      period: 'Sep 2025 – Feb 2026',
+      bullets: [
+        'Led the restructuring and analysis of operating processes, achieving a standardization that shortened inter-institutional response times.',
+        'Applied agile methods to joint project management, meeting schedules and key deliverables.',
+        'Built dashboards and KPIs to monitor the performance of the assigned projects in real time.',
+      ],
+    },
   },
   {
     id: 'bhr',
@@ -208,18 +238,38 @@ const EXPERIENCE = [
       'Automatización de la recopilación y regeneración de reportes, reduciendo significativamente los tiempos de procesamiento manual y errores operativos.',
       'Implementación de sistemas de análisis de datos para la interpretación masiva de encuestas y métricas de impacto social y empresarial.',
     ],
+    en: {
+      title: 'Software Developer and Data Analyst',
+      period: 'Project-based',
+      bullets: [
+        'Custom software to digitize forms and field data collection.',
+        'Automated data collection and report regeneration, significantly reducing manual processing time and operational errors.',
+        'Data analysis systems for large-scale interpretation of surveys and social and business impact metrics.',
+      ],
+    },
   },
   {
     id: 'ademincol',
     photos: 0,
-    title: 'Ingeniero Desarrollador e Integral de Activos',
+    title: 'Ingeniero Desarrollador de Integridad de Activos',
     org: 'ADEMINCOL',
     period: 'Jul 2024 – Actualidad',
     bullets: [
-      'Gestión integral de integridad de activos industriales aplicando normativas API (580, 581, 570) y ASME.',
-      'Transformación digital de procesos de inspección mediante el desarrollo de aplicaciones y análisis de datos con Python, R y SQL.',
+      'Gestión de integridad de activos industriales aplicando normativas API (580, 581, 570) y ASME.',
+      'Integración de 20 aplicaciones móviles de inspección en una plataforma propia (FastAPI, PostgreSQL y React) que genera los informes técnicos en Excel y PDF.',
+      'Migración del programa de inspección basada en riesgo (API 581) a Python, validado en 433 de 433 variables contra el caso de referencia.',
       'Diseño de dashboards en Power BI para la visualización de riesgos y toma de decisiones basada en datos (RBI).',
     ],
+    en: {
+      title: 'Asset Integrity Developer Engineer',
+      period: 'Jul 2024 – Present',
+      bullets: [
+        'Industrial asset integrity management under API (580, 581, 570) and ASME standards.',
+        'Integrated 20 mobile inspection apps into an in-house platform (FastAPI, PostgreSQL and React) that generates the technical reports in Excel and PDF.',
+        'Migrated the risk-based inspection program (API 581) to Python, validated on 433 of 433 variables against the reference case.',
+        'Power BI dashboards for risk visualization and data-driven decisions (RBI).',
+      ],
+    },
   },
   {
     id: 'laboratorio',
@@ -231,6 +281,14 @@ const EXPERIENCE = [
       'Ejecuté auditorías internas bajo normas ISO 17025 e ISO 9001, optimizando el sistema de gestión documental.',
       'Implementé controles en Power BI para el seguimiento de indicadores de calidad en tiempo real.',
     ],
+    en: {
+      title: 'Quality and Process Auditor',
+      period: 'Feb 2024 – Apr 2024',
+      bullets: [
+        'Ran internal audits under ISO 17025 and ISO 9001, improving the document management system.',
+        'Built Power BI controls to track quality indicators in real time.',
+      ],
+    },
   },
   {
     id: 'paz-del-rio',
@@ -243,6 +301,15 @@ const EXPERIENCE = [
       'Desarrollé e implementé herramientas de control en Power BI y Excel Avanzado, mejorando la visibilidad operativa y la toma de decisiones.',
       'Apoyé la implementación y mantenimiento de sistemas de gestión integral (Hitch) bajo normas ISO.',
     ],
+    en: {
+      title: 'Continuous Improvement Engineer – Blast Furnace',
+      period: 'Jan 2023 – Dec 2023',
+      bullets: [
+        'Led continuous improvement projects with statistical tools (Minitab, Python) to find and remove production bottlenecks.',
+        'Built control tools in Power BI and advanced Excel, improving operational visibility and decision-making.',
+        'Supported the implementation and upkeep of integrated management systems (Hitch) under ISO standards.',
+      ],
+    },
   },
 ];
 
@@ -251,16 +318,7 @@ const EXPERIENCE = [
 const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lang: 'es' | 'en' }) => {
   const [i, setI] = useState(0);
 
-  if (exp.photos === 0) {
-    return (
-      <div className="aspect-[16/9] rounded-2xl border border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center gap-1.5 mb-5 bg-gray-50 dark:bg-white/[0.015]">
-        <ImageIcon size={18} className="text-gray-400 dark:text-gray-600" />
-        <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-600">
-          {lang === 'es' ? 'Espacio para fotos' : 'Space for photos'}
-        </p>
-      </div>
-    );
-  }
+  if (exp.photos === 0) return null;
 
   return (
     <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-5 bg-gray-200 dark:bg-black/40 group/exp">
@@ -268,7 +326,7 @@ const ExperiencePhotos = ({ exp, lang }: { exp: (typeof EXPERIENCE)[number]; lan
         <img
           key={n}
           src={`/experiencia/${exp.id}/${n + 1}.webp`}
-          alt={`${exp.title} — ${n + 1}`}
+          alt={`${lang === 'es' ? exp.title : exp.en.title} — ${n + 1}`}
           loading="lazy"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
             n === i ? 'opacity-100' : 'opacity-0'
@@ -480,7 +538,9 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             {lang === 'es' ? 'PERFIL PROFESIONAL' : 'PROFESSIONAL PROFILE'}
           </h3>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-            Ingeniero Metalúrgico y Especialista en Gestión de la Productividad y Mejoramiento Continuo, con sólida trayectoria en la transformación de procesos industriales y análisis de datos. Experto en la implementación de metodologías de mejora continua (Lean Manufacturing, Six Sigma, Kaizen) y desarrollo de software para la automatización de reportes y toma de decisiones. Poseo dominio avanzado de herramientas de Business Intelligence (Power BI, Tableau) y lenguajes de programación (Python, R, SQL). Cuento con experiencia liderando proyectos de estandarización operativa y auditorías de calidad (ISO 9001, 14001, 45001). Destaco por mi capacidad para generar impacto en los resultados del negocio a través de soluciones tecnológicas ágiles y gestión estratégica de la información.
+            {lang === 'es'
+              ? `Ingeniero Metalúrgico y Especialista en Gestión de la Productividad y Mejoramiento Continuo, con sólida trayectoria en la transformación de procesos industriales y análisis de datos. Experto en la implementación de metodologías de mejora continua (Lean Manufacturing, Six Sigma, Kaizen) y desarrollo de software para la automatización de reportes y toma de decisiones. Poseo dominio avanzado de herramientas de Business Intelligence (Power BI, Tableau) y lenguajes de programación (Python, R, SQL). Cuento con experiencia liderando proyectos de estandarización operativa y auditorías de calidad (ISO 9001, 14001, 45001). Destaco por mi capacidad para generar impacto en los resultados del negocio a través de soluciones tecnológicas ágiles y gestión estratégica de la información.`
+              : `Metallurgical Engineer with a specialization in Productivity Management and Continuous Improvement, with a solid track record in transforming industrial processes and analyzing data. Expert in applying continuous improvement methods (Lean Manufacturing, Six Sigma, Kaizen) and in software development to automate reporting and decision-making. Advanced command of Business Intelligence tools (Power BI, Tableau) and programming languages (Python, R, SQL). Experience leading operational standardization projects and quality audits (ISO 9001, 14001, 45001). I stand out for creating business impact through agile technology solutions and strategic information management.`}
           </p>
         </motion.div>
 
@@ -500,12 +560,12 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             {EXPERIENCE.map((exp) => (
               <div key={exp.id} className="glass p-6 rounded-3xl border-l-4 border-l-brand flex flex-col">
                 <ExperiencePhotos exp={exp} lang={lang} />
-                <h4 className="text-lg font-bold leading-snug">{exp.title}</h4>
+                <h4 className="text-lg font-bold leading-snug">{lang === 'es' ? exp.title : exp.en.title}</h4>
                 <div className="text-brand text-xs font-bold mb-4 mt-1">
-                  {exp.org} | {exp.period}
+                  {exp.org} | {lang === 'es' ? exp.period : exp.en.period}
                 </div>
                 <ul className="list-disc list-outside pl-4 text-sm text-gray-600 dark:text-gray-400 space-y-2">
-                  {exp.bullets.map((b, k) => <li key={k}>{b}</li>)}
+                  {(lang === 'es' ? exp.bullets : exp.en.bullets).map((b, k) => <li key={k}>{b}</li>)}
                 </ul>
               </div>
             ))}

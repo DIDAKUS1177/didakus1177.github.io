@@ -34,11 +34,10 @@ import {
   Code,
   Plus,
   Sun,
-  Moon
+  Moon,
+  Menu,
+  X
 } from 'lucide-react';
-import {
-  Area} from 'recharts';
-
 import { translations } from './translations';
 
 // Cargados en diferido: Recharts y PapaParse pesan mas que todo el resto
@@ -1224,7 +1223,7 @@ const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyect
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-10">
           {lang === 'es'
-            ? 'Plataformas, dashboards y automatizaciones en produccion en Espana, Mexico y Colombia.'
+            ? 'Plataformas, dashboards y automatizaciones en producción en España, México y Colombia.'
             : 'Platforms, dashboards and automations running in production across Spain, Mexico and Colombia.'}
         </p>
         <button
@@ -1425,13 +1424,40 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
 };
 
 
+type Pagina = 'home' | 'resume' | 'datalab' | 'projects';
+const PAGINAS_INTERNAS: Pagina[] = ['resume', 'datalab', 'projects'];
+const paginaDesdeHash = (): Pagina => {
+  const hash = window.location.hash.replace('#', '') as Pagina;
+  return PAGINAS_INTERNAS.includes(hash) ? hash : 'home';
+};
+
 export default function App() {
   const [lang, setLang] = useState<'es' | 'en'>('es');
-  const [currentPage, setCurrentPage] = useState<'home' | 'resume' | 'datalab' | 'projects'>('home');
+  const [currentPage, setCurrentPageState] = useState<Pagina>(paginaDesdeHash());
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [bgIndex, setBgIndex] = useState(0);
 
   const t = translations[lang];
+
+  // Cambiar de pagina deja una entrada en el historial: asi el boton "atras"
+  // del navegador vuelve al inicio en vez de salir del sitio, y se puede
+  // enviar un enlace directo al curriculum (#resume).
+  const setCurrentPage = (page: Pagina) => {
+    setCurrentPageState(page);
+    setMenuAbierto(false);
+    window.history.pushState(null, '', page === 'home' ? window.location.pathname : `#${page}`);
+    window.scrollTo(0, 0);
+  };
+
+  React.useEffect(() => {
+    const alCambiarHistorial = () => {
+      setCurrentPageState(paginaDesdeHash());
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('popstate', alCambiarHistorial);
+    return () => window.removeEventListener('popstate', alCambiarHistorial);
+  }, []);
 
   React.useEffect(() => {
     if (theme === 'dark') {
@@ -1497,16 +1523,16 @@ export default function App() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-gray-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <a href="#hero" className="flex items-center gap-3">
-            <span className="font-black text-lg md:text-xl tracking-tighter uppercase">
+            <span className="font-black text-lg md:text-xl tracking-tighter uppercase whitespace-nowrap">
               Diego <span className="text-brand">Hernández</span>
             </span>
-            <span className="hidden lg:block text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-[0.2em] border-l border-gray-300 dark:border-white/10 pl-3">
+            <span className="hidden xl:block whitespace-nowrap text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-[0.2em] border-l border-gray-300 dark:border-white/10 pl-3">
               Desarrollo &middot; Analítica Industrial &amp; IA
             </span>
           </a>
 
-          <div className="flex items-center gap-8">
-            <div className="hidden md:flex items-center gap-6 font-medium text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-4 lg:gap-6">
+            <div className="hidden lg:flex items-center gap-5 xl:gap-6 font-medium text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
               {/* Portafolio y Curriculum van primero y juntos: son las dos
                   paginas que un reclutador busca, y antes quedaban en cuarto
                   y sexto lugar entre anclas de la misma pagina. */}
@@ -1519,23 +1545,48 @@ export default function App() {
               <button onClick={() => setCurrentPage('datalab')} className="hover:text-gray-900 dark:hover:text-white transition-colors">Data Lab</button>
               <a href="#contact" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.contact}</a>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-gray-600 dark:text-gray-300"
+              aria-label={lang === 'es' ? 'Cambiar entre tema claro y oscuro' : 'Switch between light and dark theme'}
+              className="p-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-gray-600 dark:text-gray-300"
             >
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            <button 
+            <button
               onClick={toggleLang}
+              aria-label={lang === 'es' ? 'Cambiar idioma a inglés' : 'Switch language to Spanish'}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
             >
               <Languages size={14} className="text-brand" />
               {lang}
             </button>
+
+            {/* Menu de celular y tableta: antes no habia ninguna forma de
+                llegar a las secciones desde un telefono. */}
+            <button
+              onClick={() => setMenuAbierto(!menuAbierto)}
+              aria-label={lang === 'es' ? 'Abrir el menú' : 'Open the menu'}
+              aria-expanded={menuAbierto}
+              className="lg:hidden p-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-gray-600 dark:text-gray-300"
+            >
+              {menuAbierto ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </div>
+
+        {menuAbierto && (
+          <div className="lg:hidden border-t border-gray-200 dark:border-white/5 px-6 py-4 flex flex-col text-base font-medium text-gray-700 dark:text-gray-300 bg-white/95 dark:bg-brand-black/95">
+            <button onClick={() => setCurrentPage('projects')} className="py-3 text-left font-bold text-brand">{t.nav.portfolio}</button>
+            <button onClick={() => setCurrentPage('resume')} className="py-3 text-left font-bold text-brand">{t.nav.resume}</button>
+            <a href="#about" onClick={() => setMenuAbierto(false)} className="py-3">{t.nav.about}</a>
+            <a href="#solutions" onClick={() => setMenuAbierto(false)} className="py-3">{t.nav.solutions}</a>
+            <a href="#process" onClick={() => setMenuAbierto(false)} className="py-3">{lang === 'es' ? 'Cómo trabajo' : 'How I work'}</a>
+            <button onClick={() => setCurrentPage('datalab')} className="py-3 text-left">Data Lab</button>
+            <a href="#contact" onClick={() => setMenuAbierto(false)} className="py-3">{t.nav.contact}</a>
+          </div>
+        )}
       </nav>
 
       {/* --- Hero --- */}
@@ -1597,7 +1648,7 @@ export default function App() {
             {t.hero.subtitle}
           </motion.div>
           
-          <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-[0.9] overflow-hidden">
+          <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-[1.02]">
             <motion.span
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1775,8 +1826,8 @@ export default function App() {
             <h3 className="text-3xl md:text-4xl font-black mb-4 mt-3">{t.analytics.title}</h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               {lang === 'es'
-                ? 'Estos son los análisis que entrego dentro de los proyectos: no son imágenes de ejemplo, son los gráficos reales que uso para encontrar dónde está el problema.'
-                : 'These are the analyses I deliver inside projects: not stock images, but the actual charts I use to find where the problem is.'}
+                ? 'Estos son los tipos de análisis que entrego dentro de los proyectos para encontrar dónde está el problema. Aquí se muestran con datos de ejemplo; en un proyecto se construyen con los datos de tu operación.'
+                : 'These are the kinds of analyses I deliver inside projects to find where the problem is. They are shown here with sample data; in a project they are built from the data of your own operation.'}
             </p>
           </div>
 
@@ -2024,12 +2075,12 @@ export default function App() {
       </footer>
 
       {/* --- Floating Action Buttons --- */}
-      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-[100]">
+      <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 flex flex-col gap-3 sm:gap-4 z-[100]">
         <a 
           href="https://wa.me/573337279204" 
           target="_blank"
           rel="noreferrer"
-          className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(37,99,235,0.45)] hover:scale-110 transition-transform group relative"
+          className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(37,99,235,0.45)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsapp}
         >
           <MessageCircle className="text-white" size={28} />
@@ -2042,7 +2093,7 @@ export default function App() {
           href="https://wa.me/573216291861" 
           target="_blank"
           rel="noreferrer"
-          className="w-14 h-14 bg-cyan-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(8,145,178,0.35)] hover:scale-110 transition-transform group relative"
+          className="w-12 h-12 sm:w-14 sm:h-14 bg-cyan-600 rounded-full hidden sm:flex items-center justify-center shadow-[0_10px_30px_rgba(8,145,178,0.35)] hover:scale-110 transition-transform group relative"
           title={t.contact.whatsappPersonal}
         >
           <User className="text-white" size={28} />
@@ -2055,7 +2106,7 @@ export default function App() {
           href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" 
           target="_blank"
           rel="noreferrer"
-          className="w-14 h-14 bg-[#0A66C2] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(10,102,194,0.3)] hover:scale-110 transition-transform group relative"
+          className="w-12 h-12 sm:w-14 sm:h-14 bg-[#0A66C2] rounded-full hidden sm:flex items-center justify-center shadow-[0_10px_30px_rgba(10,102,194,0.3)] hover:scale-110 transition-transform group relative"
           title={t.contact.linkedin}
         >
           <Linkedin className="text-white" size={28} />
@@ -2068,7 +2119,7 @@ export default function App() {
           href="https://github.com/DIDAKUS1177/didakus1177.github.io" 
           target="_blank"
           rel="noreferrer"
-          className="w-14 h-14 bg-[#333] rounded-full flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          className="w-12 h-12 sm:w-14 sm:h-14 bg-[#333] rounded-full hidden sm:flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
           title="GitHub"
         >
           <Github className="text-white" size={28} />
@@ -2083,7 +2134,7 @@ export default function App() {
             funciona en ambos temas sin depender de la variante dark. */}
         <button
           onClick={openGmail}
-          className="w-14 h-14 bg-slate-600 rounded-full flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          className="w-12 h-12 sm:w-14 sm:h-14 bg-slate-600 rounded-full flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
           title={t.contact.gmail}
         >
           <Mail className="text-white" size={28} />

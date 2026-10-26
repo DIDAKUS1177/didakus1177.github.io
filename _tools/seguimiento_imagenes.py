@@ -21,7 +21,7 @@ BOVEDA = os.path.join('G:', os.sep, 'Mi unidad', 'Obsidian',
 NOTA = os.path.join(BOVEDA, 'Perfil profesional - Imagenes.md')
 PUBLIC = os.path.join(RAIZ, 'public')
 FUENTES = os.path.join(os.environ['WINDIR'], 'Fonts')
-SALIDA = os.path.join(RAIZ, 'public', 'Seguimiento_Imagenes_Sitio.pdf')
+SALIDA = os.path.join(RAIZ, 'Seguimiento_Imagenes_Sitio.pdf')  # fuera de public/: es de uso interno
 
 AMBAR = (180, 83, 9)
 AMBAR_CLARO = (254, 243, 199)
