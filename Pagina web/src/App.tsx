@@ -4,7 +4,7 @@
  */
 
 import React, { Suspense, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { 
   Briefcase,
   BarChart3, 
@@ -37,6 +37,8 @@ import {
   Moon,
   ChevronDown,
   ArrowUpRight,
+  Pause,
+  Play,
   Brain,
   Boxes,
   Workflow,
@@ -1646,7 +1648,7 @@ const paginaDesdeHash = (): Pagina => {
   return PAGINAS_INTERNAS.includes(hash) ? hash : 'home';
 };
 
-export default function App() {
+function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimiento: (v: boolean) => void }) {
   const [lang, setLang] = useState<'es' | 'en'>('es');
   const [currentPage, setCurrentPageState] = useState<Pagina>(paginaDesdeHash());
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -1710,7 +1712,7 @@ export default function App() {
   // Revelado al hacer scroll: los titulos y las tarjetas que estan debajo de
   // la pantalla entran con un fundido suave. Si algo falla, quedan visibles.
   React.useEffect(() => {
-    if (currentPage !== 'home' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (currentPage !== 'home' || !movimiento) return;
     const objetivos = Array.from(
       document.querySelectorAll<HTMLElement>('#solutions h2, #solutions h2 + p, #process h2, #process h2 + p, #contact h2, #contact h2 + p, #solutions .glass, #process .glass, #contact .glass, #analytics h3')
     ).filter((el) => el.getBoundingClientRect().top > window.innerHeight);
@@ -1731,7 +1733,7 @@ export default function App() {
     }, { rootMargin: '0px 0px -60px 0px', threshold: 0.08 });
     objetivos.forEach((el) => observador.observe(el));
     return () => observador.disconnect();
-  }, [currentPage, lang]);
+  }, [currentPage, lang, movimiento]);
 
   // Los botones flotantes aparecen al salir del inicio: ahi tapaban las
   // entradas de portafolio y curriculum.
@@ -1764,6 +1766,8 @@ export default function App() {
       theme={theme}
       onTema={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       onIdioma={toggleLang}
+      movimiento={movimiento}
+      onMovimiento={() => setMovimiento(!movimiento)}
     />
   );
 
@@ -1847,6 +1851,14 @@ export default function App() {
             >
               {lang === 'es' ? 'Índice' : 'Index'}
               <ChevronDown size={15} className={`transition-transform ${menuAbierto ? 'rotate-180' : ''}`} />
+            </button>
+            <button
+              onClick={() => setMovimiento(!movimiento)}
+              aria-label={movimiento ? (lang === 'es' ? 'Pausar las animaciones' : 'Pause animations') : (lang === 'es' ? 'Activar las animaciones' : 'Turn animations on')}
+              aria-pressed={!movimiento}
+              className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+            >
+              {movimiento ? <Pause size={17} /> : <Play size={17} />}
             </button>
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -2409,5 +2421,24 @@ export default function App() {
         }
       `}} />
     </div>
+  );
+}
+
+// El movimiento va encendido por defecto, sin depender de la preferencia del
+// sistema; el boton de pausa lo apaga y la eleccion se recuerda.
+export default function App() {
+  const [movimiento, setMovimiento] = useState<boolean>(() => {
+    try { return localStorage.getItem('movimiento') !== 'off'; } catch { return true; }
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.movimiento = movimiento ? 'on' : 'off';
+    try { localStorage.setItem('movimiento', movimiento ? 'on' : 'off'); } catch { /* sin almacenamiento */ }
+  }, [movimiento]);
+
+  return (
+    <MotionConfig reducedMotion={movimiento ? 'never' : 'always'}>
+      <Sitio movimiento={movimiento} setMovimiento={setMovimiento} />
+    </MotionConfig>
   );
 }

@@ -2,7 +2,7 @@
 // se revelan al llegar a la sección y se desplazan a distinto ritmo al hacer
 // scroll (paralaje). Las imágenes son de public/experiencia/paz-del-rio.
 import { useRef } from 'react';
-import { motion, MotionConfig, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 
 type Idioma = 'es' | 'en';
 
@@ -26,7 +26,7 @@ export function SobreMi({ titulo, lang }: { titulo: string; lang: Idioma }) {
       ];
 
   return (
-    <MotionConfig reducedMotion="user">
+    <>
       <section id="about" className="py-28 px-5 sm:px-8 overflow-hidden">
         <div ref={ref} className="max-w-7xl mx-auto grid lg:grid-cols-[1fr_1.15fr] gap-14 lg:gap-20 items-center">
           <div className="max-w-xl">
@@ -108,6 +108,6 @@ export function SobreMi({ titulo, lang }: { titulo: string; lang: Idioma }) {
           </div>
         </div>
       </section>
-    </MotionConfig>
+    </>
   );
 }

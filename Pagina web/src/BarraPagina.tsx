@@ -1,13 +1,13 @@
 // Barra superior de las páginas internas (Portafolio, Currículum y Biblioteca).
 // Es la misma de la portada: nombre a la izquierda, Portafolio y Currículum
 // siempre a la vista y los controles de tema e idioma a la derecha.
-import { ArrowLeft, Moon, Sun } from 'lucide-react';
+import { ArrowLeft, Moon, Pause, Play, Sun } from 'lucide-react';
 
 type Idioma = 'es' | 'en';
 type Pagina = 'home' | 'resume' | 'datalab' | 'projects' | 'notas' | 'publicaciones';
 
 export function BarraPagina({
-  actual, onIr, lang, theme, onTema, onIdioma,
+  actual, onIr, lang, theme, onTema, onIdioma, movimiento, onMovimiento,
 }: {
   actual: Pagina;
   onIr: (p: Pagina) => void;
@@ -15,6 +15,8 @@ export function BarraPagina({
   theme: 'light' | 'dark';
   onTema: () => void;
   onIdioma: () => void;
+  movimiento: boolean;
+  onMovimiento: () => void;
 }) {
   const pill = (activo: boolean) =>
     `px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
@@ -45,6 +47,14 @@ export function BarraPagina({
         </div>
 
         <div className="flex items-center gap-1">
+          <button
+            onClick={onMovimiento}
+            aria-label={movimiento ? (lang === 'es' ? 'Pausar las animaciones' : 'Pause animations') : (lang === 'es' ? 'Activar las animaciones' : 'Turn animations on')}
+            aria-pressed={!movimiento}
+            className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          >
+            {movimiento ? <Pause size={17} /> : <Play size={17} />}
+          </button>
           <button
             onClick={onTema}
             aria-label={lang === 'es' ? 'Cambiar entre tema claro y oscuro' : 'Switch between light and dark theme'}
