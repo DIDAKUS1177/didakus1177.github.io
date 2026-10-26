@@ -11,7 +11,7 @@ export const translations = {
       contact: 'Contacto',
       portfolio: 'Portafolio',
       portfolioFull: 'Portafolio de proyectos',
-      resume: 'Curriculum',
+      resume: 'Currículum',
     },
     hero: {
       title: 'Diego Hernández',

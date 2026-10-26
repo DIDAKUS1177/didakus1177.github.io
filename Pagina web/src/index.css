@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 
 /* Tailwind v4 usa prefers-color-scheme por defecto: sin esto, el botón de
@@ -7,6 +7,7 @@
 
 @theme {
   --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
   /* Acento de marca: azul. El tono cambia por tema porque un solo azul no
@@ -242,4 +243,31 @@ img { max-width: 100%; }
 .dark .glass {
   background-color: rgba(24, 25, 28, 0.82);
   backdrop-filter: blur(10px);
+}
+
+
+/* --- Estetica minimalista: titulos de seccion en serif fino --- */
+section h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+}
+
+/* Disco del inicio: el texto del anillo gira despacio y el trazo a mano se
+   dibuja una sola vez al cargar. */
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+.ring-spin { animation: ringSpin 56s linear infinite; transform-origin: 50% 50%; }
+
+@keyframes scribbleDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.scribble path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: scribbleDraw 3s 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring-spin { animation: none; }
+  .scribble path { animation: none; stroke-dashoffset: 0; }
 }

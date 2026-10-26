@@ -35,8 +35,8 @@ import {
   Plus,
   Sun,
   Moon,
-  Menu,
-  X
+  ChevronDown,
+  ArrowUpRight
 } from 'lucide-react';
 import { translations } from './translations';
 
@@ -1435,8 +1435,8 @@ export default function App() {
   const [lang, setLang] = useState<'es' | 'en'>('es');
   const [currentPage, setCurrentPageState] = useState<Pagina>(paginaDesdeHash());
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [pasoElInicio, setPasoElInicio] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [bgIndex, setBgIndex] = useState(0);
 
   const t = translations[lang];
 
@@ -1467,14 +1467,44 @@ export default function App() {
     }
   }, [theme]);
 
-  // Rotacion de las fotos de fondo del hero.
-  // 8 s por foto: con 5 s la transicion de 2,2 s ocupaba casi la mitad del
-  // tiempo y no se alcanzaba a apreciar cada imagen.
+  const enlacesIndice: { label: string; href?: string; page?: Pagina; soloMovil?: boolean }[] = [
+    { label: t.nav.portfolio, page: 'projects', soloMovil: true },
+    { label: t.nav.resume, page: 'resume', soloMovil: true },
+    { label: t.nav.about, href: '#about' },
+    { label: t.nav.solutions, href: '#solutions' },
+    { label: lang === 'es' ? 'Cómo trabajo' : 'How I work', href: '#process' },
+    { label: 'Data Lab', page: 'datalab' },
+    { label: t.nav.contact, href: '#contact' },
+  ];
+
+  // El disco del inicio se inclina siguiendo el cursor (solo con raton).
+  const inclinarDisco = (e: React.MouseEvent<HTMLElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    e.currentTarget.style.setProperty('--ry', `${x * 16}deg`);
+    e.currentTarget.style.setProperty('--rx', `${-y * 16}deg`);
+  };
+  const reponerDisco = (e: React.MouseEvent<HTMLElement>) => {
+    e.currentTarget.style.setProperty('--ry', '0deg');
+    e.currentTarget.style.setProperty('--rx', '0deg');
+  };
+
+  // Los botones flotantes aparecen al salir del inicio: ahi tapaban las
+  // entradas de portafolio y curriculum.
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % 4);
-    }, 8000);
-    return () => clearInterval(interval);
+    const alDesplazar = () => setPasoElInicio(window.scrollY > 500);
+    alDesplazar();
+    window.addEventListener('scroll', alDesplazar, { passive: true });
+    return () => window.removeEventListener('scroll', alDesplazar);
+  }, []);
+
+  React.useEffect(() => {
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuAbierto(false);
+    };
+    window.addEventListener('keydown', alTeclear);
+    return () => window.removeEventListener('keydown', alTeclear);
   }, []);
 
   const toggleLang = () => setLang(prev => prev === 'es' ? 'en' : 'es');
@@ -1516,267 +1546,215 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen selection:bg-brand selection:text-white bg-gray-50 text-gray-900 dark:bg-brand-black dark:text-brand-white transition-colors duration-300 relative">
+    <div className="min-h-screen selection:bg-brand selection:text-white bg-[#efefec] text-gray-900 dark:bg-[#0c0c0d] dark:text-brand-white transition-colors duration-300 relative">
       <BarraProgreso />
 
-      {/* --- Navbar --- */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-gray-200 dark:border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="#hero" className="flex items-center gap-3">
-            <span className="font-black text-lg md:text-xl tracking-tighter uppercase whitespace-nowrap">
-              Diego <span className="text-brand">Hernández</span>
-            </span>
-            <span className="hidden xl:block whitespace-nowrap text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-[0.2em] border-l border-gray-300 dark:border-white/10 pl-3">
-              Desarrollo &middot; Analítica Industrial &amp; IA
-            </span>
+      {/* --- Navbar: minima. Portafolio y Curriculum son lo unico visible; el
+          resto de las secciones vive en el indice desplegable. --- */}
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-[#efefec]/85 dark:bg-[#0c0c0d]/80 border-b border-black/10 dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-3">
+          <a href="#hero" onClick={() => setMenuAbierto(false)} className="font-display text-[1.7rem] leading-none whitespace-nowrap">
+            Diego Hernández
           </a>
 
-          <div className="flex items-center gap-4 lg:gap-6">
-            <div className="hidden lg:flex items-center gap-5 xl:gap-6 font-medium text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-              {/* Portafolio y Curriculum van primero y juntos: son las dos
-                  paginas que un reclutador busca, y antes quedaban en cuarto
-                  y sexto lugar entre anclas de la misma pagina. */}
-              <button onClick={() => setCurrentPage('projects')} className="font-bold text-brand hover:opacity-80 transition-opacity">{t.nav.portfolio}</button>
-              <button onClick={() => setCurrentPage('resume')} className="font-bold text-brand hover:opacity-80 transition-opacity">{t.nav.resume}</button>
-              <span className="w-px h-4 bg-gray-300 dark:bg-white/15" aria-hidden="true" />
-              <a href="#about" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.about}</a>
-              <a href="#solutions" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.solutions}</a>
-              <a href="#process" className="hover:text-gray-900 dark:hover:text-white transition-colors">{lang === 'es' ? 'Cómo trabajo' : 'How I work'}</a>
-              <button onClick={() => setCurrentPage('datalab')} className="hover:text-gray-900 dark:hover:text-white transition-colors">Data Lab</button>
-              <a href="#contact" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t.nav.contact}</a>
-            </div>
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage('projects')}
+              className="px-5 py-2 rounded-full text-sm font-semibold bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-85 transition-opacity"
+            >
+              {t.nav.portfolio}
+            </button>
+            <button
+              onClick={() => setCurrentPage('resume')}
+              className="px-5 py-2 rounded-full text-sm font-semibold border border-gray-900/70 dark:border-white/70 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-colors"
+            >
+              {t.nav.resume}
+            </button>
+          </div>
 
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMenuAbierto(!menuAbierto)}
+              aria-expanded={menuAbierto}
+              aria-label={lang === 'es' ? 'Abrir el índice de secciones' : 'Open the section index'}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+            >
+              {lang === 'es' ? 'Índice' : 'Index'}
+              <ChevronDown size={15} className={`transition-transform ${menuAbierto ? 'rotate-180' : ''}`} />
+            </button>
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               aria-label={lang === 'es' ? 'Cambiar entre tema claro y oscuro' : 'Switch between light and dark theme'}
-              className="p-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-gray-600 dark:text-gray-300"
+              className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
             >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
-
             <button
               onClick={toggleLang}
               aria-label={lang === 'es' ? 'Cambiar idioma a inglés' : 'Switch language to Spanish'}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
+              className="px-2.5 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
             >
-              <Languages size={14} className="text-brand" />
               {lang}
-            </button>
-
-            {/* Menu de celular y tableta: antes no habia ninguna forma de
-                llegar a las secciones desde un telefono. */}
-            <button
-              onClick={() => setMenuAbierto(!menuAbierto)}
-              aria-label={lang === 'es' ? 'Abrir el menú' : 'Open the menu'}
-              aria-expanded={menuAbierto}
-              className="lg:hidden p-1.5 rounded-full border border-gray-300 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-gray-600 dark:text-gray-300"
-            >
-              {menuAbierto ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </div>
 
         {menuAbierto && (
-          <div className="lg:hidden border-t border-gray-200 dark:border-white/5 px-6 py-4 flex flex-col text-base font-medium text-gray-700 dark:text-gray-300 bg-white/95 dark:bg-brand-black/95">
-            <button onClick={() => setCurrentPage('projects')} className="py-3 text-left font-bold text-brand">{t.nav.portfolio}</button>
-            <button onClick={() => setCurrentPage('resume')} className="py-3 text-left font-bold text-brand">{t.nav.resume}</button>
-            <a href="#about" onClick={() => setMenuAbierto(false)} className="py-3">{t.nav.about}</a>
-            <a href="#solutions" onClick={() => setMenuAbierto(false)} className="py-3">{t.nav.solutions}</a>
-            <a href="#process" onClick={() => setMenuAbierto(false)} className="py-3">{lang === 'es' ? 'Cómo trabajo' : 'How I work'}</a>
-            <button onClick={() => setCurrentPage('datalab')} className="py-3 text-left">Data Lab</button>
-            <a href="#contact" onClick={() => setMenuAbierto(false)} className="py-3">{t.nav.contact}</a>
+          <div className="border-t border-black/10 dark:border-white/10 bg-[#efefec] dark:bg-[#0c0c0d] max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <ul className="max-w-7xl mx-auto px-5 sm:px-8 py-3 grid sm:grid-cols-2 sm:gap-x-16">
+              {enlacesIndice.map((it) => {
+                const clases = `${it.soloMovil ? 'sm:hidden' : ''} w-full flex items-center justify-between py-3.5 border-b border-black/10 dark:border-white/10 font-display text-3xl text-left hover:text-brand transition-colors`;
+                return (
+                  <li key={it.label} className={it.soloMovil ? 'sm:hidden' : ''}>
+                    {it.page ? (
+                      <button onClick={() => setCurrentPage(it.page!)} className={clases}>
+                        {it.label}
+                        <ArrowUpRight size={20} />
+                      </button>
+                    ) : (
+                      <a href={it.href} onClick={() => setMenuAbierto(false)} className={clases}>
+                        {it.label}
+                        <ArrowUpRight size={20} />
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         )}
       </nav>
 
-      {/* --- Hero --- */}
-      <section id="hero" className="relative pt-40 pb-24 px-6 overflow-hidden min-h-[800px] flex items-center">
-        {/* Background: animated glow + photo slider */}
-        <div className="absolute inset-0 -z-20 overflow-hidden bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-          {/* Las 4 fotos quedan montadas y solo cambia la opacidad.
-              La opacidad va en `style` y no en clases de Tailwind porque
-              `dark:opacity-45` no existe en la escala por defecto y el fondo
-              se quedaba al 25% tambien en modo oscuro.
-              Tampoco se cargan en diferido: al rotar, la siguiente foto
-              todavia no habia llegado y el fondo aparecia vacio. */}
-          {[0, 1, 2, 3].map((n) => (
-            <img
-              key={n}
-              src={`/fondo/bg${n + 1}.webp`}
-              alt=""
-              aria-hidden
-              fetchPriority={n === 0 ? 'high' : 'low'}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2200ms] ease-in-out ${
-                n === bgIndex ? 'hero-ken-burns' : ''
-              }`}
-              style={{ opacity: n === bgIndex ? (theme === 'dark' ? 0.55 : 0.34) : 0 }}
-            />
-          ))}
-          {/* Velo para que el texto siga legible sobre la foto */}
-          <div className="absolute inset-0 bg-gray-50/50 dark:bg-brand-black/45" />
-          <div className="hero-gradient-bg" />
-          <div className="tech-grid" />
-          {/* Manchas de color que flotan lentamente: dan movimiento al fondo */}
-          <div className="section-halo float-slow w-[420px] h-[420px] bg-brand/30 dark:bg-brand/20 -top-20 -left-24" />
-          <div
-            className="section-halo float-slow w-[360px] h-[360px] bg-blue-500/15 dark:bg-blue-500/10 bottom-0 right-0"
-            style={{ animationDelay: '-9s' }}
-          />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-gray-50 dark:from-brand-black to-transparent" />
-        </div>
-
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-brand/20 blur-[120px] rounded-full" />
-        </div>
-
-        <div className="max-w-7xl mx-auto text-center w-full relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
+      {/* --- Hero: fondo liso, un solo objeto protagonista (la foto como disco
+          que gira, con texto alrededor y un trazo a mano) y dos entradas
+          grandes: portafolio y curriculum. --- */}
+      <section
+        id="hero"
+        onMouseMove={inclinarDisco}
+        onMouseLeave={reponerDisco}
+        className="relative min-h-screen pt-24 pb-12 px-5 sm:px-8 flex items-center overflow-hidden"
+      >
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-40 h-40 mx-auto mb-8 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_50px_rgba(37,99,235,0.25)]"
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+            className="relative w-[190px] h-[190px] sm:w-[240px] sm:h-[240px] lg:w-[260px] lg:h-[260px]"
+            style={{
+              transform: 'perspective(900px) rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg))',
+              transition: 'transform 0.3s ease-out',
+            }}
           >
-            <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
+            <svg className="absolute inset-0 w-full h-full ring-spin" viewBox="0 0 400 400" aria-hidden="true">
+              <defs>
+                <path id="anillo-hero" d="M200,200 m-176,0 a176,176 0 1,1 352,0 a176,176 0 1,1 -352,0" />
+              </defs>
+              <text fontSize="14" fill="currentColor" className="uppercase">
+                <textPath href="#anillo-hero" textLength="1100" lengthAdjust="spacing">
+                  {lang === 'es'
+                    ? 'Ingeniería de datos · Automatización · Integridad de activos · Analítica · '
+                    : 'Data engineering · Automation · Asset integrity · Analytics · '}
+                </textPath>
+              </text>
+            </svg>
+            <img
+              src="/profile.webp"
+              alt="Diego Hernández"
+              className="absolute rounded-full object-cover shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)]"
+              style={{ inset: '17%', width: '66%', height: '66%' }}
+            />
+            <svg className="absolute -inset-7 w-[calc(100%+3.5rem)] h-[calc(100%+3.5rem)] scribble text-brand pointer-events-none" viewBox="0 0 440 440" fill="none" aria-hidden="true">
+              <path
+                d="M62,250 C28,130 150,28 264,44 C386,62 428,176 392,276 C358,372 228,424 128,388 C48,356 14,268 58,186 C104,102 222,64 306,112"
+                pathLength="1"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+            </svg>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 text-sm font-medium text-brand"
+            transition={{ delay: 0.15, duration: 0.7, ease: 'easeOut' }}
+            className="font-display mt-8 text-[clamp(2.4rem,6vw,5rem)] leading-[0.98] tracking-tight"
           >
-            <Cpu size={16} />
-            {t.hero.subtitle}
-          </motion.div>
-          
-          <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-[1.02]">
-            <motion.span
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08, duration: 0.45, ease: "easeOut" }}
-              className="block"
-            >
-              DIEGO ALEJANDRO
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.45, ease: "easeOut" }}
-              className="block text-brand"
-            >
-              HERNÁNDEZ BLANCO
-            </motion.span>
-          </h1>
-          
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <RotatingWord lang={lang} />
-          </motion.div>
+            Diego Alejandro
+            <br />
+            <span className="italic text-brand">Hernández Blanco</span>
+          </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed"
+            transition={{ delay: 0.28, duration: 0.7 }}
+            className="mt-4 max-w-xl text-base text-gray-600 dark:text-gray-400 leading-relaxed"
           >
             {t.hero.description}
           </motion.p>
-          
+
+          {/* Las dos entradas principales: grandes y con la misma jerarquia */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.18 }}
-            className="mb-10"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.7 }}
+            className="mt-7 w-full max-w-3xl grid sm:grid-cols-2 border-t border-black/20 dark:border-white/20"
           >
-            {/* Las dos paginas principales, juntas. El portafolio va primero:
-                el trabajo hecho convence antes que la hoja de vida. */}
-            <div className="flex flex-wrap justify-center gap-3">
-              <button
-                onClick={() => setCurrentPage('projects')}
-                className="px-8 py-3 rounded-xl font-bold brand-gradient text-white hover:scale-105 transition-transform inline-flex items-center gap-2 shadow-[0_8px_20px_rgba(37,99,235,0.3)]"
-              >
-                <Briefcase size={20} />
-                {t.nav.portfolioFull}
-              </button>
-              <button
-                onClick={() => setCurrentPage('resume')}
-                className="px-8 py-3 glass rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-brand inline-flex items-center gap-2"
-              >
-                <FileJson size={20} />
-                {lang === 'es' ? 'Ver Curriculum Completo' : 'View Full Resume'}
-              </button>
-            </div>
+            <button
+              onClick={() => setCurrentPage('projects')}
+              className="group flex items-center justify-between gap-4 py-5 sm:pr-8 text-left border-b border-black/20 dark:border-white/20 sm:border-r hover:text-brand transition-colors"
+            >
+              <span>
+                <span className="block text-[11px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">01</span>
+                <span className="font-display text-3xl sm:text-4xl leading-tight">{t.nav.portfolioFull}</span>
+              </span>
+              <ArrowUpRight size={30} strokeWidth={1.4} className="shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </button>
+            <button
+              onClick={() => setCurrentPage('resume')}
+              className="group flex items-center justify-between gap-4 py-5 sm:pl-8 text-left border-b border-black/20 dark:border-white/20 hover:text-brand transition-colors"
+            >
+              <span>
+                <span className="block text-[11px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">02</span>
+                <span className="font-display text-3xl sm:text-4xl leading-tight">{lang === 'es' ? 'Currículum' : 'Résumé'}</span>
+              </span>
+              <ArrowUpRight size={30} strokeWidth={1.4} className="shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </button>
           </motion.div>
 
-          {/* Gancho: quitar el riesgo de dar el primer paso */}
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
-            className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-full bg-brand/8 dark:bg-brand/12 border border-brand/30 text-sm font-bold text-brand"
+            transition={{ delay: 0.55, duration: 0.7 }}
+            className="mt-6 flex flex-col items-center gap-2"
           >
-            <CheckCircle2 size={17} />
-            {t.hero.freeConsult}
-          </motion.p>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col items-center gap-6"
-          >
-            <div className="flex flex-wrap justify-center gap-4">
-              <button 
-                onClick={openGmail}
-                className="px-10 py-4 brand-gradient text-white rounded-xl font-bold text-xl shadow-[0_10px_30px_rgba(37,99,235,0.35)] hover:scale-105 transition-transform flex items-center gap-3"
-              >
-                {t.hero.cta}
-                <ArrowRight size={24} />
-              </button>
-              
-              <div className="flex flex-wrap justify-center gap-4">
-                <a 
-                  href="https://wa.me/573337279204"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-brand flex items-center gap-2 font-bold whitespace-nowrap"
-                >
-                  <MessageCircle size={20} />
-                  +57 333 727 9204
-                </a>
-                <a 
-                  href="https://wa.me/573216291861"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-cyan-700 dark:text-cyan-400 flex items-center gap-2 font-bold whitespace-nowrap"
-                >
-                  <MessageCircle size={20} />
-                  +57 321 629 1861
-                </a>
-                <a
-                  href="https://wa.me/525647901745"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-teal-600 dark:text-teal-400 flex items-center gap-2 font-bold whitespace-nowrap"
-                >
-                  <MessageCircle size={20} />
-                  +52 56 4790 1745
-                </a>
-                <a 
-                  href="https://github.com/DIDAKUS1177/didakus1177.github.io"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 glass rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-gray-600 dark:text-gray-400 flex items-center gap-2 font-bold whitespace-nowrap"
-                >
-                  <Github size={20} />
-                  GitHub
-                </a>
-              </div>
-            </div>
+            <button
+              onClick={openGmail}
+              className="inline-flex items-center gap-2 px-7 py-3 rounded-full brand-gradient text-white text-sm font-semibold hover:scale-[1.03] transition-transform"
+            >
+              {t.hero.cta}
+              <ArrowRight size={16} />
+            </button>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{t.hero.freeConsult}</p>
           </motion.div>
         </div>
+
+        {/* Ficha de datos, como la de los creditos de una pelicula. En pantallas
+            grandes flota arriba a la izquierda; en celular queda al final. */}
+        <dl className="hidden lg:block absolute top-28 left-8 w-64 text-left text-[11px] uppercase tracking-[0.14em]">
+          {[
+            [lang === 'es' ? 'Rol' : 'Role', lang === 'es' ? 'Desarrollador y analista de datos' : 'Developer and data analyst'],
+            [lang === 'es' ? 'Base' : 'Based in', lang === 'es' ? 'Ciudad de México · remoto' : 'Mexico City · remote'],
+            [lang === 'es' ? 'Enfoque' : 'Focus', lang === 'es' ? 'Datos, automatización, integridad de activos' : 'Data, automation, asset integrity'],
+            [lang === 'es' ? 'Idiomas' : 'Languages', lang === 'es' ? 'Español · Inglés' : 'Spanish · English'],
+          ].map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-4 py-2 border-t border-black/25 dark:border-white/25 last:border-b">
+              <dt className="text-gray-500 dark:text-gray-400">{k}</dt>
+              <dd className="text-right max-w-[9.5rem] normal-case tracking-normal text-[12px] leading-snug">{v}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       {/* --- Tools Marquee --- */}
@@ -1823,7 +1801,7 @@ export default function App() {
             <span className="text-[10px] font-black text-brand uppercase tracking-[0.25em]">
               {lang === 'es' ? 'Muestra de trabajo' : 'Work sample'}
             </span>
-            <h3 className="text-3xl md:text-4xl font-black mb-4 mt-3">{t.analytics.title}</h3>
+            <h3 className="font-display text-4xl md:text-5xl font-normal tracking-tight mb-4 mt-3">{t.analytics.title}</h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               {lang === 'es'
                 ? 'Estos son los tipos de análisis que entrego dentro de los proyectos para encontrar dónde está el problema. Aquí se muestran con datos de ejemplo; en un proyecto se construyen con los datos de tu operación.'
@@ -2075,41 +2053,28 @@ export default function App() {
       </footer>
 
       {/* --- Floating Action Buttons --- */}
-      <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 flex flex-col gap-3 sm:gap-4 z-[100]">
+      <div className={`fixed bottom-4 right-4 sm:bottom-8 sm:right-8 flex flex-col gap-2.5 z-[100] transition-opacity duration-300 ${pasoElInicio ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <a 
           href="https://wa.me/573337279204" 
           target="_blank"
           rel="noreferrer"
-          className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(37,99,235,0.45)] hover:scale-110 transition-transform group relative"
+          className="w-11 h-11 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform group relative"
           title={t.contact.whatsapp}
         >
-          <MessageCircle className="text-white" size={28} />
+          <MessageCircle className="text-white dark:text-gray-900" size={20} />
           <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             {t.contact.whatsapp}
           </span>
         </a>
         
         <a 
-          href="https://wa.me/573216291861" 
-          target="_blank"
-          rel="noreferrer"
-          className="w-12 h-12 sm:w-14 sm:h-14 bg-cyan-600 rounded-full hidden sm:flex items-center justify-center shadow-[0_10px_30px_rgba(8,145,178,0.35)] hover:scale-110 transition-transform group relative"
-          title={t.contact.whatsappPersonal}
-        >
-          <User className="text-white" size={28} />
-          <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            {t.contact.whatsappPersonal}
-          </span>
-        </a>
-
-        <a 
           href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" 
           target="_blank"
           rel="noreferrer"
-          className="w-12 h-12 sm:w-14 sm:h-14 bg-[#0A66C2] rounded-full hidden sm:flex items-center justify-center shadow-[0_10px_30px_rgba(10,102,194,0.3)] hover:scale-110 transition-transform group relative"
+          className="w-11 h-11 bg-gray-900 dark:bg-white rounded-full hidden sm:flex items-center justify-center shadow-lg hover:scale-110 transition-transform group relative"
           title={t.contact.linkedin}
         >
-          <Linkedin className="text-white" size={28} />
+          <Linkedin className="text-white dark:text-gray-900" size={20} />
           <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             LinkedIn
           </span>
@@ -2119,10 +2084,10 @@ export default function App() {
           href="https://github.com/DIDAKUS1177/didakus1177.github.io" 
           target="_blank"
           rel="noreferrer"
-          className="w-12 h-12 sm:w-14 sm:h-14 bg-[#333] rounded-full hidden sm:flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          className="w-11 h-11 bg-gray-900 dark:bg-white rounded-full hidden sm:flex items-center justify-center shadow-lg hover:scale-110 transition-transform group relative"
           title="GitHub"
         >
-          <Github className="text-white" size={28} />
+          <Github className="text-white dark:text-gray-900" size={20} />
           <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             GitHub
           </span>
@@ -2134,10 +2099,10 @@ export default function App() {
             funciona en ambos temas sin depender de la variante dark. */}
         <button
           onClick={openGmail}
-          className="w-12 h-12 sm:w-14 sm:h-14 bg-slate-600 rounded-full flex items-center justify-center shadow-lg dark:shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform group relative"
+          className="w-11 h-11 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform group relative"
           title={t.contact.gmail}
         >
-          <Mail className="text-white" size={28} />
+          <Mail className="text-white dark:text-gray-900" size={20} />
           <span className="absolute right-full mr-4 glass px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             Email
           </span>
