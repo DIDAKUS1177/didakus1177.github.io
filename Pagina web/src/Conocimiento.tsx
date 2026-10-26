@@ -269,7 +269,7 @@ const ListaPublicaciones = ({ lang }: { lang: Idioma }) => {
 
 export function Conocimiento({
   tab, onCambiarTab, onBack, lang,
-}: { tab: Pestana; onCambiarTab: (t: Pestana) => void; onBack: () => void; lang: Idioma }) {
+}: { tab: Pestana; onCambiarTab: (t: Pestana) => void; onBack?: () => void; lang: Idioma }) {
   const t = T[lang];
   const [abierta, setAbierta] = useState<string | null>(null);
   const nota = NOTAS.find((n) => n.id === abierta);
@@ -280,11 +280,7 @@ export function Conocimiento({
 
   return (
     <div className="min-h-screen bg-[#efefec] dark:bg-[#0c0c0d] text-gray-900 dark:text-brand-white transition-colors duration-300">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-8 pb-24">
-        <button onClick={onBack} className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-brand transition-colors mb-10">
-          <ArrowLeft size={16} /> {t.atras}
-        </button>
-
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-14 pb-24">
         {nota ? (
           <Lectura nota={nota} lang={lang} onCerrar={() => setAbierta(null)} />
         ) : (

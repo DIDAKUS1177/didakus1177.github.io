@@ -50,6 +50,7 @@ import { translations } from './translations';
 // Cargados en diferido: Recharts y PapaParse pesan mas que todo el resto
 // del sitio junto, y solo hacen falta al llegar a la analitica o al Data Lab.
 import { SobreMi } from './SobreMi';
+import { BarraPagina } from './BarraPagina';
 const Conocimiento = React.lazy(() => import('./Conocimiento').then(m => ({ default: m.Conocimiento })));
 const Resume = React.lazy(() => import('./Resume').then(m => ({ default: m.Resume })));
 const ParetoChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.ParetoChartComponent })));
@@ -1267,7 +1268,7 @@ const ProjectsCta = ({ lang, onVerProyectos }: { lang: 'es' | 'en'; onVerProyect
 );
 
 const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
-  <section id="projects" className="py-32 px-6 bg-gray-100/50 dark:bg-gray-100/50 dark:bg-white/[0.01]">
+  <section id="projects" className="py-16 px-5 sm:px-8">
     <div className="max-w-7xl mx-auto">
       <div className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-black mb-4">
@@ -1308,7 +1309,7 @@ const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
               </div>
             </div>
 
-            <h3 className="text-xl md:text-2xl font-black mb-3">{project.title}</h3>
+            <h3 className="font-display text-3xl font-normal leading-tight mb-3">{project.title}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 flex-1">
               {project.desc[lang]}
             </p>
@@ -1600,19 +1601,36 @@ export default function App() {
     window.open('https://mail.google.com/mail/?view=cm&fs=1&to=dialhebl.dh@gmail.com', '_blank');
   };
 
+  const barra = (
+    <BarraPagina
+      actual={currentPage}
+      onIr={setCurrentPage}
+      lang={lang}
+      theme={theme}
+      onTema={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onIdioma={toggleLang}
+    />
+  );
+
   if (currentPage === 'resume') {
     return (
-      <Suspense fallback={<PantallaCargando />}>
-        <Resume onBack={() => setCurrentPage('home')} lang={lang} />
-      </Suspense>
+      <>
+        {barra}
+        <Suspense fallback={<PantallaCargando />}>
+          <Resume onBack={() => setCurrentPage('home')} lang={lang} />
+        </Suspense>
+      </>
     );
   }
 
   if (currentPage === 'notas' || currentPage === 'publicaciones') {
     return (
-      <Suspense fallback={<PantallaCargando />}>
-        <Conocimiento tab={currentPage} onCambiarTab={setCurrentPage} onBack={() => setCurrentPage('home')} lang={lang} />
-      </Suspense>
+      <>
+        {barra}
+        <Suspense fallback={<PantallaCargando />}>
+          <Conocimiento tab={currentPage} onCambiarTab={setCurrentPage} onBack={() => setCurrentPage('home')} lang={lang} />
+        </Suspense>
+      </>
     );
   }
 
@@ -1631,10 +1649,8 @@ export default function App() {
 
   if (currentPage === 'projects') {
     return (
-      <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 pt-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <BackButton onBack={() => setCurrentPage('home')} lang={lang} />
-        </div>
+      <div className="min-h-screen bg-[#efefec] text-gray-900 dark:bg-[#0c0c0d] dark:text-white transition-colors duration-300">
+        {barra}
         <ProjectsSection lang={lang} />
       </div>
     );

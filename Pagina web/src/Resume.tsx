@@ -16,11 +16,11 @@ import {
   Phone,
   MessageCircle,
   Mail,
-  Linkedin
+  Linkedin,
+  MapPin
 } from 'lucide-react';
 
 import fallbackCoursesData from './data/curriculum.json';
-import { BackButton } from './App';
 
 interface Course {
   id: string;
@@ -292,7 +292,7 @@ const EXPERIENCE = [
   },
   {
     id: 'paz-del-rio',
-    photos: 5,
+    photos: 7,
     title: 'Ingeniero de Mejora Continua – Alto Horno',
     org: 'ACERÍAS PAZ DEL RÍO',
     period: 'Ene 2023 – Dic 2023',
@@ -465,41 +465,36 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
     "bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 hover:border-gray-400 dark:hover:border-white/25 transition-colors cursor-pointer";
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
+    <div className="min-h-screen bg-[#efefec] text-gray-900 dark:bg-[#0c0c0d] dark:text-white transition-colors duration-300 py-12 px-5 sm:px-8">
       <div className="max-w-5xl mx-auto">
         
-        <div className="mb-10">
-          <BackButton onBack={onBack} lang={lang} />
-        </div>
-
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass p-12 rounded-[40px] mb-12 relative overflow-hidden flex flex-col md:flex-row items-center gap-8"
+          className="pb-12 mb-12 border-b border-black/20 dark:border-white/20 relative flex flex-col md:flex-row items-center gap-8 md:gap-12"
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand/10 blur-[100px] -z-10" />
-          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-brand/20 shadow-[0_0_30px_rgba(37,99,235,0.25)]">
+          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border border-black/10 dark:border-white/10 shadow-[0_30px_60px_-25px_rgba(0,0,0,0.5)]">
             <img src="/profile.webp" alt="Diego Hernández" className="w-full h-full object-cover" />
           </div>
           <div>
-            <h1 className="text-4xl md:text-5xl font-black mb-4">DIEGO ALEJANDRO HERNÁNDEZ BLANCO</h1>
-            <h2 className="text-xl md:text-2xl text-brand font-bold mb-6">
+            <h1 className="font-display text-[clamp(2.4rem,6vw,4.6rem)] leading-[0.98] tracking-tight mb-4">Diego Alejandro <span className="italic text-brand">Hernández Blanco</span></h1>
+            <h2 className="text-xs md:text-sm uppercase tracking-[0.18em] text-gray-600 dark:text-gray-400 font-medium mb-6 leading-relaxed">
               Desarrollador de Software | Ingeniero Metalúrgico | Data Scientist | Especialista en Mejora Continua
             </h2>
             <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 text-sm mb-6">
-              <span>📍 Ciudad de México (CDMX)</span>
+              <span className="inline-flex items-center gap-1.5"><MapPin size={15} /> Ciudad de México (CDMX)</span>
               {/* El numero mexicano va primero: el sitio se dirige sobre todo
                   a reclutadores locales y una linea de MX baja la friccion. */}
-              <span>📱 +52 56 4790 1745 (MX)</span>
-              <span>📱 +57 321 629 1861 (CO)</span>
-              <span>✉️ dialhebl.dh@gmail.com</span>
+              <span className="inline-flex items-center gap-1.5"><Phone size={15} /> +52 56 4790 1745 (MX)</span>
+              <span className="inline-flex items-center gap-1.5"><Phone size={15} /> +57 321 629 1861 (CO)</span>
+              <span className="inline-flex items-center gap-1.5"><Mail size={15} /> dialhebl.dh@gmail.com</span>
             </div>
 
             <a
               href={CV_PDF}
               download="Diego_Hernandez_Blanco_Hoja_de_Vida.pdf"
-              className="inline-flex items-center gap-2.5 px-6 py-3 brand-gradient rounded-xl font-bold text-sm text-white hover:scale-105 transition-transform shadow-[0_8px_20px_rgba(37,99,235,0.35)]"
+              className="inline-flex items-center gap-2.5 px-6 py-3 brand-gradient rounded-full font-semibold text-sm text-white hover:scale-[1.03] transition-transform"
             >
               <Download size={18} />
               {lang === 'es' ? 'Descargar hoja de vida (PDF)' : 'Download resume (PDF)'}
@@ -533,7 +528,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           transition={{ delay: 0.1 }}
           className="mb-16"
         >
-          <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
+          <h3 className="font-display text-4xl font-normal mb-6 flex items-center gap-3">
             <User className="text-brand" />
             {lang === 'es' ? 'PERFIL PROFESIONAL' : 'PROFESSIONAL PROFILE'}
           </h3>
@@ -551,7 +546,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           transition={{ delay: 0.2 }}
           className="mb-16"
         >
-          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+          <h3 className="font-display text-4xl font-normal mb-8 flex items-center gap-3">
             <Briefcase className="text-brand" />
             {lang === 'es' ? 'EXPERIENCIA LABORAL' : 'WORK EXPERIENCE'}
           </h3>
@@ -560,7 +555,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             {EXPERIENCE.map((exp) => (
               <div key={exp.id} className="glass p-6 rounded-3xl border-l-4 border-l-brand flex flex-col">
                 <ExperiencePhotos exp={exp} lang={lang} />
-                <h4 className="text-lg font-bold leading-snug">{lang === 'es' ? exp.title : exp.en.title}</h4>
+                <h4 className="font-display text-2xl font-normal leading-snug">{lang === 'es' ? exp.title : exp.en.title}</h4>
                 <div className="text-brand text-xs font-bold mb-4 mt-1">
                   {exp.org} | {lang === 'es' ? exp.period : exp.en.period}
                 </div>
@@ -579,7 +574,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           transition={{ delay: 0.3 }}
           className="mb-16"
         >
-          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+          <h3 className="font-display text-4xl font-normal mb-8 flex items-center gap-3">
             <GraduationCap className="text-brand" />
             {lang === 'es' ? 'FORMACIÓN ACADÉMICA' : 'EDUCATION'}
           </h3>
@@ -587,7 +582,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
             {EDUCATION.map((e) => (
               <div key={e.title} className="glass p-6 rounded-2xl flex flex-col">
                 <div className="flex items-start justify-between gap-3 mb-2">
-                  <h4 className="font-bold leading-snug">{e.title}</h4>
+                  <h4 className="font-display text-xl font-normal leading-snug">{e.title}</h4>
                   {e.status && (
                     <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-300 bg-blue-500/10 border border-blue-500/30 px-2 py-1 rounded-full">
                       {lang === 'es' ? e.status.es : e.status.en}
@@ -626,7 +621,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           className="mb-16"
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-            <h3 className="text-2xl font-black flex items-center gap-3">
+            <h3 className="font-display text-4xl font-normal flex items-center gap-3">
               <BookOpen className="text-brand" />
               {lang === 'es' ? 'CURSOS Y CERTIFICACIONES' : 'COURSES & CERTIFICATIONS'}
               {loading && <Loader2 className="animate-spin text-gray-500" size={18} />}
@@ -719,7 +714,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           viewport={{ once: true }}
           className="mb-16"
         >
-          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+          <h3 className="font-display text-4xl font-normal mb-8 flex items-center gap-3">
             <Languages className="text-brand" />
             {lang === 'es' ? 'IDIOMAS' : 'LANGUAGES'}
           </h3>
@@ -782,7 +777,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
           viewport={{ once: true }}
           className="mb-16"
         >
-          <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+          <h3 className="font-display text-4xl font-normal mb-8 flex items-center gap-3">
             <User className="text-brand" />
             {lang === 'es' ? 'REFERENCIAS LABORALES' : 'PROFESSIONAL REFERENCES'}
           </h3>
