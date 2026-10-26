@@ -332,3 +332,7 @@ html[data-movimiento="off"] *::after {
 html[data-movimiento="off"] .scribble path { stroke-dashoffset: 0 !important; }
 html[data-movimiento="off"] .reveal { opacity: 1 !important; transform: none !important; }
 html[data-movimiento="off"] .flota { transform: rotate(var(--giro, 0deg)) !important; }
+
+/* Tiras de fotos del fondo del inicio: avanzan despacio y sin cortes */
+@keyframes cintaFondo { to { transform: translateX(-50%); } }
+.cinta-fondo { animation: cintaFondo 100s linear infinite; }

@@ -1631,6 +1631,14 @@ const HERRAMIENTAS: { nombre: string; icono: React.ReactNode }[] = [
   { nombre: 'Big Data', icono: <Boxes size={24} color="#0F766E" /> },
 ];
 
+// Fotos del alto horno que pasan despacio por el fondo del inicio, en dos
+// tiras que van en sentidos opuestos. Son versiones livianas (640 px) de las
+// fotos de Paz del Rio y de los fondos, en public/fondo/cinta.
+const CINTAS_INICIO: { fotos: string[]; top: string; inversa: boolean; seg: number; giro: string }[] = [
+  { fotos: ['a1', 'a2', 'a3', 'a4'], top: '9%', inversa: false, seg: 110, giro: '-2.5deg' },
+  { fotos: ['b1', 'b2', 'b3'], top: '63%', inversa: true, seg: 100, giro: '2deg' },
+];
+
 // Capturas de proyectos que flotan a los lados del inicio (solo pantallas
 // anchas). Son las versiones publicables de public/proyectos.
 const CAPTURAS_INICIO: { src: string; lado: 'left' | 'right'; x: string; y: string; giro: string; dur: string; ret: string }[] = [
@@ -1912,6 +1920,36 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
         onMouseLeave={reponerDisco}
         className="relative min-h-screen pt-24 pb-12 px-5 sm:px-8 flex items-center overflow-hidden"
       >
+        {/* Fotos del alto horno pasando por el fondo, muy tenues para no
+            competir con el texto */}
+        <div aria-hidden="true" className="absolute inset-0 overflow-hidden pointer-events-none">
+          {CINTAS_INICIO.map((c) => (
+            <div
+              key={c.top}
+              className="absolute -left-[8%] -right-[8%] [mask-image:linear-gradient(to_right,transparent,black_14%,black_86%,transparent)]"
+              style={{ top: c.top, transform: `rotate(${c.giro})` }}
+            >
+              <div
+                className="flex w-max cinta-fondo"
+                style={{ animationDuration: `${c.seg}s`, animationDirection: c.inversa ? 'reverse' : 'normal' }}
+              >
+                {Array.from({ length: 4 }).flatMap(() => c.fotos).map((f, i) => (
+                  <img
+                    key={i}
+                    src={`/fondo/cinta/${f}.webp`}
+                    alt=""
+                    decoding="async"
+                    fetchPriority="low"
+                    className="mr-6 shrink-0 h-36 sm:h-52 w-auto aspect-[8/5] object-cover rounded-2xl opacity-[0.3] dark:opacity-[0.28] saturate-[0.8]"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+          {/* Velo detras del texto: las fotos se ven a los lados y el centro queda limpio */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_62%_58%_at_50%_58%,rgba(239,239,236,0.9),rgba(239,239,236,0.55)_60%,transparent_100%)] dark:bg-[radial-gradient(ellipse_62%_58%_at_50%_58%,rgba(12,12,13,0.88),rgba(12,12,13,0.5)_60%,transparent_100%)]" />
+        </div>
+
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[620px] rounded-full bg-blue-500/[0.06] blur-3xl" />
           <div className="absolute inset-0 grano" />
