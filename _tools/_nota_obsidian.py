@@ -197,7 +197,7 @@ def escribir(ctx):
             '1.%20Carpetas%20de%20respaldo%20como%20tal/1.%20Carpetas%20proyectos/'
             '1.%20Proyecto%20pagina/Pagina%20web/public')
     a('- [Abrir la carpeta `public`](%s)' % base)
-    a('- [PDF de seguimiento](%s/Seguimiento_Imagenes_Sitio.pdf)' % base)
+    a('- [PDF de seguimiento](%s/../Seguimiento_Imagenes_Sitio.pdf)' % base)
     a('- [Sitio publicado](https://didakus1177.github.io)')
     a('- [[00. Perfil profesional]]')
     a('')

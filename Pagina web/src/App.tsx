@@ -49,6 +49,8 @@ import { translations } from './translations';
 
 // Cargados en diferido: Recharts y PapaParse pesan mas que todo el resto
 // del sitio junto, y solo hacen falta al llegar a la analitica o al Data Lab.
+import { SobreMi } from './SobreMi';
+const Conocimiento = React.lazy(() => import('./Conocimiento').then(m => ({ default: m.Conocimiento })));
 const Resume = React.lazy(() => import('./Resume').then(m => ({ default: m.Resume })));
 const ParetoChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.ParetoChartComponent })));
 const IshikawaDiagram = React.lazy(() => import('./charts').then(m => ({ default: m.IshikawaDiagram })));
@@ -1481,8 +1483,8 @@ const CAPTURAS_INICIO: { src: string; lado: 'left' | 'right'; x: string; y: stri
   { src: '/proyectos/5/1.webp', lado: 'right', x: '2.5%', y: '69%', giro: '6deg', dur: '9.5s', ret: '-2s' },
 ];
 
-type Pagina = 'home' | 'resume' | 'datalab' | 'projects';
-const PAGINAS_INTERNAS: Pagina[] = ['resume', 'datalab', 'projects'];
+type Pagina = 'home' | 'resume' | 'datalab' | 'projects' | 'notas' | 'publicaciones';
+const PAGINAS_INTERNAS: Pagina[] = ['resume', 'datalab', 'projects', 'notas', 'publicaciones'];
 const paginaDesdeHash = (): Pagina => {
   const hash = window.location.hash.replace('#', '') as Pagina;
   return PAGINAS_INTERNAS.includes(hash) ? hash : 'home';
@@ -1530,6 +1532,8 @@ export default function App() {
     { label: t.nav.about, href: '#about' },
     { label: t.nav.solutions, href: '#solutions' },
     { label: lang === 'es' ? 'Cómo trabajo' : 'How I work', href: '#process' },
+    { label: lang === 'es' ? 'Notas técnicas' : 'Technical notes', page: 'notas' },
+    { label: lang === 'es' ? 'Publicaciones' : 'Publications', page: 'publicaciones' },
     { label: 'Data Lab', page: 'datalab' },
     { label: t.nav.contact, href: '#contact' },
   ];
@@ -1546,6 +1550,32 @@ export default function App() {
     e.currentTarget.style.setProperty('--ry', '0deg');
     e.currentTarget.style.setProperty('--rx', '0deg');
   };
+
+  // Revelado al hacer scroll: los titulos y las tarjetas que estan debajo de
+  // la pantalla entran con un fundido suave. Si algo falla, quedan visibles.
+  React.useEffect(() => {
+    if (currentPage !== 'home' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const objetivos = Array.from(
+      document.querySelectorAll<HTMLElement>('#solutions h2, #solutions h2 + p, #process h2, #process h2 + p, #contact h2, #contact h2 + p, #solutions .glass, #process .glass, #contact .glass, #analytics h3')
+    ).filter((el) => el.getBoundingClientRect().top > window.innerHeight);
+    objetivos.forEach((el) => el.classList.add('reveal'));
+    const observador = new IntersectionObserver((entradas) => {
+      let orden = 0;
+      entradas.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const el = e.target as HTMLElement;
+        el.style.transitionDelay = `${orden++ * 70}ms`;
+        el.classList.add('reveal-in');
+        observador.unobserve(el);
+        window.setTimeout(() => {
+          el.classList.remove('reveal', 'reveal-in');
+          el.style.transitionDelay = '';
+        }, 1200 + orden * 70);
+      });
+    }, { rootMargin: '0px 0px -60px 0px', threshold: 0.08 });
+    objetivos.forEach((el) => observador.observe(el));
+    return () => observador.disconnect();
+  }, [currentPage, lang]);
 
   // Los botones flotantes aparecen al salir del inicio: ahi tapaban las
   // entradas de portafolio y curriculum.
@@ -1574,6 +1604,14 @@ export default function App() {
     return (
       <Suspense fallback={<PantallaCargando />}>
         <Resume onBack={() => setCurrentPage('home')} lang={lang} />
+      </Suspense>
+    );
+  }
+
+  if (currentPage === 'notas' || currentPage === 'publicaciones') {
+    return (
+      <Suspense fallback={<PantallaCargando />}>
+        <Conocimiento tab={currentPage} onCambiarTab={setCurrentPage} onBack={() => setCurrentPage('home')} lang={lang} />
       </Suspense>
     );
   }
@@ -1849,7 +1887,7 @@ export default function App() {
           <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
             {[...HERRAMIENTAS, ...HERRAMIENTAS].map((h, i) => (
               <div key={i} className="flex items-center gap-3 pr-14 shrink-0">
-                <span className="w-11 h-11 rounded-xl bg-white dark:bg-white/10 border border-black/10 dark:border-white/10 flex items-center justify-center shadow-sm">
+                <span style={{ ['--i' as string]: i % HERRAMIENTAS.length }} className="bob w-11 h-11 rounded-xl bg-white dark:bg-white/10 border border-black/10 dark:border-white/10 flex items-center justify-center shadow-sm">
                   {h.icono}
                 </span>
                 <span className="text-sm font-semibold tracking-wide text-gray-700 dark:text-gray-300 whitespace-nowrap">{h.nombre}</span>
@@ -1860,25 +1898,7 @@ export default function App() {
       </div>
 
       {/* --- About --- */}
-      <section id="about" className="py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-black mb-6">{t.nav.about}</h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed mb-6">
-                {lang === 'es' 
-                  ? 'Ingeniero Metalúrgico y Especialista en Gestión de la Productividad y Mejoramiento Continuo, con sólida trayectoria en la transformación de procesos industriales y análisis de datos.'
-                  : 'Metallurgical Engineer and Specialist in Productivity Management and Continuous Improvement, with a solid track record in transforming industrial processes and data analysis.'}
-              </p>
-              <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed mb-8">
-                {lang === 'es'
-                  ? 'Experto en la implementación de metodologías de mejora continua y desarrollo de software para la automatización de reportes y toma de decisiones. Destaco por mi capacidad para generar impacto en los resultados del negocio a través de soluciones tecnológicas ágiles.'
-                  : 'Expert in implementing continuous improvement methodologies and software development for report automation and decision making. I stand out for my ability to generate impact on business results through agile technological solutions.'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <SobreMi titulo={t.nav.about} lang={lang} />
 
       {/* --- Muestra de analisis (parte de Servicios) --- */}
       <section id="analytics" className="pb-32 px-6 bg-gray-100/50 dark:bg-white/[0.01]">
