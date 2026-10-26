@@ -2398,7 +2398,7 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
           href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" 
           target="_blank"
           rel="noreferrer"
-          className="w-11 h-11 bg-gray-900 dark:bg-white rounded-full hidden sm:flex items-center justify-center shadow-lg hover:scale-110 transition-transform group relative"
+          className="w-11 h-11 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform group relative"
           title={t.contact.linkedin}
         >
           <Linkedin className="text-white dark:text-gray-900" size={20} />
