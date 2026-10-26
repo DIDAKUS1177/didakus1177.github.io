@@ -36,8 +36,15 @@ import {
   Sun,
   Moon,
   ChevronDown,
-  ArrowUpRight
+  ArrowUpRight,
+  Brain,
+  Boxes,
+  Workflow,
+  Smartphone
 } from 'lucide-react';
+import {
+  siPython, siR, siPostgresql, siReact, siFastapi, siPhp, siDocker, siFirebase, siGooglecloud, siGooglesheets
+} from 'simple-icons';
 import { translations } from './translations';
 
 // Cargados en diferido: Recharts y PapaParse pesan mas que todo el resto
@@ -1424,6 +1431,56 @@ const ContactForm = ({ lang }: { lang: 'es' | 'en' }) => {
 };
 
 
+// Logos de la tira de herramientas. Power BI, Tableau, AppSheet y Power
+// Automate no estan en la libreria de logos, asi que llevan un icono propio.
+const Marca = ({ path, color }: { path: string; color: string }) => (
+  <svg viewBox="0 0 24 24" className="w-6 h-6" aria-hidden="true"><path d={path} fill={`#${color}`} /></svg>
+);
+const IconoPowerBI = () => (
+  <svg viewBox="0 0 24 24" className="w-6 h-6" aria-hidden="true">
+    <rect x="3" y="12" width="4.5" height="9" rx="1" fill="#F2C811" opacity=".55" />
+    <rect x="9.75" y="7" width="4.5" height="14" rx="1" fill="#F2C811" opacity=".8" />
+    <rect x="16.5" y="2" width="4.5" height="19" rx="1" fill="#F2C811" />
+  </svg>
+);
+const IconoTableau = () => (
+  <svg viewBox="0 0 24 24" className="w-6 h-6" aria-hidden="true">
+    {[[12, 4, '#1F3A6B'], [12, 12, '#E97627'], [12, 20, '#1F3A6B'], [4, 12, '#5B879B'], [20, 12, '#5B879B']].map(([x, y, c], i) => (
+      <path key={i} d={`M${Number(x) - 1} ${Number(y) - 3}h2v2h2v2h-2v2h-2v-2H${Number(x) - 3}v-2h2z`} fill={c as string} />
+    ))}
+  </svg>
+);
+const HERRAMIENTAS: { nombre: string; icono: React.ReactNode }[] = [
+  { nombre: 'Power BI', icono: <IconoPowerBI /> },
+  { nombre: 'SQL', icono: <Database size={24} color="#CC2927" /> },
+  { nombre: 'Python', icono: <Marca path={siPython.path} color={siPython.hex} /> },
+  { nombre: 'R', icono: <Marca path={siR.path} color={siR.hex} /> },
+  { nombre: 'AppSheet', icono: <Smartphone size={24} color="#1A73E8" /> },
+  { nombre: 'Power Automate', icono: <Workflow size={24} color="#0B6FDE" /> },
+  { nombre: 'Tableau', icono: <IconoTableau /> },
+  { nombre: 'PostgreSQL', icono: <Marca path={siPostgresql.path} color={siPostgresql.hex} /> },
+  { nombre: 'React', icono: <Marca path={siReact.path} color={siReact.hex} /> },
+  { nombre: 'FastAPI', icono: <Marca path={siFastapi.path} color={siFastapi.hex} /> },
+  { nombre: 'PHP', icono: <Marca path={siPhp.path} color={siPhp.hex} /> },
+  { nombre: 'Docker', icono: <Marca path={siDocker.path} color={siDocker.hex} /> },
+  { nombre: 'Google Cloud', icono: <Marca path={siGooglecloud.path} color={siGooglecloud.hex} /> },
+  { nombre: 'Firebase', icono: <Marca path={siFirebase.path} color={siFirebase.hex} /> },
+  { nombre: 'Google Sheets', icono: <Marca path={siGooglesheets.path} color={siGooglesheets.hex} /> },
+  { nombre: 'Machine Learning', icono: <Brain size={24} color="#7C3AED" /> },
+  { nombre: 'AI Agents', icono: <Bot size={24} color="#0EA5E9" /> },
+  { nombre: 'Big Data', icono: <Boxes size={24} color="#0F766E" /> },
+];
+
+// Capturas de proyectos que flotan a los lados del inicio (solo pantallas
+// anchas). Son las versiones publicables de public/proyectos.
+const CAPTURAS_INICIO: { src: string; lado: 'left' | 'right'; x: string; y: string; giro: string; dur: string; ret: string }[] = [
+  { src: '/proyectos/4/1.webp', lado: 'left', x: '3%', y: '47%', giro: '-5deg', dur: '9s', ret: '0s' },
+  { src: '/proyectos/2/1.webp', lado: 'left', x: '5%', y: '70%', giro: '4deg', dur: '11s', ret: '-3s' },
+  { src: '/proyectos/6/2.webp', lado: 'right', x: '3%', y: '17%', giro: '5deg', dur: '10s', ret: '-1s' },
+  { src: '/proyectos/1/2.webp', lado: 'right', x: '5%', y: '43%', giro: '-4deg', dur: '12s', ret: '-5s' },
+  { src: '/proyectos/5/1.webp', lado: 'right', x: '2.5%', y: '69%', giro: '6deg', dur: '9.5s', ret: '-2s' },
+];
+
 type Pagina = 'home' | 'resume' | 'datalab' | 'projects';
 const PAGINAS_INTERNAS: Pagina[] = ['resume', 'datalab', 'projects'];
 const paginaDesdeHash = (): Pagina => {
@@ -1634,7 +1691,12 @@ export default function App() {
         onMouseLeave={reponerDisco}
         className="relative min-h-screen pt-24 pb-12 px-5 sm:px-8 flex items-center overflow-hidden"
       >
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center text-center">
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[620px] rounded-full bg-blue-500/[0.06] blur-3xl" />
+          <div className="absolute inset-0 grano" />
+        </div>
+
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -1755,21 +1817,45 @@ export default function App() {
             </div>
           ))}
         </dl>
+
+        <div aria-hidden="true" className="hidden xl:block absolute inset-0 pointer-events-none">
+          {CAPTURAS_INICIO.map((c) => (
+            <img
+              key={c.src}
+              src={c.src}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="absolute rounded-lg border border-black/10 dark:border-white/10 shadow-[0_24px_50px_-24px_rgba(0,0,0,0.5)] flota"
+              style={{
+                [c.lado]: c.x,
+                top: c.y,
+                width: 'clamp(170px, 14vw, 300px)',
+                animationDuration: c.dur,
+                animationDelay: c.ret,
+                ['--giro' as string]: c.giro,
+              }}
+            />
+          ))}
+        </div>
       </section>
 
-      {/* --- Tools Marquee --- */}
-      <div className="py-12 border-y border-gray-200 dark:border-white/5 bg-gray-100/60 dark:bg-white/[0.02] overflow-hidden">
-        <div className="flex gap-12 animate-marquee whitespace-nowrap">
-          {['Power BI', 'SQL', 'Python', 'R', 'AppSheet', 'Power Automate', 'Tableau', 'Machine Learning', 'AI Agents', 'Big Data'].map((tool, i) => (
-            <span key={i} className="text-2xl font-black text-gray-400 dark:text-white/20 uppercase tracking-tighter italic">
-              {tool}
-            </span>
-          ))}
-          {['Power BI', 'SQL', 'Python', 'R', 'AppSheet', 'Power Automate', 'Tableau', 'Machine Learning', 'AI Agents', 'Big Data'].map((tool, i) => (
-            <span key={i + 10} className="text-2xl font-black text-gray-400 dark:text-white/20 uppercase tracking-tighter italic">
-              {tool}
-            </span>
-          ))}
+      {/* --- Herramientas: tira con el logo de cada una --- */}
+      <div className="py-10 border-y border-black/10 dark:border-white/10">
+        <p className="text-center text-[11px] uppercase tracking-[0.22em] text-gray-500 dark:text-gray-400 mb-6">
+          {lang === 'es' ? 'Herramientas y tecnologías con las que trabajo' : 'Tools and technologies I work with'}
+        </p>
+        <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+          <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
+            {[...HERRAMIENTAS, ...HERRAMIENTAS].map((h, i) => (
+              <div key={i} className="flex items-center gap-3 pr-14 shrink-0">
+                <span className="w-11 h-11 rounded-xl bg-white dark:bg-white/10 border border-black/10 dark:border-white/10 flex items-center justify-center shadow-sm">
+                  {h.icono}
+                </span>
+                <span className="text-sm font-semibold tracking-wide text-gray-700 dark:text-gray-300 whitespace-nowrap">{h.nombre}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
