@@ -296,7 +296,7 @@ export function Conocimiento({
   useEffect(() => { window.scrollTo(0, 0); }, [abierta, tab]);
 
   return (
-    <div className="min-h-screen bg-[#efefec] dark:bg-[#0c0c0d] text-gray-900 dark:text-brand-white transition-colors duration-300">
+    <div className="min-h-screen text-gray-900 dark:text-brand-white transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-14 pb-24">
         {nota ? (
           <Lectura nota={nota} lang={lang} onCerrar={() => setAbierta(null)} />

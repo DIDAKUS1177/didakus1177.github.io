@@ -336,3 +336,86 @@ html[data-movimiento="off"] .flota { transform: rotate(var(--giro, 0deg)) !impor
 /* Tiras de fotos del fondo del inicio: avanzan despacio y sin cortes */
 @keyframes cintaFondo { to { transform: translateX(-50%); } }
 .cinta-fondo { animation: cintaFondo 100s linear infinite; }
+
+/* --- Fondo general: el color vive en <body> para que el fondo espacial
+   (fixed, detras del contenido) quede visible en todas las paginas --- */
+body { background-color: #efefec; }
+.dark body { background-color: #0c0c0d; }
+
+/* --- Fondo espacial --- */
+@keyframes titila { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.55; } }
+.ilu-titila { animation: titila 3.4s ease-in-out infinite; }
+
+@keyframes naveBob { from { transform: translateY(-4px); } to { transform: translateY(4px); } }
+.nave-bob { animation: naveBob 3s ease-in-out infinite alternate; }
+
+@keyframes llamaH { from { transform: scaleX(0.65); } to { transform: scaleX(1.3); } }
+.ilu-llama-h { transform-box: fill-box; transform-origin: right center; animation: llamaH 0.28s ease-in-out infinite alternate; }
+
+.cometa {
+  position: absolute; left: -14vw; width: 120px; height: 1.5px; opacity: 0;
+  background: linear-gradient(90deg, transparent, currentColor);
+  transform: rotate(18deg);
+  animation: cometa 14s linear infinite;
+}
+@keyframes cometa {
+  0%   { transform: translate(0, 0) rotate(18deg); opacity: 0; }
+  3%   { opacity: 0.5; }
+  13%  { transform: translate(125vw, 42vh) rotate(18deg); opacity: 0; }
+  100% { transform: translate(125vw, 42vh) rotate(18deg); opacity: 0; }
+}
+
+/* --- Ilustraciones de "Como trabajo" --- */
+@keyframes iluAparece {
+  0%, 6%   { opacity: 0; transform: translateY(8px); }
+  16%, 86% { opacity: 1; transform: none; }
+  95%, 100% { opacity: 0; transform: none; }
+}
+.ilu-aparece { animation: iluAparece 8s ease-out infinite; }
+
+@keyframes iluPunto { 0%, 100% { transform: translateY(0); opacity: 0.35; } 50% { transform: translateY(-4px); opacity: 1; } }
+.ilu-punto { transform-box: fill-box; animation: iluPunto 1.2s ease-in-out infinite; }
+
+@keyframes iluPulso { 0%, 100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; } }
+.ilu-pulso { transform-box: fill-box; transform-origin: center; animation: iluPulso 2.6s ease-in-out infinite; }
+
+.ilu-trazo { stroke-dasharray: 90; stroke-dashoffset: 90; animation: iluTrazo 7s ease-out infinite; }
+@keyframes iluTrazo { 0% { stroke-dashoffset: 90; } 20%, 88% { stroke-dashoffset: 0; } 96%, 100% { stroke-dashoffset: 90; } }
+
+.ilu-sello { transform-box: fill-box; transform-origin: center; animation: iluSello 7s ease-out infinite; }
+@keyframes iluSello {
+  0%, 38% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.18); opacity: 1; }
+  56%, 90% { transform: scale(1); opacity: 1; }
+  97%, 100% { transform: scale(0); opacity: 0; }
+}
+
+.ilu-bloque { transform-box: fill-box; animation: iluBloque 9s cubic-bezier(0.3, 0.7, 0.3, 1) infinite both; animation-delay: var(--d, 0s); }
+@keyframes iluBloque {
+  0%   { opacity: 0; transform: translateY(-46px); }
+  7%   { opacity: 1; transform: translateY(0); }
+  9%   { transform: translateY(-3px); }
+  11%, 86% { opacity: 1; transform: translateY(0); }
+  94%, 100% { opacity: 0; transform: translateY(0); }
+}
+
+@keyframes iluCursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.ilu-cursor { animation: iluCursor 1s steps(1) infinite; }
+
+@keyframes iluFlota { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+.ilu-flota { animation: iluFlota 3.6s ease-in-out infinite alternate; }
+
+@keyframes iluDespega { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.ilu-despega { transform-box: fill-box; animation: iluDespega 5s ease-in-out infinite; }
+
+@keyframes iluLlama { from { transform: scaleY(0.7); } to { transform: scaleY(1.3); } }
+.ilu-llama { transform-box: fill-box; transform-origin: top center; animation: iluLlama 0.3s ease-in-out infinite alternate; }
+
+/* --- Mapa: ruta del cohete y figuras --- */
+@keyframes viajarRuta { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+@keyframes rutaFluye { to { stroke-dashoffset: -20; } }
+.ruta-fluye { animation: rutaFluye 2.4s linear infinite; }
+@keyframes mapaFlota { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+.mapa-flota { animation: mapaFlota 3.2s ease-in-out infinite alternate; }
+@keyframes mapaGira { to { transform: rotate(360deg); } }
+.mapa-gira { transform-box: fill-box; transform-origin: center; animation: mapaGira 14s linear infinite; }

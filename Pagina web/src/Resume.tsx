@@ -465,7 +465,7 @@ export const Resume: React.FC<ResumeProps> = ({ onBack, lang }) => {
     "bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 hover:border-gray-400 dark:hover:border-white/25 transition-colors cursor-pointer";
 
   return (
-    <div className="min-h-screen bg-[#efefec] text-gray-900 dark:bg-[#0c0c0d] dark:text-white transition-colors duration-300 py-12 px-5 sm:px-8">
+    <div className="min-h-screen text-gray-900 dark:text-white transition-colors duration-300 py-12 px-5 sm:px-8">
       <div className="max-w-5xl mx-auto">
         
         {/* Header */}

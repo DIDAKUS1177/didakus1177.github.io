@@ -53,6 +53,8 @@ import { translations } from './translations';
 // del sitio junto, y solo hacen falta al llegar a la analitica o al Data Lab.
 import { SobreMi } from './SobreMi';
 import { BarraPagina } from './BarraPagina';
+import { FondoEspacial } from './FondoEspacial';
+import { IlustracionPaso, NaveTrazo } from './Ilustraciones';
 const Conocimiento = React.lazy(() => import('./Conocimiento').then(m => ({ default: m.Conocimiento })));
 const Resume = React.lazy(() => import('./Resume').then(m => ({ default: m.Resume })));
 const ParetoChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.ParetoChartComponent })));
@@ -114,6 +116,7 @@ interface Project {
   city: string;
   desc: { es: string; en: string };
   tags: string[];
+  url?: string; // plataforma en linea, para que se pueda comprobar que existe
 }
 
 const COUNTRIES = ['España', 'México', 'Colombia'] as const;
@@ -188,6 +191,7 @@ const PROJECTS: Project[] = [
     id: '1',
     shots: 4,
     title: 'BHR Due Diligence',
+    url: 'https://fiery-airlock-499117-u7.ue.r.appspot.com/login',
     client: 'Business & Human Rights',
     country: 'España',
     city: 'Madrid',
@@ -214,6 +218,7 @@ const PROJECTS: Project[] = [
     id: '3',
     shots: 2,
     title: 'BHR Country Risk Compass',
+    url: 'https://bhr-risk-compass-hortifrut.web.app/',
     client: 'Repsol · Inditex',
     country: 'España',
     city: 'Madrid',
@@ -240,6 +245,7 @@ const PROJECTS: Project[] = [
     id: '5',
     shots: 4,
     title: 'KG Academy',
+    url: 'https://kg-academy.vercel.app/',
     client: 'KG Gestión Integral S.A.S.',
     country: 'Colombia',
     city: 'Palmira',
@@ -253,6 +259,7 @@ const PROJECTS: Project[] = [
     id: '6',
     shots: 3,
     title: 'Portal Tributario Municipal',
+    url: 'https://industria-comercio-paipa.erpsoftsas.com/erpsoftsas/dist/reteicaPresentar.php',
     client: 'Alcaldía de Paipa (+3 municipios)',
     country: 'Colombia',
     city: 'Paipa',
@@ -621,6 +628,47 @@ const WorldMap = ({ lang }: { lang: 'es' | 'en' }) => {
               </text>
             );
           })}
+
+          {/* Vida en el océano: una ruta con un cohete que une los tres países, una
+              idea que flota y un engranaje que gira. Solo en la vista mundial. */}
+          {region === 'todos' && (() => {
+            const pc = pins.find((p) => p.key === 'Colombia');
+            const pm = pins.find((p) => p.key === 'México');
+            const pe = pins.find((p) => p.key === 'España');
+            if (!pc || !pm || !pe) return null;
+            const ctrl = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+              const dx = b.x - a.x, dy = b.y - a.y;
+              return `${(a.x + b.x) / 2 + dy * 0.28} ${(a.y + b.y) / 2 - dx * 0.28}`;
+            };
+            const d = `M ${pc.x} ${pc.y} Q ${ctrl(pc, pm)} ${pm.x} ${pm.y} Q ${ctrl(pm, pe)} ${pe.x} ${pe.y} Q ${ctrl(pe, pc)} ${pc.x} ${pc.y}`;
+            const bombilla = to({ x: mapaX(-58), y: mapaY(41) });
+            const engranaje = to({ x: mapaX(-24), y: mapaY(7) });
+            return (
+              <g className="text-brand pointer-events-none">
+                <path d={d} fill="none" stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.4" strokeDasharray="3 7" className="ruta-fluye" />
+                <g style={{ offsetPath: `path("${d}")`, offsetRotate: 'auto', animation: 'viajarRuta 22s linear infinite' } as React.CSSProperties}>
+                  <g transform="scale(0.55)"><NaveTrazo /></g>
+                </g>
+
+                <g transform={`translate(${bombilla.x} ${bombilla.y})`} opacity="0.65">
+                  <g className="mapa-flota" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                    <circle r="11" fill="currentColor" fillOpacity="0.1" />
+                    <path d="M-5 14h10M-3.5 19h7M0 -18v-5M-15 -12l-3-3M15 -12l3-3" />
+                  </g>
+                </g>
+
+                <g transform={`translate(${engranaje.x} ${engranaje.y})`} opacity="0.55">
+                  <g className="mapa-gira" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle r="9" fill="currentColor" fillOpacity="0.1" />
+                    <circle r="3" />
+                    {[0, 60, 120, 180, 240, 300].map((a) => (
+                      <rect key={a} x="-2.2" y="-15" width="4.4" height="6" rx="1" transform={`rotate(${a})`} fill="currentColor" fillOpacity="0.3" />
+                    ))}
+                  </g>
+                </g>
+              </g>
+            );
+          })()}
 
           {/* Pines: fuera del grupo escalado para que no crezcan con el zoom */}
           {placed.map((p, i) => (
@@ -1319,7 +1367,10 @@ const HowIWork = ({ lang }: { lang: 'es' | 'en' }) => (
               <span className="inline-block self-start text-[9px] font-black uppercase tracking-widest text-brand bg-brand/10 border border-brand/25 px-2 py-1 rounded-full mb-3">
                 {step.badge[lang]}
               </span>
-              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{step.desc[lang]}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-1">{step.desc[lang]}</p>
+              <div className="mt-5 rounded-2xl bg-brand/[0.06] border border-brand/10 px-3 py-3">
+                <IlustracionPaso n={i} />
+              </div>
             </motion.div>
           );
         })}
@@ -1467,9 +1518,24 @@ const ProjectsSection = ({ lang }: { lang: 'es' | 'en' }) => (
             </div>
 
             <h3 className="font-display text-3xl font-normal leading-tight mb-3">{project.title}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 flex-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-5 flex-1">
               {project.desc[lang]}
             </p>
+
+            {project.url && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-5">
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/enlace inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900 text-sm font-semibold hover:opacity-85 transition-opacity"
+                >
+                  {lang === 'es' ? 'Ver plataforma en línea' : 'View live platform'}
+                  <ArrowUpRight size={16} className="transition-transform group-hover/enlace:translate-x-0.5 group-hover/enlace:-translate-y-0.5" />
+                </a>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400 break-all">{new URL(project.url).hostname}</span>
+              </div>
+            )}
 
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => (
@@ -1816,7 +1882,7 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
 
   if (currentPage === 'projects') {
     return (
-      <div className="min-h-screen bg-[#efefec] text-gray-900 dark:bg-[#0c0c0d] dark:text-white transition-colors duration-300">
+      <div className="min-h-screen text-gray-900 dark:text-white transition-colors duration-300">
         {barra}
         <ProjectsSection lang={lang} />
       </div>
@@ -1824,7 +1890,7 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
   }
 
   return (
-    <div className="min-h-screen selection:bg-brand selection:text-white bg-[#efefec] text-gray-900 dark:bg-[#0c0c0d] dark:text-brand-white transition-colors duration-300 relative">
+    <div className="min-h-screen selection:bg-brand selection:text-white text-gray-900 dark:text-brand-white transition-colors duration-300 relative">
       <BarraProgreso />
 
       {/* --- Navbar: minima. Portafolio y Curriculum son lo unico visible; el
@@ -2476,6 +2542,7 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion={movimiento ? 'never' : 'always'}>
+      <FondoEspacial />
       <Sitio movimiento={movimiento} setMovimiento={setMovimiento} />
     </MotionConfig>
   );
