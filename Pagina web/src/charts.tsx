@@ -428,22 +428,23 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
   };
 
   return (
-    <section id="analyzer" className="py-32 px-6">
+    <section id="analyzer" className="py-14">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-black mb-4">{t.title}</h2>
+        <div className="text-center mb-14">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500 dark:text-gray-400 mb-3">Data Lab</p>
+          <h2 className="mb-4">{t.title}</h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg">{t.subtitle}</p>
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <label className="px-8 py-3 bg-brand rounded-xl font-bold cursor-pointer hover:scale-105 transition-transform flex items-center gap-2">
+          <label className="px-7 py-3 brand-gradient text-white rounded-full font-semibold cursor-pointer hover:scale-[1.03] transition-transform flex items-center gap-2">
             <Database size={20} />
             {t.upload}
             <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
           </label>
           <button 
             onClick={downloadTemplate}
-            className="px-8 py-3 glass rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-all flex items-center gap-2"
+            className="px-7 py-3 rounded-full border border-gray-900/60 dark:border-white/60 font-semibold hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-colors flex items-center gap-2"
           >
             <FileJson size={20} />
             {t.downloadTemplate}
@@ -477,9 +478,9 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
+              className="glass p-8 rounded-3xl border-gray-200 dark:border-white/5"
             >
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <h3 className="font-display text-3xl font-normal mb-6 flex items-center gap-3">
                 <BarChart3 className="text-brand" size={20} />
                 {t.pareto}
               </h3>
@@ -505,9 +506,9 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="glass p-8 rounded-[40px] border-gray-200 dark:border-white/5"
+              className="glass p-8 rounded-3xl border-gray-200 dark:border-white/5"
             >
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <h3 className="font-display text-3xl font-normal mb-6 flex items-center gap-3">
                 <TrendingUp className="text-brand" size={20} />
                 {t.regression}
               </h3>
@@ -544,7 +545,7 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
           </div>
           </>
         ) : (
-          <label className="block rounded-[40px] border-2 border-dashed border-gray-300 dark:border-white/10 hover:border-brand/50 bg-white dark:bg-white/[0.02] cursor-pointer transition-colors group overflow-hidden">
+          <label className="block rounded-3xl border-2 border-dashed border-gray-300 dark:border-white/10 hover:border-brand/50 bg-white dark:bg-white/[0.02] cursor-pointer transition-colors group overflow-hidden">
             <div className="p-10 md:p-14 text-center">
               <div className="w-20 h-20 mx-auto rounded-2xl bg-brand/10 flex items-center justify-center group-hover:bg-brand/20 group-hover:scale-105 transition-all mb-6">
                 <Database className="text-brand" size={34} />

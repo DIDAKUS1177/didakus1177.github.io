@@ -1875,14 +1875,16 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
 
   if (currentPage === 'datalab') {
     return (
-      <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-[#0a0a0a] dark:text-white transition-colors duration-300 py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <BackButton onBack={() => setCurrentPage('home')} lang={lang} />
-          <Suspense fallback={<CargandoBloque alto="h-[420px]" />}>
-            <DataAnalyzer lang={lang} />
-          </Suspense>
+      <>
+        {barra}
+        <div className="min-h-screen text-gray-900 dark:text-white transition-colors duration-300 pb-20 px-5 sm:px-8">
+          <div className="max-w-7xl mx-auto">
+            <Suspense fallback={<CargandoBloque alto="h-[420px]" />}>
+              <DataAnalyzer lang={lang} />
+            </Suspense>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
