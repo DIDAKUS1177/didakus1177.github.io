@@ -488,7 +488,15 @@ export const DataAnalyzer = ({ lang }: { lang: 'es' | 'en' }) => {
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={paretoData}>
                     <CartesianGrid strokeDasharray="3 3" stroke={ct.grid} vertical={false} />
-                    <XAxis dataKey="name" stroke={ct.axis} fontSize={12} />
+                    <XAxis
+                      dataKey="name"
+                      stroke={ct.axis}
+                      fontSize={12}
+                      interval={0}
+                      angle={paretoData.length > 4 ? -30 : 0}
+                      textAnchor={paretoData.length > 4 ? 'end' : 'middle'}
+                      height={paretoData.length > 4 ? 70 : 30}
+                    />
                     <YAxis yAxisId="left" stroke={ct.axis} fontSize={12} />
                     <YAxis yAxisId="right" orientation="right" stroke="#2563EB" fontSize={12} unit="%" />
                     <Tooltip 
