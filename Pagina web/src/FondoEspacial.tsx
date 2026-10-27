@@ -1,7 +1,8 @@
 // Fondo vectorial de todo el sitio: una luna, un planeta con anillo, estrellas
 // que titilan, cometas ocasionales y una ruta punteada. Va fijo y detrás del
 // contenido, con trazo fino y muy tenue para respetar la estética minimalista.
-// La nave (Nave) vive en otra capa, encima del contenido, porque se puede tocar.
+// La nave (Nave) también va al fondo, detrás del texto, y se toca por cercanía:
+// como el contenido la tapa, el clic se detecta en la ventana y se compara con su posición.
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring, useTransform } from 'motion/react';
 import { NaveTrazo } from './Ilustraciones';
@@ -20,7 +21,7 @@ const ESTRELLAS: [number, number, number, number][] = [
 ];
 
 // --- La nave ------------------------------------------------------------------
-// Dos modos. En "ruta" avanza por la ruta punteada según el scroll. Si la tocas
+// Dos modos. En "ruta" avanza por la ruta punteada según el scroll. Si haces clic cerca de ella
 // da una pirueta con chispas y pasa a "libre": te sigue el cursor (a distancia,
 // para no taparlo) hasta que la sueltes con el botón o con Esc, o hasta que dejes
 // el mouse quieto unos segundos; entonces vuelve sola a su ruta.
@@ -34,6 +35,8 @@ function Nave() {
   const ruta = useRef<SVGPathElement>(null);
   const posEl = useRef<HTMLDivElement>(null);
   const rotEl = useRef<HTMLDivElement>(null);
+  const topEl = useRef<HTMLDivElement>(null);
+  const tocarRef = useRef<() => void>(() => {});
   const { scrollYProgress } = useScroll();
   const progreso = useSpring(scrollYProgress, { stiffness: 55, damping: 22, mass: 0.6 });
 
@@ -72,6 +75,7 @@ function Nave() {
     const e = est.current;
     if (posEl.current) posEl.current.style.transform = `translate(${e.x}px, ${e.y}px)`;
     if (rotEl.current) rotEl.current.style.transform = `rotate(${e.ang}deg)`;
+    if (topEl.current) topEl.current.style.transform = `translate(${e.x}px, ${e.y}px)`;
   };
 
   const detener = () => cancelAnimationFrame(est.current.raf);
@@ -136,22 +140,37 @@ function Nave() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progreso]);
 
-  // El cursor (o el dedo) es la meta de la nave en modo libre
+  // El cursor (o el dedo) es la meta de la nave en modo libre. Como la nave va
+  // detras del contenido, la cercania se mide aqui y no con eventos del elemento;
+  // un enlace, boton o campo nunca cuenta como toque a la nave.
   useEffect(() => {
+    const cerca = (ev: MouseEvent | PointerEvent) => {
+      const e = est.current;
+      if (Math.hypot(ev.clientX - e.x, ev.clientY - e.y) > 52) return false;
+      const el = ev.target as Element | null;
+      return !el?.closest?.('a, button, input, select, textarea, summary, label, [role="button"]');
+    };
     const mover = (ev: PointerEvent) => {
       const e = est.current;
       e.tx = ev.clientX;
       e.ty = ev.clientY;
       e.mov = performance.now();
+      const sobre = cerca(ev);
+      setEncima((prev) => (prev === sobre ? prev : sobre));
+      document.body.classList.toggle('sobre-nave', sobre);
     };
+    const clic = (ev: MouseEvent) => { if (cerca(ev)) tocarRef.current(); };
     const tecla = (ev: KeyboardEvent) => { if (ev.key === 'Escape') volver(); };
     window.addEventListener('pointermove', mover, { passive: true });
     window.addEventListener('pointerdown', mover, { passive: true });
+    window.addEventListener('click', clic);
     window.addEventListener('keydown', tecla);
     return () => {
       window.removeEventListener('pointermove', mover);
       window.removeEventListener('pointerdown', mover);
+      window.removeEventListener('click', clic);
       window.removeEventListener('keydown', tecla);
+      document.body.classList.remove('sobre-nave');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -182,59 +201,63 @@ function Nave() {
     }
   };
 
+  tocarRef.current = alTocar;
+
   const texto = {
     es: { pista: libre ? 'Haz clic para soltarme' : '¡Haz clic y píloteame!', soltar: 'Devolver la nave a su ruta', etiqueta: 'Nave espacial: haz clic para pilotarla' },
     en: { pista: libre ? 'Click to let me go' : 'Click and fly me!', soltar: 'Send the ship back to its route', etiqueta: 'Spaceship: click to fly it' },
   }[lang];
 
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none text-brand">
-      {/* Copia invisible de la ruta, para calcular donde va la nave */}
-      <svg viewBox="0 0 1000 1000" width="0" height="0" className="absolute" aria-hidden="true">
-        <path ref={ruta} d={RUTA} fill="none" />
-      </svg>
+    <>
+      {/* Capa de fondo: la nave va detras del contenido y no tapa el texto */}
+      <div aria-hidden="true" className="fixed inset-0 -z-10 pointer-events-none text-brand">
+        {/* Copia invisible de la ruta, para calcular donde va la nave */}
+        <svg viewBox="0 0 1000 1000" width="0" height="0" className="absolute">
+          <path ref={ruta} d={RUTA} fill="none" />
+        </svg>
 
-      <div ref={posEl} className="absolute left-0 top-0 will-change-transform">
-        <button
-          type="button"
-          aria-label={texto.etiqueta}
-          onClick={alTocar}
-          onPointerEnter={() => setEncima(true)}
-          onPointerLeave={() => setEncima(false)}
-          className="pointer-events-auto cursor-pointer -translate-x-1/2 -translate-y-1/2 relative w-[96px] h-[64px] flex items-center justify-center bg-transparent border-0 p-0 outline-offset-4"
-        >
-          <div ref={rotEl} className={`absolute inset-0 flex items-center justify-center ${girando ? 'nave-pirueta' : ''}`}>
-            <svg
-              viewBox="-40 -26 80 52"
-              width="92"
-              height="60"
-              className={`nave-bob overflow-visible transition-[filter,scale] duration-200 ${encima ? 'scale-[1.18] nave-caliente' : ''}`}
-              style={{ opacity: 0.85 }}
-            >
-              <NaveTrazo />
-            </svg>
+        <div ref={posEl} className="absolute left-0 top-0 will-change-transform">
+          <div className="-translate-x-1/2 -translate-y-1/2 relative w-[96px] h-[64px] flex items-center justify-center">
+            <div ref={rotEl} className={`absolute inset-0 flex items-center justify-center ${girando ? 'nave-pirueta' : ''}`}>
+              <svg
+                viewBox="-40 -26 80 52"
+                width="92"
+                height="60"
+                className={`nave-bob overflow-visible transition-[filter,scale] duration-200 ${encima ? 'scale-[1.18] nave-caliente' : ''}`}
+                style={{ opacity: 0.85 }}
+              >
+                <NaveTrazo />
+              </svg>
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* Capa superior, sin clics: solo la pista, las chispas y el boton para soltarla */}
+      <div className="fixed inset-0 z-50 pointer-events-none text-brand">
+        <div ref={topEl} className="absolute left-0 top-0 will-change-transform">
           {chispas.map((c) => (
             <span key={c.id} className="chispa" style={{ ['--dx' as string]: `${c.dx}px`, ['--dy' as string]: `${c.dy}px` }} />
           ))}
-        </button>
-        {encima && (
-          <span className="absolute left-1/2 -translate-x-1/2 -top-12 whitespace-nowrap rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900 text-[11px] font-semibold px-3 py-1 shadow-lg pointer-events-none">
-            {texto.pista}
-          </span>
+          {encima && (
+            <span className="absolute left-0 top-0 -translate-x-1/2 -translate-y-[58px] whitespace-nowrap rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900 text-[11px] font-semibold px-3 py-1 shadow-lg">
+              {texto.pista}
+            </span>
+          )}
+        </div>
+
+        {libre && (
+          <button
+            type="button"
+            onClick={volver}
+            className="pointer-events-auto fixed bottom-5 left-5 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900 text-sm font-semibold px-4 py-2 shadow-lg hover:opacity-85 transition-opacity"
+          >
+            {texto.soltar} · Esc
+          </button>
         )}
       </div>
-
-      {libre && (
-        <button
-          type="button"
-          onClick={volver}
-          className="pointer-events-auto fixed bottom-5 left-5 z-50 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900 text-sm font-semibold px-4 py-2 shadow-lg hover:opacity-85 transition-opacity"
-        >
-          {texto.soltar} · Esc
-        </button>
-      )}
-    </div>
+    </>
   );
 }
 
