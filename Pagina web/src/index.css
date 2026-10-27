@@ -419,3 +419,18 @@ body { background-color: #efefec; }
 .mapa-flota { animation: mapaFlota 3.2s ease-in-out infinite alternate; }
 @keyframes mapaGira { to { transform: rotate(360deg); } }
 .mapa-gira { transform-box: fill-box; transform-origin: center; animation: mapaGira 14s linear infinite; }
+
+/* --- Nave interactiva --- */
+@keyframes pirueta { from { rotate: 0deg; } to { rotate: 360deg; } }
+.nave-pirueta { animation: pirueta 0.9s cubic-bezier(0.5, 0, 0.2, 1) 1; }
+.nave-caliente { filter: drop-shadow(0 0 8px color-mix(in srgb, currentColor 65%, transparent)); }
+.nave-caliente .ilu-llama-h { animation-duration: 0.12s; }
+.chispa {
+  position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; border-radius: 9999px;
+  background: currentColor; opacity: 0; pointer-events: none;
+  animation: chispa 0.8s ease-out forwards;
+}
+@keyframes chispa {
+  0%   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2); opacity: 0; }
+}

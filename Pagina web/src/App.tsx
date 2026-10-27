@@ -1826,6 +1826,12 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
     return () => window.removeEventListener('keydown', alTeclear);
   }, []);
 
+  // El idioma actual queda en <html lang>; la nave del fondo lo lee para su texto.
+  React.useEffect(() => {
+    document.documentElement.lang = lang;
+    window.dispatchEvent(new Event('idioma'));
+  }, [lang]);
+
   const toggleLang = () => setLang(prev => prev === 'es' ? 'en' : 'es');
 
   const openGmail = () => {
