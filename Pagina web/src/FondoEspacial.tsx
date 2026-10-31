@@ -3,9 +3,11 @@
 // contenido, con trazo fino y muy tenue para respetar la estética minimalista.
 // La nave (Nave) también va al fondo, detrás del texto, y se toca por cercanía:
 // como el contenido la tapa, el clic se detecta en la ventana y se compara con su posición.
+// Un clic en cualquier otro lado la hace disparar hacia ahí (ver Combate.ts).
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring, useTransform } from 'motion/react';
 import { NaveTrazo } from './Ilustraciones';
+import { crearCombate, type Combate } from './Combate';
 
 // Ruta de la nave en un lienzo de 1000 x 1000 que se estira a la pantalla.
 const RUTA = 'M50,400 C230,300 470,340 650,240 S970,330 900,520 S400,540 240,700 S520,930 910,880';
@@ -25,6 +27,8 @@ const ESTRELLAS: [number, number, number, number][] = [
 // da una pirueta con chispas y pasa a "libre": te sigue el cursor (a distancia,
 // para no taparlo) hasta que la sueltes con el botón o con Esc, o hasta que dejes
 // el mouse quieto unos segundos; entonces vuelve sola a su ruta.
+// Un clic lejos de la nave la hace girar hacia ahí y disparar. Cada tanto cruza un
+// asteroide; si el disparo le atina, explota.
 type Modo = 'ruta' | 'libre' | 'vuelta';
 type Chispa = { id: number; dx: number; dy: number };
 
@@ -36,15 +40,25 @@ function Nave() {
   const posEl = useRef<HTMLDivElement>(null);
   const rotEl = useRef<HTMLDivElement>(null);
   const topEl = useRef<HTMLDivElement>(null);
+  const lienzo = useRef<HTMLCanvasElement>(null);
+  const combate = useRef<Combate | null>(null);
   const tocarRef = useRef<() => void>(() => {});
+  const dispararRef = useRef<(x: number, y: number) => void>(() => {});
   const { scrollYProgress } = useScroll();
   const progreso = useSpring(scrollYProgress, { stiffness: 55, damping: 22, mass: 0.6 });
 
-  const est = useRef({ modo: 'ruta' as Modo, x: 0, y: 0, ang: 0, tx: 0, ty: 0, mov: 0, raf: 0 });
+  // apunta: giro temporal hacia donde dispara; regresa: vuelve al angulo de la ruta
+  const est = useRef({
+    modo: 'ruta' as Modo, x: 0, y: 0, ang: 0, tx: 0, ty: 0, mov: 0, raf: 0,
+    apunta: null as { ang: number; hasta: number } | null, regresa: false, ultimoDisparo: 0, disparado: false,
+  });
   const [libre, setLibre] = useState(false);
   const [girando, setGirando] = useState(false);
   const [encima, setEncima] = useState(false);
   const [chispas, setChispas] = useState<Chispa[]>([]);
+  const [aviso, setAviso] = useState(false);
+  // En pantallas tactiles se "toca", no se hace clic
+  const [tactil] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches);
   const [lang, setLang] = useState<'es' | 'en'>(document.documentElement.lang === 'en' ? 'en' : 'es');
 
   useEffect(() => {
@@ -104,9 +118,29 @@ function Nave() {
       } else {
         e.modo = 'ruta';
       }
+    } else {
+      // En su ruta: gira hacia donde dispara y, al terminar, retoma el rumbo de la ruta
+      if (e.apunta) {
+        if (performance.now() < e.apunta.hasta) {
+          e.ang += giroCorto(e.ang, e.apunta.ang) * 0.32;
+        } else {
+          e.apunta = null;
+          e.regresa = true;
+        }
+      }
+      if (!e.apunta && e.regresa) {
+        const r = puntoRuta(progreso.get());
+        if (r) {
+          const d = giroCorto(e.ang, r.ang);
+          e.ang += d * 0.16;
+          if (Math.abs(d) < 0.6) { e.ang = r.ang; e.regresa = false; }
+        } else {
+          e.regresa = false;
+        }
+      }
     }
     pintar();
-    if (e.modo !== 'ruta') e.raf = requestAnimationFrame(bucle);
+    if (e.modo !== 'ruta' || e.apunta || e.regresa) e.raf = requestAnimationFrame(bucle);
   };
 
   const volver = () => {
@@ -125,7 +159,8 @@ function Nave() {
       if (e.modo !== 'ruta') return;
       const r = puntoRuta(v);
       if (!r) return;
-      e.x = r.x; e.y = r.y; e.ang = r.ang;
+      e.x = r.x; e.y = r.y;
+      if (!e.apunta && !e.regresa) e.ang = r.ang; // si esta apuntando, el giro lo lleva el bucle
       pintar();
     };
     colocar(progreso.get());
@@ -142,13 +177,14 @@ function Nave() {
 
   // El cursor (o el dedo) es la meta de la nave en modo libre. Como la nave va
   // detras del contenido, la cercania se mide aqui y no con eventos del elemento;
-  // un enlace, boton o campo nunca cuenta como toque a la nave.
+  // un enlace, boton o campo nunca cuenta como toque a la nave ni como disparo.
   useEffect(() => {
+    const esInteractivo = (el: Element | null) =>
+      !!el?.closest?.('a, button, input, select, textarea, summary, label, [role="button"], [contenteditable="true"]');
     const cerca = (ev: MouseEvent | PointerEvent) => {
       const e = est.current;
       if (Math.hypot(ev.clientX - e.x, ev.clientY - e.y) > 52) return false;
-      const el = ev.target as Element | null;
-      return !el?.closest?.('a, button, input, select, textarea, summary, label, [role="button"]');
+      return !esInteractivo(ev.target as Element | null);
     };
     const mover = (ev: PointerEvent) => {
       const e = est.current;
@@ -159,21 +195,97 @@ function Nave() {
       setEncima((prev) => (prev === sobre ? prev : sobre));
       document.body.classList.toggle('sobre-nave', sobre);
     };
-    const clic = (ev: MouseEvent) => { if (cerca(ev)) tocarRef.current(); };
+    // Un "toque" es pulsar y soltar casi en el mismo punto. Se mide con eventos de
+    // puntero y no con "click": Safari en iPhone no manda "click" desde zonas en blanco.
+    let toque: { id: number; x: number; y: number; t: number } | null = null;
+    const abajo = (ev: PointerEvent) => {
+      toque = ev.button === 0 ? { id: ev.pointerId, x: ev.clientX, y: ev.clientY, t: performance.now() } : null;
+    };
+    const arriba = (ev: PointerEvent) => {
+      const t0 = toque;
+      toque = null;
+      if (!t0 || t0.id !== ev.pointerId) return;
+      if (Math.hypot(ev.clientX - t0.x, ev.clientY - t0.y) > 10 || performance.now() - t0.t > 800) return;
+      if (cerca(ev)) { tocarRef.current(); return; }
+      // Dispara con cualquier toque en zona libre. No cuenta un enlace o boton, un
+      // texto recien seleccionado ni algo con cursor de mano (tarjetas que se abren al tocarlas).
+      const el = ev.target as Element | null;
+      if (!el || esInteractivo(el)) return;
+      if (document.documentElement.dataset.movimiento === 'off') return;
+      if (window.getSelection()?.toString()) return;
+      if (getComputedStyle(el).cursor === 'pointer') return;
+      dispararRef.current(ev.clientX, ev.clientY);
+    };
+    const cancelar = () => { toque = null; };
     const tecla = (ev: KeyboardEvent) => { if (ev.key === 'Escape') volver(); };
     window.addEventListener('pointermove', mover, { passive: true });
     window.addEventListener('pointerdown', mover, { passive: true });
-    window.addEventListener('click', clic);
+    window.addEventListener('pointerdown', abajo, { passive: true });
+    window.addEventListener('pointerup', arriba, { passive: true });
+    window.addEventListener('pointercancel', cancelar, { passive: true });
     window.addEventListener('keydown', tecla);
     return () => {
       window.removeEventListener('pointermove', mover);
       window.removeEventListener('pointerdown', mover);
-      window.removeEventListener('click', clic);
+      window.removeEventListener('pointerdown', abajo);
+      window.removeEventListener('pointerup', arriba);
+      window.removeEventListener('pointercancel', cancelar);
       window.removeEventListener('keydown', tecla);
       document.body.classList.remove('sobre-nave');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Disparos y asteroides. El lienzo va encima del contenido pero sin recibir clics; la
+  // nave solo le da su posicion y su rumbo. Un aviso unico anuncia el primer asteroide
+  // para que se sepa que se puede disparar.
+  useEffect(() => {
+    const el = lienzo.current;
+    if (!el) return;
+    let avisado = false;
+    let quitarAviso = 0;
+    const c = crearCombate({
+      lienzo: el,
+      nave: () => ({ x: est.current.x, y: est.current.y, ang: est.current.ang }),
+      pausado: () => document.documentElement.dataset.movimiento === 'off',
+      alCambiar: (n) => {
+        if (n > 0 && !avisado && !est.current.disparado) {
+          avisado = true;
+          setAviso(true);
+          quitarAviso = window.setTimeout(() => setAviso(false), 7000);
+        }
+      },
+    });
+    combate.current = c;
+    const lanzar = () => c.lanzarAsteroide();
+    window.addEventListener('lanzar-asteroide', lanzar);
+    return () => {
+      window.removeEventListener('lanzar-asteroide', lanzar);
+      window.clearTimeout(quitarAviso);
+      c.destruir();
+      combate.current = null;
+    };
+  }, []);
+
+  const alDisparar = (x: number, y: number) => {
+    const c = combate.current;
+    const e = est.current;
+    const ahora = performance.now();
+    if (!c || ahora - e.ultimoDisparo < 140) return;
+    e.ultimoDisparo = ahora;
+    e.disparado = true;
+    setAviso(false);
+    // En su ruta la nave gira hacia el blanco; en modo libre ya mira al cursor
+    if (e.modo === 'ruta') {
+      e.apunta = { ang: c.apuntar(x, y), hasta: ahora + 450 };
+      e.regresa = false;
+      detener();
+      e.raf = requestAnimationFrame(bucle);
+    }
+    window.setTimeout(() => combate.current?.disparar(x, y), 90);
+  };
+
+  dispararRef.current = alDisparar;
 
   const alTocar = () => {
     const e = est.current;
@@ -191,6 +303,8 @@ function Nave() {
     // Alterna el modo
     if (e.modo === 'ruta' || e.modo === 'vuelta') {
       e.modo = 'libre';
+      e.apunta = null;
+      e.regresa = false;
       e.mov = performance.now();
       if (!e.tx && !e.ty) { e.tx = e.x + 120; e.ty = e.y + 80; }
       setLibre(true);
@@ -204,8 +318,8 @@ function Nave() {
   tocarRef.current = alTocar;
 
   const texto = {
-    es: { pista: libre ? 'Haz clic para soltarme' : '¡Haz clic y píloteame!', soltar: 'Devolver la nave a su ruta', etiqueta: 'Nave espacial: haz clic para pilotarla' },
-    en: { pista: libre ? 'Click to let me go' : 'Click and fly me!', soltar: 'Send the ship back to its route', etiqueta: 'Spaceship: click to fly it' },
+    es: { pista: libre ? 'Haz clic para soltarme' : '¡Haz clic y píloteame!', soltar: 'Devolver la nave a su ruta', etiqueta: 'Nave espacial: haz clic para pilotarla', asteroide: tactil ? 'Pasa un asteroide: toca para dispararle' : 'Pasa un asteroide: haz clic para dispararle' },
+    en: { pista: libre ? 'Click to let me go' : 'Click and fly me!', soltar: 'Send the ship back to its route', etiqueta: 'Spaceship: click to fly it', asteroide: tactil ? 'An asteroid is passing: tap to shoot it' : 'An asteroid is passing: click to shoot it' },
   }[lang];
 
   return (
@@ -234,8 +348,10 @@ function Nave() {
         </div>
       </div>
 
-      {/* Capa superior, sin clics: solo la pista, las chispas y el boton para soltarla */}
+      {/* Capa superior, sin clics: asteroides y disparos (encima del contenido, debajo de
+          la barra), la pista, las chispas y el boton para soltarla */}
       <div className="fixed inset-0 z-50 pointer-events-none text-brand">
+        <canvas ref={lienzo} aria-hidden="true" className="absolute inset-0 w-full h-full" />
         <div ref={topEl} className="absolute left-0 top-0 will-change-transform">
           {chispas.map((c) => (
             <span key={c.id} className="chispa" style={{ ['--dx' as string]: `${c.dx}px`, ['--dy' as string]: `${c.dy}px` }} />
@@ -246,6 +362,15 @@ function Nave() {
             </span>
           )}
         </div>
+
+        {aviso && (
+          <div
+            aria-hidden="true"
+            className={`fixed left-5 ${libre ? 'bottom-[4.5rem]' : 'bottom-5'} max-w-[calc(100vw-6.5rem)] rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900 text-[13px] sm:text-sm font-semibold leading-tight px-4 py-2 shadow-lg`}
+          >
+            {texto.asteroide}
+          </div>
+        )}
 
         {libre && (
           <button
