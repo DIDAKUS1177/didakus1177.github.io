@@ -24,6 +24,19 @@
 :root { --color-brand: #1D4ED8; }
 .dark { --color-brand: #60A5FA; }
 
+/* Colores del logo de Didakus (los usa Marca.tsx). El degradado va de azul a
+   verde; en oscuro sube de tono porque el azul profundo se pierde sobre negro. */
+:root {
+  --dk-1: #1c58b8; --dk-2: #1a63c8; --dk-3: #1a82cc; --dk-4: #19acd0; --dk-5: #19c2c0; --dk-6: #26d8a6;
+  --dk-a1: #1763bd; --dk-a2: #1e93c9; --dk-a3: #1db1d3; --dk-a4: #1dbfb2; --dk-a5: #22cfa0;
+  --dk-did: #3b465c; --dk-kus: #0b1426;
+}
+.dark {
+  --dk-1: #2f78ee; --dk-2: #2f82f2; --dk-3: #2a9cf0; --dk-4: #25bdf0; --dk-5: #22d2d2; --dk-6: #38e6ae;
+  --dk-a1: #2f78ee; --dk-a2: #2a9cf0; --dk-a3: #25bdf0; --dk-a4: #22d2d2; --dk-a5: #38e6ae;
+  --dk-did: #cbd3da; --dk-kus: #ffffff;
+}
+
 @layer base {
   /* Sin esto el navegador dibuja los desplegables nativos de <select> en
      blanco, aunque el resto del sitio este en modo oscuro. Tambien arregla

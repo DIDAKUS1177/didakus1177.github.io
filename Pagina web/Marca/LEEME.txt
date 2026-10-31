@@ -1,0 +1,40 @@
+MARCA DIDAKUS · Diego Hernández
+================================
+
+Esta carpeta es el kit de marca. Lo principal está en la guía:
+  guia-de-marca-didakus.pdf   (5 hojas: logo, uso, color y tipografía, textos)
+
+Qué hay dentro
+--------------
+logos/                  Logo horizontal y monograma DK, en SVG (vectorial) y PNG con fondo transparente.
+                        - didakus-logo-fondo-oscuro   (principal, para fondos oscuros)
+                        - didakus-logo-fondo-claro    (para fondos claros)
+                        - didakus-logo-blanco / -azul-marino   (una sola tinta)
+                        - didakus-logo-simple-...     (sin subtítulo: úsalo por debajo de 300 px de ancho)
+                        - dk-monograma, dk-monograma-blanco, dk-monograma-azul-marino
+redes/                  Piezas listas para subir:
+                        - perfil-1080.png            Foto de perfil (WhatsApp, LinkedIn, Instagram...). Queda bien en círculo.
+                        - perfil-claro-1080.png      Lo mismo sobre fondo claro.
+                        - portada-linkedin-1584x396.png
+                        - portada-1920x1080.png      Portada 16:9 (WhatsApp Business, YouTube, presentaciones).
+                        - compartir-enlace-1200x630.png   Imagen que aparece al compartir el enlace del sitio.
+firma-correo/firma.html Firma de correo para pegar en Gmail (instrucciones adentro).
+originales/             Los dos archivos del logo tal como llegaron, sin tocar.
+
+Colores
+-------
+Marino        #0B1426    fondos oscuros y texto sobre claro
+Azul Didakus  #1C58B8    monograma, botones y acentos
+Turquesa      #19ACD0    transición del degradado
+Verde         #26D8A6    final del degradado
+Gris azulado  #CBD3DA    letras DID sobre oscuro
+Hueso         #EFEFEC    fondo claro del sitio
+
+Cómo se usa en el sitio
+-----------------------
+El sitio dibuja el logo desde src/Marca.tsx (monograma en la barra superior, logo simple en el pie de página).
+Los iconos de la pestaña están en public/ (favicon.svg, favicon.ico, icon-192.png, icon-512.png, apple-touch-icon.png)
+y la imagen al compartir el enlace es public/og-didakus.jpg.
+
+Las versiones vectoriales se trazaron a partir de los dos originales. El nombre DIDAKUS y su subtítulo son un dibujo:
+no se reescriben con una fuente.

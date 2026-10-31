@@ -1,0 +1,60 @@
+# -*- coding: utf-8 -*-
+# Firma de correo: logo en PNG (se aloja en el sitio) + HTML listo para pegar en Gmail.
+import os, shutil
+from PIL import Image
+from logos import svg_lockup
+from render import edge_png
+
+RAIZ = r'C:\Users\dieal\OneDrive\Desktop\1. Carpetas de respaldo como tal\1. Carpetas proyectos\1. Proyecto pagina\Pagina web'
+MARCA = os.path.join(RAIZ, 'Marca')
+PUB = os.path.join(RAIZ, 'public', 'marca')
+os.makedirs(PUB, exist_ok=True)
+os.makedirs(os.path.join(MARCA, 'firma-correo'), exist_ok=True)
+
+# Logo simple sobre fondo claro, el doble de ancho que se muestra (pantallas retina)
+svg = svg_lockup('claro', margen=6, ident='fm', subtitulo=False)
+ancho = 520
+vb = [float(v) for v in svg.split('viewBox="')[1].split('"')[0].split()]
+alto = round(ancho * vb[3] / vb[2])
+tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_firma.html')
+open(tmp, 'w', encoding='utf-8').write(
+    f'<!doctype html><html><head><style>html,body{{margin:0;background:transparent}}svg{{display:block;width:{ancho}px;height:{alto}px}}</style></head><body>{svg}</body></html>')
+destino = os.path.join(PUB, 'firma-logo.png')
+edge_png(tmp, destino, ancho, alto, transparente=True)
+Image.open(destino).save(destino, optimize=True)
+print('logo firma', ancho, alto, os.path.getsize(destino))
+
+URL = 'https://didakus-portafolio.web.app'
+html = f'''<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Firma de correo · Didakus</title>
+<style>body{{margin:40px;font-family:Arial,Helvetica,sans-serif;color:#0b1426}}.nota{{max-width:640px;color:#5b6578;font-size:13px;line-height:1.5;margin-bottom:28px}}</style></head>
+<body>
+<p class="nota"><strong>Cómo usarla en Gmail:</strong> abre este archivo en el navegador, selecciona solo la firma de abajo (el logo y los datos),
+cópiala y pégala en Configuración → Ver todos los ajustes → General → Firma. El logo se carga desde el sitio, así que necesita internet para verse.</p>
+
+<!-- ====== FIRMA ====== -->
+<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.45;color:#0b1426">
+  <tr>
+    <td style="padding:0 18px 0 0;border-right:2px solid #19acd0;vertical-align:middle">
+      <a href="{URL}/" style="text-decoration:none"><img src="{URL}/marca/firma-logo.png" width="190" alt="Didakus" style="display:block;border:0;width:190px;height:auto"></a>
+    </td>
+    <td style="padding:0 0 0 18px;vertical-align:middle">
+      <div style="font-size:16px;font-weight:bold;color:#0b1426">Diego Alejandro Hern&aacute;ndez Blanco</div>
+      <div style="color:#3b465c;margin-top:1px">Ingenier&iacute;a de datos &middot; Automatizaci&oacute;n &middot; Integridad de activos</div>
+      <div style="margin-top:7px;font-size:12.5px">
+        <a href="https://wa.me/573337279204" style="color:#1c58b8;text-decoration:none;font-weight:bold">WhatsApp</a>
+        <span style="color:#9aa5b8">&nbsp;|&nbsp;</span>
+        <a href="mailto:dialhebl.dh@gmail.com" style="color:#1c58b8;text-decoration:none">dialhebl.dh@gmail.com</a>
+        <span style="color:#9aa5b8">&nbsp;|&nbsp;</span>
+        <a href="{URL}/" style="color:#1c58b8;text-decoration:none">didakus-portafolio.web.app</a>
+        <span style="color:#9aa5b8">&nbsp;|&nbsp;</span>
+        <a href="https://www.linkedin.com/in/diego-alejandro-hernandez-blanco-08b64120b" style="color:#1c58b8;text-decoration:none">LinkedIn</a>
+      </div>
+    </td>
+  </tr>
+</table>
+<!-- ====== FIN ====== -->
+</body></html>
+'''
+open(os.path.join(MARCA, 'firma-correo', 'firma.html'), 'w', encoding='utf-8').write(html)
+print('firma lista')

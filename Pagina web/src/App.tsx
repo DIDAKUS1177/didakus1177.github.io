@@ -55,6 +55,7 @@ import { SobreMi } from './SobreMi';
 import { BarraPagina } from './BarraPagina';
 import { FondoEspacial } from './FondoEspacial';
 import { IlustracionPaso, NaveTrazo } from './Ilustraciones';
+import { LogoDidakus, Monograma } from './Marca';
 const Conocimiento = React.lazy(() => import('./Conocimiento').then(m => ({ default: m.Conocimiento })));
 const Resume = React.lazy(() => import('./Resume').then(m => ({ default: m.Resume })));
 const ParetoChartComponent = React.lazy(() => import('./charts').then(m => ({ default: m.ParetoChartComponent })));
@@ -1421,7 +1422,7 @@ const BarraProgreso = () => {
   return (
     <div className="fixed top-0 left-0 right-0 h-[3px] z-[60] pointer-events-none">
       <div
-        className="h-full brand-gradient transition-[width] duration-150 ease-out"
+        className="h-full bg-gradient-to-r from-[#1c58b8] via-[#19acd0] to-[#26d8a6] transition-[width] duration-150 ease-out"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -1905,11 +1906,12 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
           resto de las secciones vive en el indice desplegable. --- */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-[#efefec]/85 dark:bg-[#0c0c0d]/80 border-b border-black/10 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-3">
-          <a href="#hero" onClick={() => setMenuAbierto(false)} className="font-display text-[1.7rem] leading-none whitespace-nowrap">
-            Diego Hernández
+          <a href="#hero" aria-label="Diego Hernández" onClick={() => setMenuAbierto(false)} className="flex items-center gap-2.5 font-display text-[1.7rem] leading-none whitespace-nowrap">
+            <Monograma className="h-8 w-auto shrink-0" />
+            <span className="hidden min-[480px]:inline">Diego Hernández</span>
           </a>
 
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2">
             <button
               onClick={() => setCurrentPage('projects')}
               className="px-5 py-2 rounded-full text-sm font-semibold bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-85 transition-opacity"
@@ -2424,8 +2426,8 @@ function Sitio({ movimiento, setMovimiento }: { movimiento: boolean; setMovimien
       {/* --- Footer --- */}
       <footer className="py-12 px-6 border-t border-gray-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <a href="#hero" className="font-black text-sm tracking-tighter uppercase">
-            Diego <span className="text-brand">Hernández</span>
+          <a href="#hero" aria-label="Didakus · Diego Hernández" className="block">
+            <LogoDidakus className="h-12 w-auto" />
           </a>
           
           <p className="text-gray-500 dark:text-gray-500 text-sm">
